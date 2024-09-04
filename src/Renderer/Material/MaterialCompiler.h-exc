@@ -1,0 +1,73 @@
+#pragma once
+#include <set>
+
+#include "IO/Folder.h"
+
+
+namespace Landmark::Render
+{
+	class MaterialCompiler 
+	{
+		
+		enum Material_Stage_Type
+		{
+			STAGE_MESH,
+			STAGE_RENDER
+		};
+		
+		struct Material_Stage_Info
+		{
+			Material_Stage_Type stageType;
+
+			std::string Entry;
+			std::string FileSource;
+
+			bool operator<(const Material_Stage_Info& other)const { return stageType < other.stageType; }
+		};
+		struct Material_Info
+		{
+			std::set<Material_Stage_Info> Stage_Infos;
+			std::string Name;
+		};
+
+		const static inline std::map<std::string, Material_Stage_Type> StageLookUp = {
+				{"MESH", STAGE_MESH},
+				{"RENDER", STAGE_RENDER}
+		};
+		const static inline std::string MaterialName_VarName = "name";
+		const static inline std::string Stages_VarName = "stages";
+
+		const static inline std::string Stages_Type_VarName = "type";
+		const static inline std::string Stages_SourceFile_VarName = "file";
+		const static inline std::string Stages_Entry_VarName = "entry";
+
+		static void Start();
+		static void FolderSearch(Folder& f);
+
+		const static inline std::string MaterialDescFileFormat = ".json";
+
+
+		const static std::string VertFillerContent;
+		const static std::string FragFillerContent;
+
+
+		static inline Log LOGGER = Log("MaterialCompiler");
+
+
+
+		static std::vector<Material_Info> ParseMaterialFile(File& materialFile);
+
+
+		
+
+		static void CompileMaterial(const Material_Info& material_info,Folder TargetFolder);
+
+		public:
+			static void Init()
+			{
+				Start();
+			}
+	};
+
+
+}

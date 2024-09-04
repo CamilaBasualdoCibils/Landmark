@@ -1,0 +1,21 @@
+﻿#pragma once
+#include "Buffer.h"
+
+
+class  IndexBuffer : public Buffer
+{
+public:
+	IndexBuffer(size_t size, SharingState shareMode = { SharingMode::EXCLUSIVE });
+
+	void Bind(vk::CommandBuffer& cmdBuffer);
+};
+
+template <typename T>
+class  IndexBufferN : public Buffer
+{
+	//using DataType = std::conditional_t<T =>
+public:
+
+};
+
+

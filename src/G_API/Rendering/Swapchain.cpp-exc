@@ -1,0 +1,256 @@
+#include "pch.h"
+#include "Swapchain.h"
+
+#include "G_API/VulkanInstance.h"
+#include "G_API/Devices/LogicalDevice.h"
+
+/*
+void Swapchain::CreateSwapchain(const CreateInfo& s_info)
+{
+	auto surfaceCapabilities = GetOwnerPhysicalDevice().getSurfaceCapabilitiesKHR(surface);
+	vk::SwapchainCreateInfoKHR swapchain_create_info{};
+
+	swapchain_create_info.sType = vk::StructureType::eSwapchainCreateInfoKHR;
+	swapchain_create_info.surface = surface;
+	swapchain_create_info.minImageCount = imageCount;
+	swapchain_create_info.imageFormat = format.format;
+	swapchain_create_info.imageColorSpace = format.colorSpace;
+	swapchain_create_info.imageExtent = extent;
+	swapchain_create_info.imageArrayLayers = 1;
+	vk::ImageUsageFlags image_usage_flags = {};
+	for (auto& usage : usage)
+		image_usage_flags |= static_cast<vk::ImageUsageFlagBits>(usage);
+	swapchain_create_info.imageUsage = image_usage_flags;
+	swapchain_create_info.imageSharingMode = vk::SharingMode::eExclusive;
+
+	swapchain_create_info.preTransform = surfaceCapabilities.currentTransform;
+	swapchain_create_info.compositeAlpha = s_info.compositeAlpha ? vk::CompositeAlphaFlagBitsKHR::eInherit : vk::CompositeAlphaFlagBitsKHR::eOpaque;
+
+	swapchain_create_info.presentMode = presentMode;
+	swapchain_create_info.clipped = clipped;
+	swapchain_create_info.oldSwapchain = nullptr;
+
+	swapChain = GetOwnerDevice().createSwapchainKHR(swapchain_create_info);
+	images = GetOwnerDevice().getSwapchainImagesKHR(swapChain);
+
+	imageViews.reserve(images.size());
+	for (auto& image : images)
+	{
+		vk::ImageViewCreateInfo image_view_create_info{};
+		image_view_create_info.sType = vk::StructureType::eImageViewCreateInfo;
+		image_view_create_info.image = image;
+		image_view_create_info.viewType = vk::ImageViewType::e2D;
+		image_view_create_info.format = format.format;
+		image_view_create_info.components.r = vk::ComponentSwizzle::eIdentity;
+		image_view_create_info.components.g = vk::ComponentSwizzle::eIdentity;
+		image_view_create_info.components.b = vk::ComponentSwizzle::eIdentity;
+		image_view_create_info.components.a = vk::ComponentSwizzle::eIdentity;
+		image_view_create_info.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+		image_view_create_info.subresourceRange.baseMipLevel = 0;
+		image_view_create_info.subresourceRange.levelCount = 1;
+		image_view_create_info.subresourceRange.baseArrayLayer = 0;
+		image_view_create_info.subresourceRange.layerCount = 1;
+		imageViews.push_back(GetOwnerDevice().createImageView(image_view_create_info));
+		//swapChainImageViews.push_back(VulkanDevice.createImageView(image_view_create_info));
+	}
+	framebuffers.reserve(images.size());
+	for (auto& imageView : imageViews)
+	{
+		vk::FramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = vk::StructureType::eFramebufferCreateInfo;
+		framebufferInfo.renderPass = Renderpass;
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = &imageView;
+		framebufferInfo.width = SwapchainExtent->width;
+		framebufferInfo.height = SwapchainExtent->height;
+		framebufferInfo.layers = 1;
+
+		swapChainFramebuffers.push_back(VulkanDevice.createFramebuffer(framebufferInfo));
+	}
+}
+
+void Swapchain::Finalize()
+{
+
+}
+
+Swapchain::Swapchain(const CreateInfo& s_info) :
+	 format(s_info._format), presentMode(s_info._presentMode), imageCount(s_info._imageCount), extent(s_info._extent.x, s_info._extent.y)
+{
+	auto surfaceCapabilities = GetOwnerPhysicalDevice().getSurfaceCapabilitiesKHR(surface);
+
+	auto availableFormats = GetOwnerPhysicalDevice().getSurfaceFormatsKHR(surface);
+	auto availablePresents = GetOwnerPhysicalDevice().getSurfacePresentModesKHR(surface);
+
+	{
+		auto NotFoundMessage = [&](std::string what, std::string specified)
+		{
+			logger.Error() << "Requested " << what << " ("
+				<< specified << ") not supported by device ("
+				<< GetOwnerPhysicalDevice().getProperties().deviceName << ")" << Log::end;
+		};
+		if (std::find(availableFormats.begin(), availableFormats.end(), format) == availableFormats.end())
+		{
+
+			NotFoundMessage("format", vk::to_string(format.format) + ", " + vk::to_string(format.colorSpace));
+			return;
+		}if (std::find(availablePresents.begin(), availablePresents.end(), presentMode) == availablePresents.end())
+		{
+			NotFoundMessage("present mode", vk::to_string(presentMode));
+			return;
+		}
+
+		if (extent > surfaceCapabilities.maxImageExtent)
+		{
+			const auto maxExtent = surfaceCapabilities.maxImageExtent;
+			logger.Error() << "Requested extent exceeds maximum supported by device(" << GetOwnerPhysicalDevice().getProperties().deviceName
+				<< "): " << maxExtent.width << ", " << maxExtent.height << Log::end;
+			return;
+		}
+
+		if (extent < surfaceCapabilities.minImageExtent)
+		{
+			const auto minExtent = surfaceCapabilities.minImageExtent;
+			logger.Error() << "Requested extent exceeds minimum supported by device(" << GetOwnerPhysicalDevice().getProperties().deviceName
+				<< "): " << minExtent.width << ", " << minExtent.height << Log::end;
+			return;
+		}
+		if (imageCount < surfaceCapabilities.minImageCount)
+		{
+
+			logger.Error() << "Requested image count exceeds minimum supported by device(" << GetOwnerPhysicalDevice().getProperties().deviceName
+				<< "): " << surfaceCapabilities.minImageCount << Log::end;
+			return;
+		}
+
+		if (imageCount > surfaceCapabilities.maxImageCount)
+		{
+
+			logger.Error() << "Requested image count exceeds maximum supported by device(" << GetOwnerPhysicalDevice().getProperties().deviceName
+				<< "): " << surfaceCapabilities.maxImageCount << Log::end;
+			return;
+		}
+
+	}
+
+
+
+}
+*/
+/*
+Swapchain::Swapchain(const CreateInfo&)
+{
+
+}*/
+
+void Swapchain::Recreate(const SwapchainInfo &new_info, vk::SurfaceKHR new_surface, RenderPass *new_renderpass)
+{
+	for (auto &fbo : framebuffers)
+		fbo.Destroy();
+
+	framebuffers.clear();
+
+	MakeSwapchain(new_renderpass? *new_renderpass : current_rp,new_surface ? new_surface : current_surface,new_info);
+	MakeFramebuffers();
+	info = new_info;
+}	
+
+void Swapchain::Destroy()
+{
+	for (auto &fbo : framebuffers)
+		fbo.Destroy();
+	
+
+	GetDevice()->destroySwapchainKHR(swapChain);
+}
+
+void Swapchain::MakeSwapchain(RenderPass &, vk::SurfaceKHR surf, const SwapchainInfo &new_info)
+{
+	vk::SwapchainCreateInfoKHR swapchain_create_info;
+	swapchain_create_info.minImageCount = new_info.imageCount;
+	swapchain_create_info.imageFormat = new_info.format.format;
+	swapchain_create_info.imageColorSpace = new_info.format.colorSpace;
+	swapchain_create_info.imageExtent = vk::Extent2D{new_info.extent.x, new_info.extent.y};
+	swapchain_create_info.imageArrayLayers = 1;
+	swapchain_create_info.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+
+	const Queue &graphicsQueue = VulkanInstance::GetInstance().GetMainDevice().GetGraphicsQueue(), &presentQueue = VulkanInstance::GetInstance().GetMainDevice().GetPresentQueue();
+
+	uint32_t queueFamilyIndicies[] = {graphicsQueue.GetFamilyID(), presentQueue.GetFamilyID()};
+	// https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain
+	if (queueFamilyIndicies[0] != queueFamilyIndicies[1])
+	{
+		swapchain_create_info.imageSharingMode = vk::SharingMode::eConcurrent;
+		swapchain_create_info.queueFamilyIndexCount = 2;
+		swapchain_create_info.pQueueFamilyIndices = queueFamilyIndicies;
+	}
+	else
+	{
+		swapchain_create_info.imageSharingMode = vk::SharingMode::eExclusive;
+	}
+	swapchain_create_info.preTransform = new_info.transform;
+	swapchain_create_info.compositeAlpha = new_info.compositeAlpha ? vk::CompositeAlphaFlagBitsKHR::eInherit : vk::CompositeAlphaFlagBitsKHR::eOpaque;
+
+	swapchain_create_info.presentMode = new_info.presentMode;
+	swapchain_create_info.clipped = new_info.clipped;
+	swapchain_create_info.oldSwapchain = swapChain;
+
+	swapchain_create_info.surface = surf;
+
+	vk::SwapchainKHR newSwapchain = GetDevice()->createSwapchainKHR(swapchain_create_info).value;
+	if (swapChain) GetDevice()->destroySwapchainKHR(swapChain);
+	swapChain = newSwapchain;
+}
+
+void Swapchain::MakeFramebuffers()
+{
+	LASSERT(framebuffers.empty(),"MakeFrameBuffers called on swapchain with existing framebuffers");
+	const auto &images = GetDevice()->getSwapchainImagesKHR(swapChain).value;
+
+	framebuffers = std::vector<Framebuffer>();
+
+	Image::ImageInfo image_info;
+	image_info.format = static_cast<ColorFormat>(info.format.format);
+	image_info.dimensions = {info.extent.x, info.extent.y, 1};
+	image_info.Samples = 1;
+	image_info.layers = 1;
+	image_info.mipLevels = 1;
+
+	for (auto &image : images)
+	{
+
+		framebuffers.emplace_back(current_rp, image, image_info);
+	}
+
+}
+
+Swapchain::Swapchain(RenderPass &_rp,vk::SurfaceKHR _surface, const SwapchainInfo &_info) : info(_info),current_rp(_rp),current_surface(_surface)
+{
+
+	MakeSwapchain(current_rp,current_surface,info);
+	MakeFramebuffers();
+
+	logger.Debug("Swapchain Created. TODO: Make this more descriptive");
+	// logger << "Swapchain Created. TODO: Make this more descriptive" << Log::end;
+
+	
+}
+
+uint32_t Swapchain::AcquireNextImage(bool* OutOfDate,std::optional<Semaphore> triggerSemaphore, std::optional<Fence> triggerFence, uint64_t TimeOutWait)
+{
+
+	vk::Semaphore semaphore = nullptr;
+	if (triggerSemaphore.has_value())
+		semaphore = triggerSemaphore->GetVkSemaphore();
+	vk::Fence fence = nullptr;
+	if (triggerFence.has_value())
+		fence = triggerFence->GetVkFence();
+	auto result = GetDevice()->acquireNextImageKHR(swapChain, TimeOutWait, semaphore, fence);
+
+	if (result.result ==vk::Result::eErrorOutOfDateKHR)
+		*OutOfDate = true;
+		else
+		*OutOfDate = false;
+
+	return result.value;
+}

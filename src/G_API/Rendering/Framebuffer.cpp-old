@@ -1,0 +1,63 @@
+﻿#include "pch.h"
+#include "Framebuffer.h"
+#include "RenderPass.h"
+#include "G_API/Devices/LogicalDevice.h"
+Framebuffer::Framebuffer(RenderPass& rp, glm::uvec2 dimensions, const std::vector<ColorFormat> formats)
+{
+	images.reserve(formats.size());
+	for (auto& format : formats)
+	{
+		Image::ImageInfo image_info;
+		image_info.dimensions = { dimensions,1 };
+		image_info.format = format;
+		image_info.memoryTilling = MemoryTillingType::OPTIMAL;
+		images.emplace_back(image_info);
+	}
+		
+	Image::ImageInfo image_info;
+	image_info.dimensions = { dimensions,1 };
+	
+
+	framebuffer = MakeFramebuffer(GetDevice(), images, rp, image_info);
+
+	logger.Debug( "Framebuffer Created. TODO: Make this more descriptive");
+}
+
+Framebuffer::Framebuffer(RenderPass& rp, vk::Image image, const Image::ImageInfo& image_info)
+{
+	images.emplace_back(image, image_info);
+	framebuffer = MakeFramebuffer(GetDevice(), images, rp, image_info);
+
+	logger.Debug("Framebuffer Created with existing image handle. TODO: make this more descriptive");
+}
+
+Framebuffer::Framebuffer(const Framebuffer& fb) : framebuffer(fb.framebuffer),images(fb.images)
+{
+}
+
+vk::Framebuffer Framebuffer::MakeFramebuffer(LogicalDevice& device,const std::vector<Image>& images, RenderPass& rp,const Image::ImageInfo& image_info)
+{
+	std::vector<vk::ImageView> imageViews;
+	imageViews.reserve(images.size());
+	for (auto& image : images)
+		imageViews.emplace_back(image.GetVkImageView());
+
+	vk::FramebufferCreateInfo framebuffer_create_info;
+	framebuffer_create_info.pAttachments = imageViews.data();
+	framebuffer_create_info.attachmentCount = imageViews.size();
+	framebuffer_create_info.width = image_info.dimensions.x;
+	framebuffer_create_info.height = image_info.dimensions.y;
+	framebuffer_create_info.renderPass = rp.GetVkRenderPass();
+	framebuffer_create_info.layers = 1;
+
+	return device->createFramebuffer(framebuffer_create_info).value;
+}
+
+void Framebuffer::Destroy()
+{
+	for (auto& image : images)
+		image.Destroy();
+
+	GetDevice()->destroyFramebuffer(framebuffer);
+	//logger.Warning("Framebuffer::Destroy() has not yet been implemented, memory leak has occured");
+}

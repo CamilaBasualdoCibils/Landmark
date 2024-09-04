@@ -1,0 +1,16 @@
+﻿#include "pch.h"
+#include "VertexBuffer.h"
+
+
+VertexBuffer::VertexBuffer(size_t size, SharingState shareMode) :
+	Buffer(size, BufferUsage::VERTEX_BUFFER, shareMode)
+{
+
+}
+
+void VertexBuffer::Bind(vk::CommandBuffer& cmdbuffer)
+{
+	vk::DeviceSize offset = 0;
+	cmdbuffer.bindVertexBuffers(0, 1, &_buffer, &offset);
+}
+

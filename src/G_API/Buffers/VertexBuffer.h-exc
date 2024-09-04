@@ -1,0 +1,18 @@
+﻿#pragma once
+#include "Buffer.h"
+
+
+
+
+
+class  VertexBuffer : public Buffer
+{
+
+public:
+
+	VertexBuffer(size_t size, SharingState shareMode = { SharingMode::EXCLUSIVE });
+
+
+	void Bind(vk::CommandBuffer& cmdbuffer);
+};
+

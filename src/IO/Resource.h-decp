@@ -1,0 +1,14 @@
+#pragma once
+#include <string>
+
+#include "Folder.h"
+#include "File.h"
+
+class Resource
+{
+	Log LOGGER = Log("Resource");
+public:
+	static File GetFile(const std::string& localPath);
+	static Folder GetFolder(const std::string& localpath);
+
+};

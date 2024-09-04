@@ -1,0 +1,42 @@
+﻿#pragma once
+
+#include <G_API/Buffers/VertexBuffer.h>
+#include <G_API/Buffers/IndexBuffer.h>
+class Mesh
+{
+public:
+	struct Vertex
+	{
+		vec3 Position;
+		//vec3 Normal;
+		//vec3 Color;
+		//vec2 UV;
+	};
+	using IndexType = uint32_t;
+private:
+	std::vector<Vertex> verticies;
+	std::vector<IndexType> indicies;
+	Landmark::Graphics::VertexBuffer vertexBuffer;
+	Landmark::Graphics::IndexBuffer indexBuffer;
+public:
+
+	Mesh(std::vector<Vertex> verts = {},std::vector<IndexType> indicies = {})
+	: verticies(verts),indicies(indicies),
+	vertexBuffer(sizeof(Vertex) * verticies.size()),
+	indexBuffer(sizeof(IndexType) * indicies.size())
+	{
+		vertexBuffer.InsertData(0, vertexBuffer.Size(), verticies.data());
+		indexBuffer.InsertData(0, indexBuffer.Size(), indicies.data());
+	}
+	void Bind(vk::CommandBuffer& cmdBuffer)
+	{
+		vertexBuffer.Bind(cmdBuffer);
+		indexBuffer.Bind(cmdBuffer);
+	}
+	size_t IndexCount() { return indicies.size(); }
+
+	~Mesh()
+	{
+		
+	}
+};

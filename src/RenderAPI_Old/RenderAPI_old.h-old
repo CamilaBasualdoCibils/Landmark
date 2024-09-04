@@ -1,0 +1,137 @@
+﻿#pragma once
+
+#include "../IInternalModule.h"
+#include "Systems/Logging/Log.h"
+#include "Window.h"
+#include "Vulkan/Devices/Queue.h"
+#include "Vulkan/Buffers/UniformBuffer.h"
+namespace 
+{
+	struct  RenderAPIInitDesc
+	{
+		bool EnableValidation = false;
+	};
+	struct QueueFamilyIndicies
+	{
+
+		std::optional<uint32_t> Graphics, Present, Compute;
+	};
+	class  RenderAPI : public Systems::IInternalModule<RenderAPI>
+	{
+
+		Log logger;
+		const RenderAPIInitDesc RunSettings;
+
+		vk::Instance VulkanInstance;
+		VkDebugUtilsMessengerEXT VulkanDebugMessenger;
+		vk::PhysicalDevice VulkanPhysicalDevice;
+		vk::Device VulkanDevice;
+
+		std::optional<Queue> GraphicsQueue;
+		std::optional<uint32_t> GraphicsQueueFamily;
+		vk::CommandPool GraphicsCmdPool;
+		vk::CommandBuffer GraphicsCmdBuffer;
+
+		std::optional<Queue> PresentQueue;
+		std::optional<uint32_t> PresentQueueFamily;
+		vk::CommandPool PresentCmdPool;
+		vk::CommandBuffer PresentCmdBuffer;
+
+		std::optional<Queue> ComputeQueue;
+		std::optional<uint32_t> ComputeQueueFamily;
+		vk::CommandPool ComputeCmdPool;
+		vk::CommandBuffer ComputeCmdBuffer;
+
+		std::optional<const vk::SurfaceFormatKHR> SwapchainFormat;
+		std::optional<const vk::PresentModeKHR> SwapchainPresentMode;
+		std::optional<const vk::Extent2D> SwapchainExtent;
+		std::optional<const uint32_t> SwapchainImageCount;
+		vk::SwapchainKHR swapchain;
+		uint32_t CurrentImageIndex = -1;
+
+		std::vector<vk::Image> swapChainImages;
+		std::vector<vk::ImageView> swapChainImageViews;
+		std::vector<vk::Framebuffer> swapChainFramebuffers;
+		
+		vk::RenderPass Renderpass;
+
+		vk::Semaphore imageAvailableSemaphore;
+		vk::Semaphore renderFinishedSemaphore;
+		vk::Fence inFlightFence;
+
+
+		Window MainWindow;
+		union MVPUboContents
+		{
+			struct
+			{
+				mat4 Model, View, Proj, MVP;
+			};
+			mat4 data[4] = {mat4(1)};
+		
+		};
+		MVPUboContents uboContent;
+		const uint32 MVPUboBindingPoint = 0;
+		std::optional<UniformBuffer> MVPUbo;
+	private:
+		vk::Instance InitVulkan();
+		void InitVulkanDevice();
+		void RetrieveQueues(const QueueFamilyIndicies queues);
+		void MakeCmdBuffers();
+		void InitSwapChain();
+		void InitRenderPass();
+		void RetrieveSwapchainImages();
+		void CreateSynchronizationObjects();
+
+		void UpdateMVPUbo()
+		{
+			MVPUbo.value().InsertData(0, sizeof(uboContent), &uboContent);
+		}
+	public:
+		
+		RenderAPI(const  RenderAPIInitDesc&);
+		void PreRender();
+		void PostRender();
+
+		//--- Getters ---
+		Window& GetWindow();
+		vk::Instance GetVkInstance() { return VulkanInstance; }
+		vk::Device& GetDevice() { return VulkanDevice; }
+		vk::PhysicalDevice& GetPhysicalDevice() { return VulkanPhysicalDevice; }
+		vk::RenderPass& GetRenderPass() { return Renderpass; }
+		vk::CommandBuffer& GetGraphicsCmdBuffer() { return GraphicsCmdBuffer; }
+		UniformBuffer& GetMVPUniformBuffer() { return MVPUbo.value(); }
+		vk::SurfaceFormatKHR GetSurfaceFormat() {return SwapchainFormat.value();}
+		vk::PresentModeKHR GetPresentMode() {return SwapchainPresentMode.value();}
+		vk::SwapchainKHR& GetSwapchain() { return swapchain; }
+		uint32_t GetGraphicsQueueFamily() { return GraphicsQueueFamily.value(); }
+		Queue& GetGraphicsQueue() { return GraphicsQueue.value(); }
+		vk::CommandPool& GetGraphicsCmdPool() { return GraphicsCmdPool; }
+		
+		//MVP functions
+		void BindMVPUbo(vk::PipelineLayout& pl)
+		{
+			GraphicsCmdBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pl, 0, { MVPUbo.value().GetDescriptorSet() }, {});
+		}
+		mat4 ComputeMVPMatrix();
+		void OverrideMvpMatrix(const glm::mat4& m);
+		void SetViewMatrix(const glm::mat4& v)
+		{
+			uboContent.View = v;
+			OverrideMvpMatrix(ComputeMVPMatrix());
+
+		}
+		void SetModelMatrix(const mat4& m)
+		{
+			uboContent.Model = m;
+			OverrideMvpMatrix(ComputeMVPMatrix());
+		}
+		void SetProjectionMatrix(const mat4& p)
+		{
+			uboContent.Proj = p;
+			OverrideMvpMatrix(ComputeMVPMatrix());
+		}
+		void PollEvents();
+	};
+
+}

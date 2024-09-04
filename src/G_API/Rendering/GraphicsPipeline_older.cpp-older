@@ -1,0 +1,239 @@
+﻿#include "pch.h"
+#include "GraphicsPipeline.h"
+
+#include <vulkan/vulkan_enums.hpp>
+#include "../Graphics.h"
+
+
+
+Landmark::Graphics::GraphicsPipeline& Landmark::Graphics::GraphicsPipeline::AttachModule(ShaderStage stage, const std::vector<char>& src)
+{
+	if (ShaderModules.contains(stage))
+	{
+		LOGGER.Error() << "GraphicsPipeline already contains shader module of this stage: " << string_VkShaderStageFlagBits((VkShaderStageFlagBits)stage) ;
+		return *this;
+	}
+	VkShaderModuleCreateInfo createInfo{};
+	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	createInfo.codeSize = src.size();
+	createInfo.pCode = reinterpret_cast<const uint32_t*>(src.data());
+
+	ShaderModules.insert(std::pair<ShaderStage,VkShaderModule>(stage,{}));
+	
+
+	auto& target = ShaderModules.at(stage);
+
+	auto& device = Graphics::GetInstance().GetDevice();
+	try
+	{
+		target = device.createShaderModule(createInfo);
+	}
+	catch (vk::SystemError& err)
+	{
+		LOGGER.Error() << "Failed to create Shader Module" << err.what() << Log::end;
+		ShaderModules.erase(stage);
+		return *this;
+	}
+
+}
+
+Landmark::Graphics::GraphicsPipeline& Landmark::Graphics::GraphicsPipeline::SetDynamicStates(
+	std::initializer_list<vk::DynamicState> States)
+{
+	DynamicStates = States;
+
+	return *this;
+}
+
+
+
+Landmark::Core::GraphicsPipeline& Landmark::Core::GraphicsPipeline::DefineInputAssembly(TopologyType _TopologyType)
+{
+	
+	TopologyMode = _TopologyType;
+	return *this;
+}
+
+Landmark::Core::GraphicsPipeline& Landmark::Core::GraphicsPipeline::SetViewportState(uint32_t _ViewportCount,
+	uint32_t _ScissorCount)
+{
+	ViewportCount = _ViewportCount;
+	ScissorCount = _ScissorCount;
+	return *this;
+}
+
+Landmark::Core::GraphicsPipeline& Landmark::Core::GraphicsPipeline::Raz_SetCullMode(CullingMode _mode)
+{
+	cullingMode = _mode;
+	return *this;
+}
+
+Landmark::Core::GraphicsPipeline& Landmark::Core::GraphicsPipeline::Raz_SetLineWidth(float _LineWidth)
+{
+	LineWidth = _LineWidth;
+	return *this;
+}
+
+Landmark::Core::GraphicsPipeline& Landmark::Core::GraphicsPipeline::Raz_PolygonMode(PolygonMode _PolygonMode)
+{
+	polygonMode = _PolygonMode;
+	return *this;
+}
+
+Landmark::Core::GraphicsPipeline& Landmark::Core::GraphicsPipeline::Raz_DiscardEnable(bool state)
+{
+	DiscardEnable = state;
+	return *this;
+}
+
+Landmark::Core::GraphicsPipeline& Landmark::Core::GraphicsPipeline::Raz_DepthClampEnable(bool state)
+{
+	DepthClampEnable = state;
+	return *this;
+}
+
+Landmark::Core::GraphicsPipeline& Landmark::Core::GraphicsPipeline::SetDepthState(bool _DepthTestingEnable,
+	bool _DepthWritingEnable, DepthCompareOp _CompareOp)
+{
+	DepthTestingState = _DepthTestingEnable;
+	DepthWritingState = _DepthWritingEnable;
+	DepthComparingOperation = _CompareOp;
+	return *this;
+}
+
+void Landmark::Core::GraphicsPipeline::Build()
+{
+	auto Device = DeviceManager::GetMainPresentingDevice()->GetVkDevice();
+
+	
+
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = 0; // Optional
+	pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+	
+	if (vkCreatePipelineLayout(Device, &pipelineLayoutInfo, nullptr, &PipelineLayout) != VK_SUCCESS) {
+		LOGGER.Error("Failed to create Pipeline Layout");
+		return;
+	}
+	LOGGER.Log("PipelineLayout Created");
+
+	std::vector<VkPipelineShaderStageCreateInfo> shader_stage_create_infos;
+	for (auto& Module : ShaderModules)
+	{
+		VkPipelineShaderStageCreateInfo createInfo;
+		createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		createInfo.pName = "main";
+		createInfo.module = Module.second;
+		createInfo.stage = static_cast<VkShaderStageFlagBits>(Module.first);
+		createInfo.pNext = nullptr;
+		createInfo.pSpecializationInfo = nullptr;
+		shader_stage_create_infos.push_back(createInfo);
+
+	}
+
+	VkPipelineDynamicStateCreateInfo dynamicState{};
+	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicState.dynamicStateCount = static_cast<uint32_t>(DynamicStates.size());
+	dynamicState.pDynamicStates = DynamicStates.data();
+
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	vertexInputInfo.vertexBindingDescriptionCount = 0;
+	vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
+	vertexInputInfo.vertexAttributeDescriptionCount = 0;
+	vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
+
+
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssembly.topology = static_cast<VkPrimitiveTopology>(TopologyMode);
+	inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+	auto windowSize = IO::WindowManager::MainWindow().GetWindowSize();
+	std::vector<VkViewport> DefaultViewports(ViewportCount, { 0,0,(float)windowSize.x,(float)windowSize.y,0.0f,1.0f });
+	std::vector<VkRect2D > DefaultScissors(ScissorCount, { {0,0},{windowSize.x,windowSize.y} });
+
+	VkPipelineViewportStateCreateInfo viewportState{};
+	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewportState.viewportCount = ViewportCount;
+	viewportState.pViewports = DefaultViewports.data();
+	viewportState.scissorCount = ScissorCount;
+	viewportState.pScissors = DefaultScissors.data();
+
+
+	VkPipelineRasterizationStateCreateInfo rasterizer{};
+	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizer.depthClampEnable = VK_FALSE;
+	rasterizer.polygonMode = static_cast<VkPolygonMode>(polygonMode);
+	rasterizer.depthBiasEnable = DepthClampEnable;
+	rasterizer.cullMode = static_cast<VkCullModeFlags>(cullingMode);
+	rasterizer.lineWidth = 1.0f;
+	rasterizer.rasterizerDiscardEnable = DiscardEnable;
+	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.depthBiasEnable = VK_FALSE;
+	rasterizer.depthBiasConstantFactor = 0.0f; // Optional
+	rasterizer.depthBiasClamp = 0.0f; // Optional
+	rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
+
+
+	VkPipelineMultisampleStateCreateInfo multisampling{};
+	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampling.sampleShadingEnable = VK_FALSE;
+	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	multisampling.minSampleShading = 1.0f; // Optional
+	multisampling.pSampleMask = nullptr; // Optional
+	multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
+	multisampling.alphaToOneEnable = VK_FALSE; // Optional
+
+	VkPipelineDepthStencilStateCreateInfo DepthStencil;
+	DepthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	DepthStencil.depthTestEnable = DepthTestingState;
+	DepthStencil.depthWriteEnable = DepthWritingState;
+	DepthStencil.depthCompareOp = static_cast<VkCompareOp>(DepthComparingOperation);
+	DepthStencil.pNext = nullptr;
+	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	colorBlendAttachment.blendEnable = VK_FALSE;
+	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // Optional
+	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+
+	VkPipelineColorBlendStateCreateInfo colorBlending{};
+	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	colorBlending.logicOpEnable = VK_FALSE;
+	colorBlending.logicOp = VK_LOGIC_OP_COPY; // Optional
+	colorBlending.attachmentCount = 1;
+	colorBlending.pAttachments = &colorBlendAttachment;
+	colorBlending.blendConstants[0] = 0.0f; // Optional
+	colorBlending.blendConstants[1] = 0.0f; // Optional
+	colorBlending.blendConstants[2] = 0.0f; // Optional
+	colorBlending.blendConstants[3] = 0.0f; // Optional
+	VkGraphicsPipelineCreateInfo pipelineInfo{};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = shader_stage_create_infos.size();
+	pipelineInfo.pStages = shader_stage_create_infos.data();
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizer;
+	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pDepthStencilState = &DepthStencil;
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.pDynamicState = &dynamicState;
+	pipelineInfo.layout = PipelineLayout;
+	pipelineInfo.renderPass = Render::Renderer::GetRenderPass();
+	pipelineInfo.subpass = 0;
+
+	if (vkCreateGraphicsPipelines(Device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+		LOGGER.Error("Failed to create Graphics Pipeline");
+		return;
+	}
+	LOGGER.Log("Graphics Pipeline Created");
+
+}

@@ -1,0 +1,91 @@
+﻿#pragma once
+
+#ifndef _GRAPHICSPIPELINE_H_
+#define _GRAPHICSPIPELINE_H_
+#include <vulkan/GenericEnums.h>
+#include "Debug/Debug.h"
+
+
+
+	class  GraphicsPipeline
+	{
+		static inline Log LOGGER = Log("GraphicsPipeline");
+	public:
+		enum VertexInputRate
+		{
+			VERTEX = vk::VertexInputRate::eVertex,//Per Vertex
+			INSTANCE = vk::VertexInputRate::eInstance //Per Instace
+		};
+		enum VertexInputType
+		{
+			FLOAT = vk::Format::eR32Sfloat,
+			VEC2 = vk::Format::eR32G32Sfloat,
+			VEC3 = vk::Format::eR32G32B32Sfloat,
+			VEC4 = vk::Format::eR32G32B32A32Sfloat
+		};
+		struct VertexInputAttribute
+		{
+			
+			VertexInputType type;
+			uint32_t offset;
+		};
+		struct VertexInputBinding
+		{
+			uint32_t stride;
+			VertexInputRate inputRate;
+			std::vector<VertexInputAttribute> attributes;
+		};
+		
+	private:
+		vk::PipelineLayout PipelineLayout;
+		vk::Pipeline Pipeline;
+		std::map<ShaderStage, const std::vector<char>&> StageBinarySources;
+		std::vector<vk::DescriptorSetLayout> AttachedDescriptors;
+		std::vector<vk::DynamicState> DynamicStates = { vk::DynamicState::eViewport,vk::DynamicState::eScissor };
+		std::vector<VertexInputBinding> vertexInputDescriptions;
+
+		vk::PrimitiveTopology TopologyMode = vk::PrimitiveTopology::eTriangleList;
+		uint32_t ViewportCount = 1;
+		uint32_t ScissorCount = 1;
+		vk::CullModeFlags cullingMode = vk::CullModeFlagBits::eBack;
+		float LineWidth = 1.0f;
+		vk::PolygonMode polygonMode = vk::PolygonMode::eFill;
+		bool DiscardEnable = false;
+		bool DepthClampEnable = true;
+		bool DepthTestingState = true;
+		bool DepthWritingState = true;
+		vk::CompareOp DepthComparingOperation = vk::CompareOp::eLessOrEqual;
+
+	public:
+		GraphicsPipeline();
+		vk::Pipeline& GetPipeline() { return Pipeline; }
+		vk::PipelineLayout& GetPipelineLayout() { return PipelineLayout; }
+		void Bind(vk::CommandBuffer& cmdBuffer);
+
+		void Draw(vk::CommandBuffer& cmdBuffer,uint32_t indexCount)
+		{
+			cmdBuffer.drawIndexed(indexCount, 1, 0, 0, 0);
+			//cmdBuffer.drawins(3, 1, 0, 0);
+		}
+		/**
+		 * \brief Defines Vertex Attribute Description
+		 * \param Vs Vector of vectors of Input Descriptions, Outer most vector iterate on binding, inner most on location
+		 * aka only use outer most if more than one vertex buffer
+		 * \return 
+		 */
+		GraphicsPipeline& DefineVertexInput(const std::vector<VertexInputBinding >& vs)
+		{
+			vertexInputDescriptions = vs;
+			return*this;
+		}
+		GraphicsPipeline& AddModule(ShaderStage stageType, const std::vector<char>& binary);
+
+
+		GraphicsPipeline& Raz_SetCullMode(vk::CullModeFlags mode);
+
+
+		GraphicsPipeline& Build(vk::Device& device, vk::RenderPass& renderpass, int subpass = 0);
+	};
+
+
+#endif

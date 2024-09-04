@@ -1,0 +1,51 @@
+﻿#pragma once
+#include <G_API/Devices/DeviceResource.h>
+
+#include "../GenericEnums.h"
+
+
+class Image final : public DeviceResource
+{
+public:
+
+	struct ImageInfo
+	{
+
+		uvec3 dimensions;
+		ColorFormat format = ColorFormat::RGBA8uint;
+		uint32_t layers = 1;
+		uint32_t mipLevels = 1;
+		uint32_t Samples = 1;//only relevant for images used as render attachments
+		MemoryTillingType memoryTilling = MemoryTillingType::OPTIMAL;
+		vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled;
+		//ImageLayouts 
+	};
+private:
+	vk::Image image;
+	vk::ImageView imageView;
+
+	vk::DeviceMemory imageMemory;
+	ImageInfo imageInfo;
+
+public:
+
+	Image(const ImageInfo& ci);
+
+	operator vk::Image() const {return GetVkImage();}
+	/**
+	 * \brief Takes an existing image and create image view for it. becoming a handle to it, does not create a copy
+	 * \param existingImage
+	 * \param image_info
+	 */
+	Image(vk::Image existingImage, const ImageInfo& image_info);
+	Image(const Image& o);
+	vk::Image GetVkImage() const { return image; }
+	vk::ImageView GetVkImageView() const { return imageView; }
+	void Destroy() override;
+	//~Image();
+
+	ImageInfo GetInfo() {return imageInfo;}
+	void SetInfoNRecreate(const ImageInfo& _info) {LASSERT(false,"Not implemented");}
+private:
+	static vk::ImageView MakeImageView(LogicalDevice& d, vk::Image, const ImageInfo& image_info);
+};

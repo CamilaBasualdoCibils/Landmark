@@ -1,0 +1,13 @@
+#include "pch.h"
+#include "Resource.h"
+#include "File.h"
+#include "Folder.h"
+File Resource::GetFile(const std::string& localPath)
+{
+	return File("Resource\\"+ localPath);
+}
+
+Folder Resource::GetFolder(const std::string& localpath)
+{
+	return Folder("Resource\\" + localpath);
+}

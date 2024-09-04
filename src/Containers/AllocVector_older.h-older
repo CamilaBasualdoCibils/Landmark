@@ -1,0 +1,380 @@
+#pragma once
+#include <vector>
+#include <set>
+#include <limits>
+#include <iostream>
+/**
+ * \brief Vector that acts as memory manager, on insert objects stay in place relative to beginning
+ * of vector.
+ * Erasing Marks a space as empty, ready to be overwritten
+ * \tparam T Storage Type
+ * \tparam PosType Data Type used for indexing, unsigned long long is default
+ * \tparam NullMemory Set Memory to NULL on erase
+ */
+template <typename T, typename PosType, bool NullMemory = false>
+class AllocVector_base
+{
+
+	std::vector<T> data;
+	std::set<PosType> markers;
+	const size_t maxSize = std::numeric_limits<PosType>().max();
+	friend class iterator;
+
+	//using AllocType = AllocVector<T, PosType, NullMemory>;
+public:
+
+	class iterator
+	{
+		PosType DataIndex;
+		//Owner
+		AllocVector_base* Owner;
+
+	public:
+		iterator() :Owner(nullptr), DataIndex(-1) {};
+		iterator(AllocVector_base* _Owner, PosType _Index) : Owner(_Owner), DataIndex(_Index)
+		{
+		}
+		/*
+		template <typename O>
+		iterator(O& other) :
+			Owner(reinterpret_cast<AllocVector_base*>(static_cast<void*>(other.GetOwner())))
+			, DataIndex(other.GetIndex())
+		{
+
+		}*/
+		bool operator!=(const iterator& other) const
+		{
+			return DataIndex != other.GetIndex();
+		}
+		bool operator<(const iterator& other) const
+		{
+			return DataIndex < other.GetIndex();
+		}
+		bool operator==(const iterator& other) const
+		{
+			return !(operator!=(other));
+		}
+		iterator& operator=(const iterator& other)
+		{
+			DataIndex = other.GetIndex();
+			Owner = other.GetOwner();
+			return *this;
+		};
+
+		PosType GetIndex() const { return DataIndex; }
+		AllocVector_base* GetOwner() const { return Owner; }
+		T& operator*()
+		{
+			//return (*Owner)[DataIndex];
+			return Owner->operator[](DataIndex);
+		}
+		T& operator->()
+		{
+
+			return operator*();
+		}
+		const T& operator*() const
+		{
+			//return (*Owner)[DataIndex];
+			return Owner->operator[](DataIndex);
+		}
+		const T& operator->() const
+		{
+			return operator*();
+		}
+
+
+		//number of existing elements to shift by
+		void ShiftBy(int shift)
+		{
+
+			std::vector<T>& DataRef = Owner->data;;
+			std::set<PosType>& MarkerRef = Owner->markers;
+
+			DataIndex += shift;
+			const short Direction = shift > 0 ? 1 : -1;
+			while (true)
+			{
+
+				if (!MarkerRef.contains(DataIndex)) break;
+				else DataIndex += Direction;
+			}
+		}
+
+
+		iterator& operator++()
+		{
+			ShiftBy(1);
+			return *this;
+		}
+		iterator& operator+=(PosType shift)
+		{
+			ShiftBy(shift);
+			return *this;
+		}
+		iterator& operator--()
+		{
+			ShiftBy(-1);
+			return *this;
+		}
+
+		iterator& operator-=(PosType shift)
+		{
+			ShiftBy(-shift);
+			return *this;
+		}
+
+
+	};
+
+
+
+private:
+	iterator GetPushLocation()
+	{
+		if (markers.empty())
+		{
+			if (data.size() >= maxSize)
+			{
+				throw std::range_error("Max Capacity Reached");
+			}
+
+			return end();
+		}
+		else
+		{
+			//get first empty location
+			auto InsertLocation = markers.begin();
+			auto index = *InsertLocation;
+			//insert it there
+
+			return iterator(this, index);
+		}
+	}
+
+	void CheckGrow(PosType newInsertion)
+	{
+		if (newInsertion + 1 > data.size())
+		{
+			PosType previousSize = data.size();
+			data.resize(newInsertion + 1);
+			PosType newsize = data.size();
+			for (PosType i = previousSize; i < newsize - 1; i++)
+			{
+				markers.insert(i);
+			}
+
+
+		}
+	}
+public:
+	AllocVector_base() {};
+	AllocVector_base(std::initializer_list<T> Entries)
+	{
+		for (auto& entry : Entries)
+		{
+			Push(entry);
+		}
+	}
+	/**
+	 * \brief Initialize entries with specified positions
+	 * \param Entries
+	 */
+	AllocVector_base(std::initializer_list<std::pair<PosType, T>> Entries)
+	{
+
+		for (auto& entry : Entries)
+			Insert(entry.first, entry.second);
+	}
+
+	/**
+	 * \brief Initialize with N count of T
+	 */
+	AllocVector_base(PosType N, T t) : data(N, t)
+	{
+
+	}
+
+	iterator begin()
+	{
+		auto It = data.begin();
+		PosType Index = 0;
+		auto begin = iterator(this, Index);
+		if (!markers.contains(Index)) return begin;
+		else return ++begin;
+
+
+	}
+	iterator end()
+	{
+		return iterator(this, data.size());
+	}
+
+	bool Contains(iterator it) const
+	{
+		return Contains(it.GetIndex());
+	}
+	bool Contains(PosType Index) const
+	{
+		//if within confines of vector
+		if (Index >= 0 && Index < data.size())
+		{
+			//if index is not marked as empty
+			if (!markers.contains(Index)) return true;
+		}
+		return false;
+	}
+	//size of underlying vector
+	PosType Size_Vector() const { return data.size(); }
+	//number of active elements. (size of vector minus number of free spots)
+	PosType Count() const { return data.size() - markers.size(); }
+	T& at(iterator Index)
+	{
+		return at[Index.GetIndex()];
+	}
+	T& at(PosType Index)
+	{
+		return data.at(Index);
+	}
+	T& operator[](iterator it)
+	{
+		return operator[](it.GetIndex());
+	}
+	T& operator[](PosType Index)
+	{
+		return data[Index];
+	}
+	void SpaceCheck()
+	{
+		if (Size_Vector() == maxSize) throw std::out_of_range("AllocVector has reached capacity for its tracker type");
+	}
+	iterator Push(const T& val)
+	{
+		SpaceCheck();
+		const iterator loc = GetPushLocation();
+		if (loc == end())
+		{
+			data.push_back(val);
+			return iterator(this, data.size() - 1);
+		}
+		else
+		{
+			memcpy(&data[loc.GetIndex()], &val, sizeof(T));
+			markers.erase(loc.GetIndex());
+			return loc;
+		}
+
+	}
+	template<typename... Args>
+	iterator Push_Emplace(Args&&... args)
+	{
+		SpaceCheck();
+		const iterator loc = GetPushLocation();
+		if (loc == end())
+		{
+			data.emplace_back(std::forward<Args>(args)...);
+			return iterator(this, data.size() - 1);
+		}
+		else
+		{
+			//unnecesarry??
+			if constexpr (std::is_constructible_v<T, Args...>)
+			{
+				//T* Target = &_DATA[loc.GetIndex()];
+				T* newEntry = new (&data[loc.GetIndex()]) T(std::forward<Args>(args)...);
+				//Target->T(std::forward<Args>(args)...);
+			}
+			markers.erase(loc.GetIndex());
+			return loc;
+		}
+	}
+	iterator PointerTo(const PosType& where)
+	{
+		return iterator(this, where);
+	}
+	void Insert(const iterator where, const T& val)
+	{
+		Insert(where.GetIndex(), val);
+	}
+	void Insert(const PosType where, const T& val)
+	{
+		if (Contains(where)) Erase(where);
+		CheckGrow(where);
+		//if (where.GetIndex() > _DATA.capacity())_DATA.reserve(where.GetIndex() +1);
+		data[where] = val;
+		//data.insert(data.begin()+ where, val);
+		//memcpy(&data[where], &val, sizeof(T));
+	}
+	template<typename... Args >
+	void Insert_Emplace(const iterator where, Args&&... args)
+	{
+		Insert_Emplace(where.GetIndex());
+	}
+	template<typename... Args >
+	void Insert_Emplace(const PosType where, Args&&... args)
+	{
+		if (Contains(where)) Erase(where);
+		//if (where.GetIndex() > _DATA.capacity())_DATA.reserve(where.GetIndex());
+		CheckGrow(where);
+
+		//no need for checking if constructable because of the intention of emplace
+		//data.emplace(where, std::forward<Args>(args)...);
+		//data.
+		//data.emplace_back()
+
+		new (&data[where]) T(std::forward<Args>(args)...);
+		//(&data[where.GetIndex()])->T(std::forward<Args>(args)...);
+	}
+	PosType Capacity() const { return maxSize; }
+	void Erase(const iterator where)
+	{
+		Erase(where.GetIndex());
+	}
+	void Erase(const PosType where)
+	{
+		if (markers.contains(where))return;
+
+		if (std::is_destructible<T>::value)
+			data[where].~T();
+		if (NullMemory)
+		{
+			memset(&data[where], NULL, sizeof(T));
+			//dothecommandthatsetsNULLS();
+		}
+
+		//if every slot in vector is available
+		if (data.size() == markers.size() + 1)
+		{
+			data.clear();
+			markers.clear();
+		}
+		else markers.emplace(where);
+
+	}
+
+
+};
+
+
+/**
+ * \brief AllocVector uint32 tracker, 4,294,967,296 max entries
+ * \tparam T
+ */
+template<typename T, bool NullMemory = false >
+using AllocVector = AllocVector_base<T, uint32_t, NullMemory>;
+
+
+/**
+ * \brief AllocVector uint16 tracker, 65,536 max entries
+ * \tparam T
+ */
+template<typename T, bool NullMemory = false>
+using  AllocVector_Small = AllocVector_base<T, uint16_t, NullMemory>;
+
+/**
+ * \brief AllocVector uint8 tracker, 256 max entries
+ * \tparam T
+ */
+template<typename T, bool NullMemory = false>
+using AllocVector_Tiny = AllocVector_base<T, uint8_t, NullMemory>;
+

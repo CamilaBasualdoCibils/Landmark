@@ -1,0 +1,71 @@
+#include "pch.h"
+#include "UniformBuffer.h"
+
+
+Landmark::Graphics::UniformBuffer::UniformBuffer(size_t size, uint32_t BindingPoint, SharingState): Buffer(size,BufferUsage::UNIFORM_BUFFER)
+{
+    vk::DescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorCount = 1;
+   
+    uboLayoutBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
+    uboLayoutBinding.pImmutableSamplers = nullptr;
+    uboLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eAll;
+    vk::DescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = vk::StructureType::eDescriptorSetLayoutCreateInfo;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &uboLayoutBinding;
+
+    descriptorSetLayout = GetvkDevice().createDescriptorSetLayout(layoutInfo);
+
+
+    vk::DescriptorPoolSize poolSize{};
+    poolSize.type = vk::DescriptorType::eUniformBuffer;
+    poolSize.descriptorCount = 1;
+
+    vk::DescriptorPoolCreateInfo poolInfo{};
+    poolInfo.sType = vk::StructureType::eDescriptorPoolCreateInfo;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = &poolSize;
+    poolInfo.maxSets = 1;
+
+    descriptorPool = GetvkDevice().createDescriptorPool(poolInfo);
+
+    vk::DescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = vk::StructureType::eDescriptorSetAllocateInfo;
+    allocInfo.descriptorPool = descriptorPool;
+    allocInfo.descriptorSetCount = 1;
+    allocInfo.pSetLayouts = &descriptorSetLayout;
+
+    descriptorSet = GetvkDevice().allocateDescriptorSets(allocInfo).front();
+
+    SetBindingPoint(BindingPoint);
+   
+
+    
+
+}
+
+void Landmark::Graphics::UniformBuffer::SetBindingPoint(uint32_t BindingPoint)
+{
+;
+
+	vk::DescriptorBufferInfo bufferInfo{};
+	bufferInfo.buffer = _buffer;
+	bufferInfo.offset = 0;
+	bufferInfo.range = BufferSize;
+
+	vk::WriteDescriptorSet descriptorWrite{};
+	descriptorWrite.sType = vk::StructureType::eWriteDescriptorSet;
+	descriptorWrite.dstSet = descriptorSet;
+    descriptorWrite.descriptorType = vk::DescriptorType::eUniformBuffer;
+    descriptorWrite.descriptorCount = 1;
+    descriptorWrite.pBufferInfo = &bufferInfo;
+    descriptorWrite.pImageInfo = nullptr;
+    descriptorWrite.pTexelBufferView = nullptr;
+	descriptorWrite.dstBinding = BindingPoint;
+	descriptorWrite.dstArrayElement = 0;
+
+    GetvkDevice().updateDescriptorSets(descriptorWrite,{});
+
+}

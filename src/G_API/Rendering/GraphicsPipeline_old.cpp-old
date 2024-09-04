@@ -1,0 +1,215 @@
+﻿#include "pch.h"
+#include "GraphicsPipeline.h"
+
+GraphicsPipeline::GraphicsPipeline()
+{
+}
+
+void GraphicsPipeline::Bind(vk::CommandBuffer& cmdBuffer)
+{
+	cmdBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, GetPipeline());
+}
+
+GraphicsPipeline& GraphicsPipeline::AddModule(ShaderStage stageType,
+	const std::vector<char>& binary)
+{
+	if (StageBinarySources.contains(stageType))
+		LOGGER.Error() << "Module of type" << vk::to_string((vk::ShaderStageFlagBits)stageType) << " already exists in this graphics pipeline" << Log::end;
+	else
+		StageBinarySources.emplace(stageType, binary);
+
+	return *this;
+}
+
+
+
+GraphicsPipeline& GraphicsPipeline::Raz_SetCullMode(vk::CullModeFlags mode)
+{
+	cullingMode = mode;
+
+	return *this;
+}
+
+GraphicsPipeline& GraphicsPipeline::Build(vk::Device& device,
+                                                                                  vk::RenderPass& renderpass, int subpass)
+{
+			
+	std::vector<std::pair<vk::ShaderStageFlagBits, vk::ShaderModule>> ShaderModules;
+	for (auto& stage : StageBinarySources)
+	{
+		vk::ShaderModuleCreateInfo module_create_info;
+		module_create_info.sType = vk::StructureType::eShaderModuleCreateInfo;
+		module_create_info.pCode = reinterpret_cast<const uint32_t*>(stage.second.data());
+		module_create_info.codeSize = stage.second.size();
+		auto module = device.createShaderModule(module_create_info);
+		ShaderModules.emplace_back((vk::ShaderStageFlagBits) stage.first, module);
+	}
+
+	vk::PipelineLayoutCreateInfo pipeline_layout_create_info{};
+	pipeline_layout_create_info.sType = vk::StructureType::ePipelineLayoutCreateInfo;
+	pipeline_layout_create_info.setLayoutCount = AttachedDescriptors.size();
+	pipeline_layout_create_info.pSetLayouts = AttachedDescriptors.data();
+	pipeline_layout_create_info.pushConstantRangeCount = 0;
+
+	PipelineLayout = device.createPipelineLayout(pipeline_layout_create_info);
+
+	std::vector<vk::PipelineShaderStageCreateInfo> shader_stage_create_infos;
+	{
+		for (auto& Module : ShaderModules)
+		{
+			vk::PipelineShaderStageCreateInfo createInfo;
+			createInfo.sType = vk::StructureType::ePipelineShaderStageCreateInfo;
+			createInfo.pName = "main";
+			createInfo.module = Module.second;
+			createInfo.stage = Module.first;
+			createInfo.pNext = nullptr;
+			createInfo.pSpecializationInfo = nullptr;
+			shader_stage_create_infos.push_back(createInfo);
+
+		}
+	}
+			
+	vk::PipelineDynamicStateCreateInfo dynamicState{};
+	{
+		dynamicState.sType = vk::StructureType::ePipelineDynamicStateCreateInfo;
+		dynamicState.dynamicStateCount = static_cast<uint32_t>(DynamicStates.size());
+		dynamicState.pDynamicStates = DynamicStates.data();
+	}
+			
+	std::vector<vk::VertexInputBindingDescription> bindings;
+	bindings.reserve(vertexInputDescriptions.size());
+	std::vector<vk::VertexInputAttributeDescription> attributes;
+
+	vk::PipelineVertexInputStateCreateInfo vertexInputInfo{};
+	{
+		vertexInputInfo.sType = vk::StructureType::ePipelineVertexInputStateCreateInfo;
+		
+		{
+			int BindingIndex = 0;
+			for (auto& binding : vertexInputDescriptions)
+			{
+				vk::VertexInputBindingDescription b;
+				b.inputRate = static_cast<vk::VertexInputRate>(binding.inputRate);
+				b.binding = BindingIndex;
+				b.stride = binding.stride;
+				bindings.push_back(b);
+
+				int LocationIndex = 0;
+				for (auto& attrib : binding.attributes)
+				{
+					vk::VertexInputAttributeDescription a;
+					a.format =  static_cast<vk::Format>(attrib.type);
+					a.binding = BindingIndex;
+					a.location = LocationIndex;
+					a.offset = attrib.offset;
+					attributes.push_back(a);
+
+					LocationIndex++;
+				}
+
+				BindingIndex++;
+			}
+		}
+
+		vertexInputInfo.vertexBindingDescriptionCount = bindings.size();
+		vertexInputInfo.pVertexBindingDescriptions = bindings.data(); // Optional
+		vertexInputInfo.vertexAttributeDescriptionCount = attributes.size();
+		vertexInputInfo.pVertexAttributeDescriptions = attributes.data(); // Optional
+	}
+
+	vk::PipelineInputAssemblyStateCreateInfo inputAssembly{};
+	{
+		inputAssembly.sType = vk::StructureType::ePipelineInputAssemblyStateCreateInfo;
+		inputAssembly.topology = TopologyMode;
+		inputAssembly.primitiveRestartEnable = VK_FALSE;
+	}
+	vk::PipelineViewportStateCreateInfo viewportState{};
+	{
+		viewportState.sType = vk::StructureType::ePipelineViewportStateCreateInfo;
+		viewportState.viewportCount = ViewportCount;
+		vk::Viewport vp = { 0,0,800,800,0.0f,1.0f };
+		vk::Rect2D scissor = { {0,0},{800,800} };
+		viewportState.pViewports = &vp;
+		viewportState.scissorCount = ScissorCount;
+		viewportState.pScissors = &scissor;
+	}
+	vk::PipelineRasterizationStateCreateInfo rasterizer{};
+	{
+		rasterizer.sType = vk::StructureType::ePipelineRasterizationStateCreateInfo;
+		rasterizer.depthClampEnable = VK_FALSE;
+		rasterizer.polygonMode = polygonMode;
+		rasterizer.depthBiasEnable = DepthClampEnable;
+		rasterizer.cullMode = cullingMode;
+		rasterizer.lineWidth = 1.0f;
+		rasterizer.rasterizerDiscardEnable = DiscardEnable;
+		rasterizer.frontFace = vk::FrontFace::eCounterClockwise;
+		rasterizer.depthBiasEnable = VK_FALSE;
+		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
+		rasterizer.depthBiasClamp = 0.0f; // Optional
+		rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
+
+	}
+	vk::PipelineMultisampleStateCreateInfo multisampling{};
+	multisampling.sType = vk::StructureType::ePipelineMultisampleStateCreateInfo;
+	multisampling.sampleShadingEnable = VK_FALSE;
+	multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
+	multisampling.minSampleShading = 1.0f; // Optional
+	multisampling.pSampleMask = nullptr; // Optional
+	multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
+	multisampling.alphaToOneEnable = VK_FALSE; // Optional
+
+	vk::PipelineDepthStencilStateCreateInfo DepthStencil;
+	{
+		DepthStencil.sType = vk::StructureType::ePipelineDepthStencilStateCreateInfo;
+		DepthStencil.depthTestEnable = DepthTestingState;
+		DepthStencil.depthWriteEnable = DepthWritingState;
+		DepthStencil.depthCompareOp = DepthComparingOperation;
+		DepthStencil.pNext = nullptr;
+	}
+	vk::PipelineColorBlendAttachmentState colorBlendAttachment{};
+	{
+		colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+		colorBlendAttachment.blendEnable = VK_FALSE;
+		colorBlendAttachment.srcColorBlendFactor = vk::BlendFactor::eOne; // Optional
+		colorBlendAttachment.dstColorBlendFactor = vk::BlendFactor::eZero; // Optional
+		colorBlendAttachment.colorBlendOp = vk::BlendOp::eAdd; // Optional
+		colorBlendAttachment.srcAlphaBlendFactor = vk::BlendFactor::eOne; // Optional
+		colorBlendAttachment.dstAlphaBlendFactor = vk::BlendFactor::eZero; // Optional
+		colorBlendAttachment.alphaBlendOp = vk::BlendOp::eAdd; // Optional
+	}
+	vk::PipelineColorBlendStateCreateInfo colorBlending{};
+	{
+		colorBlending.sType = vk::StructureType::ePipelineColorBlendStateCreateInfo;
+		colorBlending.logicOpEnable = VK_FALSE;
+		colorBlending.logicOp = vk::LogicOp::eCopy; // Optional
+		colorBlending.attachmentCount = 1;
+		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.blendConstants[0] = 0.0f; // Optional
+		colorBlending.blendConstants[1] = 0.0f; // Optional
+		colorBlending.blendConstants[2] = 0.0f; // Optional
+		colorBlending.blendConstants[3] = 0.0f; // Optional
+	}
+	vk::GraphicsPipelineCreateInfo pipelineInfo{};
+	pipelineInfo.sType = vk::StructureType::eGraphicsPipelineCreateInfo;
+	pipelineInfo.stageCount = shader_stage_create_infos.size();
+	pipelineInfo.pStages = shader_stage_create_infos.data();
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizer;
+	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pDepthStencilState = &DepthStencil;
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.pDynamicState = &dynamicState;
+	pipelineInfo.layout = PipelineLayout;
+	pipelineInfo.renderPass = renderpass;
+	pipelineInfo.subpass = subpass;
+	
+
+	
+			
+	
+	Pipeline = device.createGraphicsPipeline(nullptr, pipelineInfo).value;
+	
+	return *this;
+}
