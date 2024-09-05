@@ -20,14 +20,10 @@ class DemoApp : public Landmark::IAttachableModule {
     void Exit() override {}
 };
 
-struct test {
-int a = 2;
-};
+
 int main(void) {
-    test b;
-    ObjectAllocator_new<test> a;
-    a.Push(b);
-    a.Push_Emplace(3);
+
+    std::cout << "test\n";
     Landmark::Application app({"Demo"});
     app.AttachModule<DemoApp>();
     app.Run();

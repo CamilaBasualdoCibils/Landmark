@@ -1,2 +1,9 @@
 Landmark.code-workspace
 .vs
+Demo.make
+ImGui.make
+ImPlot.make
+Landmark.make
+Makefile
+bin
+obj
