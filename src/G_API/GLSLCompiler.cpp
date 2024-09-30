@@ -1,11 +1,11 @@
 ﻿#include "pch.h"
 #include "GLSLCompiler.h"
 //#include <glslang/SPIRV/GlslangToSpv.h>
-#include <glslang/Include/glslang_c_interface.h>
+//#include <glslang/Include/glslang_c_interface.h>
 GLSLCompiler::GLSLCompiler()
 {
 	//int v = glslang::GetSpirvGeneratorVersion();
-	glslang_initialize_process();
+//	glslang_initialize_process();
 	//log.Debug(std::to_string());
 	//glslang::InitializeProcess();
 	

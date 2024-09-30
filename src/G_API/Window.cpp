@@ -18,7 +18,13 @@ Landmark::Window::Window(vk::Instance vk_instance)
 	else Logger.Critical("Failed to create Window");
 
 	glfwSetWindowUserPointer(glfw_window_ptr, this);
-
+	std::cout << std::hex;
+	const unsigned char* byteMem = reinterpret_cast<const unsigned char*>(&vk_instance);
+	for (int i = 0; i < sizeof(vk::Instance);i++) {
+		std::cout << std::setw(2) << std::setfill('0')
+                  << static_cast<int>(byteMem[i]) << " ";
+	}
+	std::cout << std::dec;
 	VkSurfaceKHR surf;
 	glfwCreateWindowSurface(vk_instance, glfw_window_ptr, nullptr, &surf);
 	vulkan_surface = vk::SurfaceKHR(surf);

@@ -8,7 +8,7 @@
 #define PCH_H
 #include <assert.h>
 
-#define LASSERT(a,b) assert(a&&b)
+#define LASSERT(a,b) assert(a && b)
 
 
 // add headers that you want to pre-compile here

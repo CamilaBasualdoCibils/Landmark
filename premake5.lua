@@ -40,9 +40,10 @@ project "Landmark"
 
    files { "src/**.h", "src/**.c","src/**.cpp"}
    pchheader "pch.h"
-   includedirs {"src","dependencies","imgui","glslang"}
+   includedirs {"src","dependencies","imgui","glslang","dependencies/RenderDoc/include"}
    links { "ImGui","ImPlot","vulkan","glfw",
-   "glslang","MachineIndependent","OSDependent","GenericCodeGen"  }
+   "glslang","MachineIndependent","OSDependent","GenericCodeGen" ,"librenderdoc" }
+   libdirs{"dependencies/RenderDoc/lib"}
    dependson {"ImGui","ImPlot"}
 
    --filter "configurations:Debug"

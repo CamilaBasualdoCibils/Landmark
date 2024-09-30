@@ -123,11 +123,40 @@ vk::Instance VulkanInstance::CreateInstance()
 	instance_create_info.ppEnabledLayerNames = RequestedValidationLayers.data();
 
 	auto result = vk::createInstance(instance_create_info);
-
+	
 	if (result.result != vk::Result::eSuccess)
 	{
-		log.Critical("Failed to created Vulkan Instance");
+		log.Critical("FAILED TO CREATE VULKAN INSTANCE. ERROR: " + vk::to_string(result.result));
+		switch (result.result)
+		{
+			case vk::Result::eErrorExtensionNotPresent:
+			{
+				const auto availExt = vk::enumerateInstanceExtensionProperties().value;
+				std::set<const char*> aExt;
+				for (const auto& a : availExt)
+					aExt.insert(a.extensionName.data());
+				for (const auto& ext : RequestedExtensions)
+					if (!aExt.contains(ext))
+						log.Critical("Extension " +std::string( ext) +" not available in this system");
+			}
+			break;
+			case vk::Result::eErrorLayerNotPresent:
+			{
+				const auto availLay = vk::enumerateInstanceLayerProperties().value;
+				std::set<const char*> aLay;
+				for (const auto& a : availLay)
+					aLay.insert(a.layerName.data());
+				for (const auto& lay : RequestedValidationLayers)
+					if (!aLay.contains(lay))
+						log.Critical("Layer " +std::string( lay) +" not available in this system");
+			}
+			break;
+		
+		default:
+			break;
+		}
 	}
+	LASSERT(result.result == vk::Result::eSuccess,"VULKAN INSTANCE CREATE FAILURE");
 	log.Debug("===== Vulkan Instance  ===== \nExtensions:");
 	for (auto &ext : RequestedExtensions)
 		log.Debug(std::string("	") + ext);
@@ -155,7 +184,7 @@ std::vector<PhysicalDevice> VulkanInstance::FetchPhysicalDevices()
 
 const PhysicalDevice &VulkanInstance::PickMainDevice()
 {
-	return physicalDevices[1];
+	return physicalDevices[0];
 }
 
 VulkanInstance &VulkanInstance::GetInstance()

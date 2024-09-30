@@ -8,6 +8,7 @@
 #include "Time/Time.h"
 #include "Transform/TransformSystem.h"
 #include "Logo.h"
+
 Landmark::Application::Application(const ApplicationRunDesc& desc) :
 RunSettings(desc),
 AppName(desc.AppName),
@@ -35,6 +36,7 @@ void Landmark::Application::Run()
 
 void Landmark::Application::Start(const ApplicationRunDesc& desc)
 {
+	
 	logger.Debug("Internal Init");
 	//logger.Debug() << "Internal Init" << Log::end;
 	Time::Init();
