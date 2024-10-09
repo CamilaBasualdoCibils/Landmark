@@ -1,31 +1,5 @@
-[LogKeeper] Init. Flushing every 250ms
-[Vulkan] ===== Vulkan Instance  ===== 
-Extensions:
-[Vulkan] 	VK_KHR_surface
-[Vulkan] 	VK_KHR_xcb_surface
-[Vulkan] 	VK_KHR_portability_enumeration
-[Vulkan] 	VK_EXT_debug_utils
-[Vulkan] Validation Layers:
-[Vulkan] 	VK_LAYER_KHRONOS_validation
-[Vulkan] ============================
-[Window] Window Created
-[Window] at 0x7fffffffd180 assigned as Main Window
-[NVIDIA GeForce RTX 3070 Laptop GPU] 
-====== Logical Device Init ======
-Extensions:
-	VK_EXT_descriptor_indexing
-	VK_KHR_swapchain
-Layers:
-	VK_LAYER_KHRONOS_validation
-Queues: 
-  Family_ID : Count
-	0 : 1
-	2 : 2
-=================================
-[Main Device] Init
-[Vulkan] Debug Messenger Created
-[Application] 
-                    
+[Logger] Logging Init
+[App]                     
                        /\
                        ||
                        ||
@@ -55,27 +29,4 @@ Queues:
        |               ]I               |       
        |               ]I               |     
 
-[Application] Internal Init
-[Time] Initialized at Some time, fix this, make this show a clock of smth
-[NVIDIA GeForce RTX 3070 Laptop GPU] Semaphore Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] Semaphore Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] Fence Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] Fence Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] Renderpass Created. TODO: Make this more descriptive
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] Fence Created
-[Imgui] Init
-[NVIDIA GeForce RTX 3070 Laptop GPU] Image Created. TODO: make this more descriptive
-[NVIDIA GeForce RTX 3070 Laptop GPU] ImageView Created
-[EntityManager] 9TransformComponent Added to Entity ID(0)(camera)
-[EntityManager] 6CameraComponent Added to Entity ID(0)(camera)
-[EntityManager] 9TransformComponent Added to Entity ID(1)(Cube)
-[NVIDIA GeForce RTX 3070 Laptop GPU] Pipeline Layout Created
-[NVIDIA GeForce RTX 3070 Laptop GPU] Fucking idiot didnt implement dynamic states. tomorrows problems are tomorrow's me
+[Logger] Logging closing

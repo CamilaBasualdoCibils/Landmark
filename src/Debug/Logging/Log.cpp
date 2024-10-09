@@ -1,9 +1,10 @@
 ﻿#include "pch.h"
 #include "Log.h"
-#include "LogKeeper.h"
+
+#include "LogKeeper2.h"
 void Log::Print(const std::string &t)
 {
-    static auto const logKeeper = LogKeeper::GetInstance();
+    static auto const logKeeper = LogKeeper2::GetInstance();
     std::cout << "[" << origin << "] " << t << '\n';
-    logKeeper->Push(origin, t);
+    logKeeper->PushLog(origin, t);
 }

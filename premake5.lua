@@ -14,7 +14,7 @@ project "Demo"
    "glslang","MachineIndependent","OSDependent","GenericCodeGen" }
    
    files { "demo/src/**.h", "demo/src/**.c","demo/src/**.cpp"}
-   includedirs {"demo/src","src","dependencies"}
+   includedirs {"demo/src","src","lib"}
    libdirs {"bin/%{cfg.buildcfg}"}
    --
    filter "configurations:Editor"
@@ -40,10 +40,10 @@ project "Landmark"
 
    files { "src/**.h", "src/**.c","src/**.cpp"}
    pchheader "pch.h"
-   includedirs {"src","dependencies","imgui","glslang","dependencies/RenderDoc/include"}
+   includedirs {"src","lib","imgui","glslang","lib/RenderDoc/include"}
    links { "ImGui","ImPlot","vulkan","glfw",
    "glslang","MachineIndependent","OSDependent","GenericCodeGen" ,"librenderdoc" }
-   libdirs{"dependencies/RenderDoc/lib"}
+   libdirs{"lib/RenderDoc/lib"}
    dependson {"ImGui","ImPlot"}
 
    --filter "configurations:Debug"
@@ -75,7 +75,7 @@ project "ImGui"
    targetdir "bin/%{cfg.buildcfg}"
    flags{"MultiProcessorCompile"}
 
-   files { "dependencies/imgui/**.h","dependencies/imgui/**.cpp"  }
+   files { "lib/imgui/**.h","lib/imgui/**.cpp"  }
    
    filter "configurations:Editor"
       defines { "_DEBUG" }
@@ -94,8 +94,8 @@ project "ImPlot"
    targetdir "bin/%{cfg.buildcfg}"
    flags{"MultiProcessorCompile"}
 
-   files { "dependencies/implot/**.h","dependencies/implot/**.cpp"  }
-   includedirs {"dependencies"}
+   files { "lib/implot/**.h","lib/implot/**.cpp"  }
+   includedirs {"lib"}
    
    filter "configurations:Editor"
       defines { "_DEBUG" }

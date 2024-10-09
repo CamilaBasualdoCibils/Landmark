@@ -1,0 +1,1 @@
+Describes what the Lens will capture around it

@@ -47,6 +47,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/constants.hpp>
 using namespace glm;
 
 
@@ -68,4 +69,7 @@ using namespace glm;
 #include <optional>
 #include <unordered_set>
 #include <unordered_map>
+#include <variant>
+#include <thread>
+#include <mutex>
 #endif //PCH_H
