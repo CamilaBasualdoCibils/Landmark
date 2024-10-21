@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Debug/Debug.h"
 #include "Entity/IComponent.h"
-//#include "G_API/Rendering/Framebuffer.h"
+//#include "VK/Rendering/Framebuffer.h"
 class EntityManager;
 #include "Transform/Transform.h"
 

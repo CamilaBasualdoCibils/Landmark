@@ -2,11 +2,12 @@
 #include "ImguiHandler.h"
 
 #include "EditorLambda.h"
-#include "G_API/Window.h"
-#include "G_API/VulkanInstance.h"
-#include "G_API/Rendering/RenderPass.h"
-#include <Renderer/Renderer.h>
+#include "Core/Window.h"
+#include "VK/Vulkan_Instance.h"
+#include "VK/Rendering/RenderPass.h"
+//#include <Renderer/Renderer.h>
 #include "Editor.h"
+/*
 void Landmark::Debug::ImguiHandler::Init(Queue &queue, RenderPass &rp)
 {
 	
@@ -137,3 +138,4 @@ void Landmark::Debug::ImguiHandler::PushEditorTools()
 										{ ImGui::MenuItem("Implot Demo", 0, &ShowImplotDemo); }, [&]()
 										{ if (ShowImplotDemo) ImPlot::ShowDemoWindow(); });
 }
+*/

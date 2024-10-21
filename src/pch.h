@@ -30,9 +30,6 @@
 //#include <GLFW/include/GLFW/glfw3native.h>
 
 
-//OPENAL
-#include <AL/al.h>
-
 
 //IMGUI
 #include <imgui/imgui.h>
@@ -72,4 +69,5 @@ using namespace glm;
 #include <variant>
 #include <thread>
 #include <mutex>
+#include <chrono>
 #endif //PCH_H

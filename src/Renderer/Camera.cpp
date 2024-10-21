@@ -3,7 +3,7 @@
 
 #include "Entity/EntityManager.h"
 #include "Transform/Transform.h"
-#include "Renderer/Renderer.h"
+//#include "Renderer/Renderer.h"
 Camera::Camera(EntityID id): IComponent(id)//,renderFBO(Renderer::GetRenderPass(),{800,800},{ColorFormat::RGBA8SRGB})
 {
 

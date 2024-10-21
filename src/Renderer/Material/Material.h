@@ -2,8 +2,8 @@
 #include "IO/File.h"
 #include "IO/IO.h"
 //#include "IO/Resource.h"
-#include "Renderer/Renderer.h"
-#include "G_API/Rendering/Pipeline.h"
+//#include "Renderer/Renderer.h"
+#include "VK/Rendering/Pipeline.h"
 //#include "Vulkan/Rendering/GraphicsPipeline.h"
 
 class  Material
@@ -27,7 +27,7 @@ public:
 		Pipeline::PipelineProperties pipeline_construction_info;
 		pipeline_construction_info.shaderStages[ShaderStage::VERTEX] = f.GetFile(vert).GetContent_Binary();
 		pipeline_construction_info.shaderStages[ShaderStage::FRAGMENT] = f.GetFile(frag).GetContent_Binary();
-		pipeline.emplace(pipeline_construction_info, MaterialPipelineLayout.value(), Renderer::GetRenderPass());
+		//pipeline.emplace(pipeline_construction_info, MaterialPipelineLayout.value(), Renderer::GetRenderPass());
 	}
 };
 

@@ -2,17 +2,18 @@
 
 std::vector<AppModule::EngineCallInject> LogKeeper2::GetInjections()
 {
-    std::vector<AppModule::EngineCallInject> injects =
-        {
-            {AppModule::EngineCallPoints::START,
-             INT64_MAX, // initialize first
-             std::bind(&LogKeeper2::Init, this)},
-            {AppModule::EngineCallPoints::END,
-             -INT64_MAX, // end last
-             std::bind(&LogKeeper2::Shutdown, this)}
+    
+        AppModule::EngineCallInject inject_start("LogKeeper Start");
+        inject_start.call_point = AppModule::EngineCallPoints::START;
+        inject_start.priority = INT64_MAX;
+        inject_start.call = std::bind(&LogKeeper2::Init, this);
 
-        };
-    return injects;
+        AppModule::EngineCallInject inject_end("LogKeeper End");
+        inject_end.call_point = AppModule::EngineCallPoints::END;
+        inject_end.priority = INT64_MIN;
+        inject_end.call = std::bind(&LogKeeper2::Shutdown, this);
+    return {inject_start,inject_end};
+    
 }
 
 void LogKeeper2::SetFlushInterval(milliseconds ms)

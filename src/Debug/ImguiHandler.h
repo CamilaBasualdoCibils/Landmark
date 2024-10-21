@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Debug/Debug.h"
 
-#include "G_API/Operations/CommandBuffer.h"
+#include "VK/Operations/CommandBuffer.h"
 
 namespace Landmark::Debug
 {
