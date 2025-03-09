@@ -61,7 +61,7 @@ void Landmark::Application::Start(const ApplicationRunDesc& desc)
 void Landmark::Application::Update()
 {
 
-	auto& window = VulkanInstance::GetInstance().GetWindow();
+	auto& window = VulkanInstance::GetInstance().GetLWindow();
 	
 	while (!window.ShouldClose())
 	{
@@ -77,7 +77,7 @@ void Landmark::Application::Update()
 	}
 	/*
 	auto& graphics = *Graphics::RenderAPI::GetInstance();
-	while (!graphics.GetWindow().ShouldClose())
+	while (!graphics.GetLWindow().ShouldClose())
 	{
 		TransformSystem::Update();
 		for (auto& module : EngineModules)
@@ -85,7 +85,7 @@ void Landmark::Application::Update()
 
 		
 
-		if (!graphics.GetWindow().isMinimized())
+		if (!graphics.GetLWindow().isMinimized())
 		{
 			graphics.PreRender();
 

@@ -1,38 +1,43 @@
 #include <pch.h>
 #include "Window.h"
 
-
-
-Window::Window( Window_Properties _p) : properties(_p)
+LWindow::LWindow( LWindow_Properties _p) : properties(_p)
 {
     CreateWindow();
 }
 
-vk::SurfaceKHR Window::GetorMakeSurface(vk::Instance _instance)
+vk::SurfaceKHR LWindow::GetorMakeSurface(vk::Instance _instance)
 {
     if (!surface_created)
     {
         VkSurfaceKHR surf;
         glfwCreateWindowSurface(_instance, window_ptr, nullptr, &surf);
         logger.Debug("Surface Created");
+        surface_created = true;
         surface = vk::SurfaceKHR(surf);
     }
     return surface;
 }
 
-constexpr vk::SurfaceKHR Window::GetSurface() const
+vk::SurfaceKHR LWindow::GetSurface() const
 {
     LASSERT(surface_created,"Surface not created");
     return surface;
 }
 
-Window::~Window()
+LWindow::~LWindow()
 {
     glfwDestroyWindow(window_ptr);
-    logger.Debug("Window Destroyed");
+    logger.Debug("LWindow Destroyed");
+    
 }
 
-void Window::CreateWindow()
+LWindow::internal_window_handle LWindow::GetInternalHandle()
+{
+    return glfwGetX11Window(window_ptr);
+}
+
+void LWindow::CreateWindow()
 {
     if (window_ptr)
         throw std::runtime_error("Window Recycling not implemented");
@@ -48,5 +53,5 @@ void Window::CreateWindow()
         throw std::runtime_error("Failed to create glfw window");
 
     glfwSetWindowUserPointer(window_ptr, this);
-    logger.Debug("Window Created");
+    logger.Debug("LWindow Created");
 }

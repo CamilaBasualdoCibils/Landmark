@@ -18,6 +18,7 @@ public:
 	SingleUseCommandBuffer& operator=(const SingleUseCommandBuffer& o) = delete;
 	
 	vk::CommandBuffer* operator->() { return cmdBuffer.operator->(); }
+	CommandBuffer& operator*() {return cmdBuffer;}
 
 };
 

@@ -1,18 +1,18 @@
 #pragma once
-#include "Entity/IComponent.h"
-struct Transform final : public IComponent<Transform>
+
+struct Transform
 {
 private:
-
-	vec3 Position = {0,0,0};
-	quat Rotation = quat({0,0,0});
-	vec3 Scale = {1,1,1};
+	
+	vec3 pos = {0,0,0};
+	quat rot = quat({0,0,0});
+	vec3 scale = {1,1,1};
 
 	bool ModelMatrixDirty = true;
 	mat4 ModelMatrix;
 public:
-	explicit Transform(EntityID id)
-		: IComponent(id)
+	explicit Transform()
+
 	{
 	}
 
@@ -20,9 +20,9 @@ public:
 	{
 		if (ModelMatrixDirty)
 		{
-			mat4 T = translate(identity<mat4>(), Position);
-			mat4 R(Rotation);
-			mat4 S = scale(identity<mat4>(), Scale);
+			mat4 T = translate(identity<mat4>(), pos);
+			mat4 R(rot);
+			mat4 S = glm::scale(identity<mat4>(), scale);
 			ModelMatrix = T * R * S;
 			ModelMatrixDirty = false;
 		}
@@ -32,16 +32,15 @@ public:
 
 	constexpr bool isDirty() const { return ModelMatrixDirty; }
 
-	static void ComponentInspector(IComponentData* comp) {
-		Transform* trans = reinterpret_cast<Transform*>(comp);
-		bool tModified = ImGui::DragFloat3("Position",&trans->Position[0]);
-		vec3 euler = glm::eulerAngles(trans->Rotation);
-		
-		bool rModified = ImGui::DragFloat3("Rotation",&euler.x);
-		if (rModified) trans->Rotation = quat(euler);
-		bool sModified = ImGui::DragFloat3("Scale",&trans->Scale[0]);
 
-		trans->ModelMatrixDirty = trans->ModelMatrixDirty || tModified || rModified || sModified;
-	}
+	const decltype(pos) Position() const {return pos;}
+	decltype(pos)& Position() {ModelMatrixDirty = true; return pos;}
+
+	const decltype(rot) Rotation() const {return rot;}
+	decltype(rot)& Rotation() {ModelMatrixDirty = true; return rot;}
+
+	const decltype(scale) Scale() const {return scale;}
+	decltype(scale)& Scale() {ModelMatrixDirty = true; return scale;}
+
 	
 };

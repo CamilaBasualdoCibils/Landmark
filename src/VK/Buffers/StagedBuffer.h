@@ -1,36 +1,37 @@
-#include <pch.h>
+#pragma once
+#include <VK/Operations/CommandBuffer.h>
+
 #include "Buffer.h"
-#include <VK/Operations/CommandPool.h>
-class StagedBuffer : DeviceResource
+class StagedBuffer : public Buffer
 {
 
 public:
     struct StagedBufferProperties : Buffer::BufferProperties
     {
 
-        StagedBufferProperties()
+        StagedBufferProperties(size_t _size,Flags<BufferUsage> _buffer_usage, 
+        Flags<MemoryProperties> _memory_properties = MemoryProperties::DEVICE_LOCAL)
         {
-            memory_properties = MemoryProperties::DEVICE_LOCAL;
-            usage_flags = BufferUsage::TRANSFER_DST;
+            size = _size;
+            usage_flags = _buffer_usage;
+            memory_properties = _memory_properties;
         }
     };
-
 private:
-    Buffer buffer;
-    std::optional<Buffer> staging_buffer;
     StagedBufferProperties properties;
+protected:
+    std::optional<Buffer> staging_buffer;
 
 public:
-    StagedBuffer(const StagedBufferProperties &_prop) : buffer(_prop), properties(_prop)
-    {
-    }
+    StagedBuffer(const StagedBufferProperties &_prop);
 
-    void *MapMemory();
-    void UnmapMemory();
-    void UnmapMemoryAndTransfer(CommandPool &pool);
-    void Transfer(CommandPool &pool);
+    void Realloc_NoCopy(const size_t newsize) override;
+    void Realloc_Copy(CommandPool& pool, const size_t newsize) override;
+
+    void Transfer(CommandBuffer& cmd_buffer);
     void DisposeStagingBuffer();
-
+    void Destroy() override;
+    void InsertData(uint32_t Offset, uint32_t size, void* data) override;
 private:
     Buffer &MakeOrGetStagingBuffer();
 };

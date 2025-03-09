@@ -10,7 +10,7 @@ bool File::Exists() const
 	return std::filesystem::exists(FilePath) && std::filesystem::is_regular_file(FilePath);
 }
 
-std::string File::GetPath() const
+const std::string& File::GetPath() const
 {
 	return FilePath;
 }
@@ -20,6 +20,11 @@ std::string File::GetName() const
 	return FilePath.substr(FilePath.find_last_of("/")+1);
 }
 
+std::string File::GetExtension() const
+{
+	const auto pos_of_dot = GetPath().find_last_of('.');
+    return GetPath().substr();
+}
 
 std::vector<char> GetBinaryFromFile(std::string Filename)
 {

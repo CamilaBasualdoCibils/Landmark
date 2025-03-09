@@ -1,13 +1,13 @@
 #pragma once
-#include "Entity/IComponent.h"
+#include "Entity/IComponentData.h"
 
 
-struct MeshRender : public IComponent<MeshRender>
+struct MeshRender : public IComponentData<MeshRender>
 {
 	int a;
 
-	MeshRender(EntityID id)
-		: IComponent<MeshRender>(id)
+	MeshRender(ObjectID id)
+		: IComponentData<MeshRender>(id)
 	{
 	}
 

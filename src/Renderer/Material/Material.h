@@ -20,7 +20,7 @@ public:
 	{
 		if (!MaterialPipelineLayout.has_value())
 		{
-			MaterialPipelineLayout.emplace();
+			//MaterialPipelineLayout.emplace();
 		}
 
 		auto f = IO::GetResources().GetFolder("materials");

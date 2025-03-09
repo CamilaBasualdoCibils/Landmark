@@ -23,6 +23,7 @@ class MainDevice : public LogicalDevice
 		f.sampleRateShading = true;
 		f.swapchainSupport = true;
 		f.tesselationShader = true;
+		f.raytracing = true;
 
 		return f;
 	}();

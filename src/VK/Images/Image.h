@@ -10,7 +10,7 @@ public:
     {
 
         uvec3 dimensions;
-        ColorFormat format = ColorFormat::RGBA8uint;
+        Format format = Format::RGBA8uint;
         uint32_t layers = 1;
         uint32_t mipLevels = 1;
         uint32_t Samples = 1; // only relevant for images used as render attachments

@@ -7,4 +7,5 @@ Landmark.make
 Makefile
 bin
 obj
-.obsidian
+doc/.obsidian
+compile_commands.json

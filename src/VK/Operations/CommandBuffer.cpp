@@ -1,15 +1,15 @@
 ﻿#include "pch.h"
 #include "CommandBuffer.h"
 
-
 #include "Queue.h"
 #include <VK/Devices/LogicalDevice.h>
 
 #include "VK/Rendering/RenderPass.h"
 #include <VK/Rendering/Framebuffer.h>
 #include <VK/Rendering/Pipeline.h>
-CommandBuffer::SubmitInfo CommandBuffer::prepareSubmitInfo(const std::vector<Semaphore>& waitSemaphores,
-                                                                                                   const std::vector<Semaphore>& signalSemaphores)
+#include <VK/Descriptors/DescriptorSet.h>
+CommandBuffer::SubmitInfo CommandBuffer::prepareSubmitInfo(const std::vector<Semaphore> &waitSemaphores,
+														   const std::vector<Semaphore> &signalSemaphores)
 {
 	SubmitInfo finalsubmit;
 
@@ -17,14 +17,14 @@ CommandBuffer::SubmitInfo CommandBuffer::prepareSubmitInfo(const std::vector<Sem
 	finalsubmit.submit_info.pCommandBuffers = &cmdbuffer;
 
 	{
-		for (auto& ss : signalSemaphores)
+		for (auto &ss : signalSemaphores)
 		{
 			finalsubmit.signalSemaphores.push_back(ss);
 		}
 	}
 
 	{
-		for (auto& ss : waitSemaphores)
+		for (auto &ss : waitSemaphores)
 		{
 			finalsubmit.waitSemaphores.push_back(ss);
 		}
@@ -37,11 +37,9 @@ CommandBuffer::SubmitInfo CommandBuffer::prepareSubmitInfo(const std::vector<Sem
 	finalsubmit.submit_info.pWaitSemaphores = finalsubmit.waitSemaphores.data();
 
 	return finalsubmit;
-
-
 }
 
-CommandBuffer::CommandBuffer(CommandPool& cp):pool(cp)
+CommandBuffer::CommandBuffer(CommandPool &cp) : pool(cp)
 {
 
 	vk::CommandBufferAllocateInfo allocInfo = {};
@@ -50,7 +48,6 @@ CommandBuffer::CommandBuffer(CommandPool& cp):pool(cp)
 	allocInfo.commandPool = pool.GetVkCommandPool();
 	allocInfo.commandBufferCount = 1;
 	cmdbuffer = GetvkDevice().allocateCommandBuffers(allocInfo).value.front();
-	
 }
 /*
 CommandBuffer::~CommandBuffer()
@@ -69,21 +66,22 @@ void CommandBuffer::Begin(Flags<CommandBufferUsageFlags> flag)
 	beginInfo.sType = vk::StructureType::eCommandBufferBeginInfo;
 	beginInfo.flags = flag;
 	auto result = cmdbuffer.begin(beginInfo);
+	has_begun = true;
 }
 
 void CommandBuffer::End()
 {
 	auto result = cmdbuffer.end();
-	
+	has_begun = false;
 }
 
-void CommandBuffer::BeginRenderPass(RenderPass& rp, Framebuffer& fb, vk::Rect2D renderArea,
-	bool ClearFramebuffer, vk::ClearValue clearValues)
+void CommandBuffer::BeginRenderPass(RenderPass &rp, Framebuffer &fb, vk::Rect2D renderArea,
+									bool ClearFramebuffer, vk::ClearValue clearValues)
 {
 	vk::RenderPassBeginInfo render_pass_begin;
 	render_pass_begin.framebuffer = fb.GetVkFramebuffer();
 	render_pass_begin.renderPass = rp.GetVkRenderPass();
-	render_pass_begin.clearValueCount = ClearFramebuffer+1;
+	render_pass_begin.clearValueCount = ClearFramebuffer + 1;
 	render_pass_begin.pClearValues = &clearValues;
 	render_pass_begin.renderArea = renderArea;
 
@@ -98,37 +96,73 @@ void CommandBuffer::EndRenderPass()
 void CommandBuffer::Reset()
 {
 	cmdbuffer.reset();
+	has_begun = false;
 }
 
-void CommandBuffer::Submit(const std::vector<Semaphore>& waitSemaphores,
-                                               const std::vector<Semaphore>& signalSemaphores, const std::optional<Fence>& CompletionFence)
+void CommandBuffer::Submit(const std::vector<Semaphore> &waitSemaphores,
+						   const std::vector<Semaphore> &signalSemaphores, const std::optional<Fence> &CompletionFence)
 {
 	auto submit = prepareSubmitInfo(waitSemaphores, signalSemaphores);
 
-
 	vk::Fence f = {};
-	if (CompletionFence.has_value()) f = CompletionFence.value();
-	
+	if (CompletionFence.has_value())
+		f = CompletionFence.value();
+
 	auto result = pool.GetBelongingQueue()->submit(submit.submit_info, f);
 }
 
-void CommandBuffer::SubmitAndWait(const std::vector<Semaphore>& waitSemaphores,
-	const std::vector<Semaphore>& signalSemaphores)
+void CommandBuffer::SubmitAndWait(const std::vector<Semaphore> &waitSemaphores,
+								  const std::vector<Semaphore> &signalSemaphores)
 {
 	auto submit = prepareSubmitInfo(waitSemaphores, signalSemaphores);
-
 
 	auto result = pool.GetBelongingQueue()->submit(submit.submit_info, fence);
 	fence.WaitAndReset();
 }
 
+void CommandBuffer::CopyBuffer(Buffer &srcBuffer, Buffer &dstBuffer, uint64_t size, uint64_t srcOffset, uint64_t dstOffset)
+{
+	vk::BufferCopy copy_region(srcOffset, dstOffset, size);
+	cmdbuffer.copyBuffer(srcBuffer, dstBuffer, 1, &copy_region);
+}
+
 void CommandBuffer::BindPipeline(const Pipeline &p, PipelineBindPoint bp)
 {
-	cmdbuffer.bindPipeline(EnumCast(bp),p);
+	cmdbuffer.bindPipeline(enum_cast(bp), p);
+}
+
+void CommandBuffer::BindDescriptorSets(const PipelineLayout &layout, const std::vector<DescriptorSet> &descriptor_sets, uint32_t first_set, uint32_t binding, PipelineBindPoint bind_point)
+{
+	std::vector<vk::DescriptorSet> vk_ds;
+	for (const auto &ds : descriptor_sets)
+	{
+		vk_ds.push_back(ds);
+	}
+	cmdbuffer.bindDescriptorSets((vk::PipelineBindPoint)bind_point,
+								 (vk::PipelineLayout)layout,
+								 first_set,
+								 vk_ds,
+								 {});
 }
 
 void CommandBuffer::Destroy()
 {
-	GetDevice()->freeCommandBuffers(pool.GetVkCommandPool(), { cmdbuffer });
+	GetDevice()->freeCommandBuffers(pool.GetVkCommandPool(), {cmdbuffer});
+	fence.Destroy();
 }
 
+void CommandBuffer::SetViewport(Viewport bounds)
+{
+
+	cmdbuffer.setViewport(0, {bounds});
+}
+
+void CommandBuffer::SetScissor(IRect2D bounds)
+{
+	vk::Rect2D rect;
+	rect.offset.x = bounds.min.x;
+	rect.offset.y = bounds.min.y;
+	rect.extent.width = bounds.size().x;
+	rect.extent.height = bounds.size().y;
+	cmdbuffer.setScissor(0,{rect});
+}

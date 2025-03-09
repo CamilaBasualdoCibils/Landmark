@@ -4,23 +4,41 @@
 Pipeline::Pipeline(const PipelineProperties& _info, const PipelineLayout& _layout, const RenderPass& rp, uint32_t subpass):info(_info)
 {
 	vk::PipelineDynamicStateCreateInfo dynamic_state_create;
-	{
-		logger.Warning("Fucking idiot didnt implement dynamic states. tomorrows problems are tomorrow's me");
-		/*
 		std::vector<vk::DynamicState> dynamic_states;
+	{
+		//logger.Warning("Fucking idiot didnt implement dynamic states. tomorrows problems are tomorrow's me");
+
 		for (auto& ds : info.renderProperties.dynamicStates) {
-			vk::DynamicState d =EnumCast( ds);
+			vk::DynamicState d =enum_cast( ds);
 			dynamic_states.push_back(d);
 		}
 			
 		dynamic_state_create.dynamicStateCount = dynamic_states.size();
 		dynamic_state_create.pDynamicStates = dynamic_states.data();
-		*/
+
+	}
+	std::vector<vk::VertexInputAttributeDescription> vk_v_attribs;
+	for (const auto& attrib: info.renderProperties.vertex_attributes) {
+		vk::VertexInputAttributeDescription attrib_description;
+		attrib_description.binding = attrib.binding;
+		attrib_description.location = attrib.location;
+		attrib_description.format = (vk::Format)attrib.format;
+		attrib_description.offset = attrib.offset;
+		vk_v_attribs.push_back(attrib_description);
 	}
 
+	std::vector<vk::VertexInputBindingDescription> vk_v_binding;
+	for (const auto& binding: info.renderProperties.vertex_bindings) {
+		vk::VertexInputBindingDescription binding_description;
+		binding_description.binding = binding.binding;
+		binding_description.stride = binding.stride;
+		binding_description.inputRate = enum_cast(binding.input_rate);
+		vk_v_binding.push_back(binding_description);
+
+	}
 	vk::PipelineVertexInputStateCreateInfo vertex_input_state_create;
-
-
+	vertex_input_state_create.setVertexAttributeDescriptions(vk_v_attribs);
+	vertex_input_state_create.setVertexBindingDescriptions(vk_v_binding);
 	vk::PipelineInputAssemblyStateCreateInfo input_assembly_state_create;
 	{
 		input_assembly_state_create.topology = vk::PrimitiveTopology(info.renderProperties.topology);

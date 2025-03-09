@@ -9,8 +9,9 @@ class Framebuffer : public DeviceResource
 public:
     struct FramebufferAttachmentProperties
     {
-        ColorFormat format = ColorFormat::RGBA8SRGB;
+        Format format = Format::RGBA8SRGB;
         MemoryTillingType tilling = MemoryTillingType::OPTIMAL;
+        Flags<ImageUsage> usages = ImageUsage::COLOR_ATTACHMENT;
     };
     struct FramebufferProperties
     {
@@ -30,6 +31,11 @@ public:
     void Destroy() override;
     vk::Framebuffer GetVkFramebuffer() const {return framebuffer;}
     
+    constexpr size_t GetImageCount() const {return images.size();} 
+    const decltype(images)& GetImages() const {return images;}
+    decltype(images)& GetImages() {return images;}
+    decltype(FramebufferProperties::dimensions) GetSize() const {return properties.dimensions;}
+
 private:
     void CreateFramebuffer(const RenderPass &rp);
     void CreateImages();

@@ -12,7 +12,7 @@ public:
     struct SwapchainProperties
     {
         ColorSpace colorSpace = ColorSpace::SRGB_NON_LINEAR;
-        ColorFormat colorFormat = ColorFormat::RGBA8SRGB;
+        Format colorFormat = Format::RGBA8SRGB;
         PresentModes presentMode;
 
         // leave empty for swapchain to autodeduce imageCount
@@ -21,7 +21,7 @@ public:
         // leave empty for swapchain to autodeduce extent
         std::optional<uvec2> extent;
 
-        SurfaceTransformFlags transform = SurfaceTransformFlags::INHERIT;
+        SurfaceTransformFlags transform = SurfaceTransformFlags::IDENTITY;
         CompositeAlphaModes alphaMode = CompositeAlphaModes::OPAQUE;
         bool clipped = true;
 
@@ -44,7 +44,7 @@ public:
     Framebuffer& GetFramebuffer(uint32_t index) {return framebuffers[index];}
     uvec2 GetExtent() const {return properties.extent.value();}
     const SwapchainProperties& GetProperties() const {return properties;}
-    void Recreate(const SwapchainProperties&) {LASSERT(false,"NOT IMPLEMENTED");}
+    void Recreate(const SwapchainProperties&);
 private:
     void Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<vk::SwapchainKHR> = {});
     uint32_t DeduceImageCount(vk::SurfaceKHR surf);

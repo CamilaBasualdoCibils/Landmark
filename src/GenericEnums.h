@@ -11,11 +11,11 @@
 #define _CREATE_ENUM_(x, y)                                                                                                     \
 	enum class x : EnumType;                                                                                                    \
 	inline constexpr EnumType operator|(const x &l, const x &r) { return static_cast<EnumType>(l) | static_cast<EnumType>(r); } \
-	constexpr y EnumCast(const x &_a) { return static_cast<y>(_a); }                                                            \
-	constexpr x EnumCast(const y &_a) { return static_cast<x>(_a); }                                                            \
+	constexpr y enum_cast(const x &_a) { return static_cast<y>(_a); }                                                            \
+	constexpr x enum_cast(const y &_a) { return static_cast<x>(_a); }                                                            \
 	enum class x : EnumType
 
-#include "Containers/Flags.h"
+#include "Types/Flags.h"
 template <typename T>
 static constexpr int int_cast(T t) { return static_cast<int>(t); }
 
@@ -42,17 +42,25 @@ _CREATE_ENUM_(SharingMode, vk::SharingMode){
 	CONCURRENT = int_cast(vk::SharingMode::eConcurrent),
 };
 
-_CREATE_ENUM_(ColorFormat, vk::Format){
+_CREATE_ENUM_(Format, vk::Format){
 	RGBA8uint = int_cast(vk::Format::eR8G8B8A8Uint),
 	BGRA8unorm = int_cast(vk::Format::eB8G8R8A8Unorm),
 	BGRA8SRGB = int_cast(vk::Format::eB8G8R8A8Srgb),
 	RGBA8SRGB = int_cast(vk::Format::eR8G8B8A8Srgb),
+	R_32_SFLOAT = int_cast(vk::Format::eR32Sfloat), // scalar 4 byte signed float
+	RG_32_SFLOAT = int_cast(vk::Format::eR32G32Sfloat), // vec2 4 byte signed float
+	RGB_32_SFLOAT = int_cast(vk::Format::eR32G32B32Sfloat), // vec3 4 byte signed float
+	RGBA_32_SFLOAT = int_cast(vk::Format::eR32G32B32A32Sfloat),  // vec4 4 byte signed float
+	R_64_SFLOAT = int_cast(vk::Format::eR64Sfloat),
+	R_32_INT = int_cast(vk::Format::eR32Sint),
+	R_32_UINT = int_cast(vk::Format::eR32Uint),
 };
 
 _CREATE_ENUM_(ImageUsage, vk::ImageUsageFlagBits){
 	TRANSFER_DST = int_cast(vk::ImageUsageFlagBits::eTransferDst),
 	TRANSFER_SRC = int_cast(vk::ImageUsageFlagBits::eTransferSrc),
 	COLOR_ATTACHMENT = int_cast(vk::ImageUsageFlagBits::eColorAttachment),
+	SAMPLED= int_cast(vk::ImageUsageFlagBits::eSampled)
 
 };
 
@@ -65,7 +73,10 @@ _CREATE_ENUM_(SampleCountFlags, vk::SampleCountFlagBits){
 	e32 = int_cast(vk::SampleCountFlagBits::e32),
 	e64 = int_cast(vk::SampleCountFlagBits::e64),
 };
-
+_CREATE_ENUM_(VertexInputRate,vk::VertexInputRate) {
+	VERTEX = int_cast(vk::VertexInputRate::eVertex),
+	INSTANCE = int_cast(vk::VertexInputRate::eInstance),
+};
 _CREATE_ENUM_(AttachmentLoadOp, vk::AttachmentLoadOp){
 	CLEAR = int_cast(vk::AttachmentLoadOp::eClear),
 	DONT_CARE = int_cast(vk::AttachmentLoadOp::eDontCare),

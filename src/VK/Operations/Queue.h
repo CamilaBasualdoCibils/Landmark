@@ -4,6 +4,7 @@
 #define QUEUE_H_
 #include <pch.h>
 #include "VK/Devices/DeviceResource.h"
+#include <VK/Synchronization/Semaphore.h>
 class Swapchain;
 class Semaphore;
 class LogicalDevice;
@@ -21,7 +22,7 @@ public:
 	const vk::Queue& GetQueue() { return _VkQueue; }
 	vk::Queue* operator->() { return &_VkQueue; }
 	operator vk::Queue() { return _VkQueue; }
-
+	operator vk::Queue() const { return _VkQueue; }
 	uint32_t GetFamilyID() const { return QueueFamilyID; }
 	uint32_t GetQueueID() const { return QueueID; }
 

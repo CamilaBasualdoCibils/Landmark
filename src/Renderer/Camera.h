@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include "Debug/Debug.h"
-#include "Entity/IComponent.h"
 //#include "VK/Rendering/Framebuffer.h"
 class EntityManager;
 #include "Transform/Transform.h"
 
 
-struct Camera : public IComponent<Camera>
+struct Camera 
 {
 	enum class ProjectionModes {
 		PERSPECTIVE,
@@ -16,7 +15,7 @@ struct Camera : public IComponent<Camera>
 	};
 private:
 	static inline Log logger = Log("Camera");
-	CompHandle<Transform> transform ;
+
 	//Horizontal
 	float _FOV = 70;
 
@@ -34,14 +33,14 @@ private:
 	//Framebuffer renderFBO;
 
 public:
-	Camera(EntityID id);
+	Camera();
 	~Camera()
 	{
 		//renderFBO.Destroy();
 	}
 
 private:
-	bool IsReady();
+
 
 public:
 
@@ -50,12 +49,14 @@ public:
 
 	constexpr float GetFOV() const { return _FOV; }
 	constexpr void SetFOV(float f) { projDirty = true; _FOV = f; }
+	constexpr vec2 GetZPlanes() const { return ZclipPlanes;}
+	constexpr void SetZPlanes(vec2 pl) {projDirty = true; ZclipPlanes = pl;}
 	float GetFOVVertical() const
 	{
-		return 2.0f * glm::atan(glm::tan(GetFOV() / 2.0f) / GetAspectRatio());
+		return 2.0f * glm::atan(glm::tan(glm::radians( GetFOV()) / 2.0f) / GetAspectRatio());
 	}
 	//const float GetFOV
-	const mat4& GetViewMatrix();
+	const mat4& GetViewMatrix(Transform& t);
 	const mat4& GetProjMatrix();
 
 	ProjectionModes GetProjectionMode() const { return projectionMode; }

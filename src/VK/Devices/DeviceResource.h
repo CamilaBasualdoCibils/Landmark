@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "Debug/Debug.h"
+#include "Debug/Logging/Log.h"
 #include <algorithm>
-
+#include <pch.h>
 #ifndef _DEVICEOBJECT_H_
 #define _DEVICEOBJECT_H_
 class LogicalDevice;

@@ -3,7 +3,7 @@
 #include "Debug/Debug.h"
 #include "VK/Devices/LogicalDevice.h"
 #include "Shared_Structs.h"
-class Window;
+class LWindow;
 class Vulkan_Instance {
     public:
     struct VulkanInstanceProperties {
@@ -31,7 +31,9 @@ class Vulkan_Instance {
     public:
     Vulkan_Instance(const VulkanInstanceProperties& _p);
     ~Vulkan_Instance();
-    std::vector<PhysicalDevice> EnumerateDevices(Window* window = nullptr);
+    operator vk::Instance() const {return vk_instance;}
+    operator vk::Instance() {return vk_instance;}
+    std::vector<PhysicalDevice> EnumerateDevices(LWindow* window = nullptr);
     private:
     void CreateInstance();
 };

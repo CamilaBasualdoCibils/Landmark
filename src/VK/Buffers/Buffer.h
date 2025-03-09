@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <VK/Operations/CommandBuffer.h>
+
 #include "GenericEnums.h"
 #include "Debug/Debug.h"
 #include "VK/Devices/DeviceResource.h"
@@ -33,14 +35,19 @@ public:
 
 	Buffer(const BufferProperties& _prop);
 	~Buffer();
-	operator vk::Buffer() {return buffer;}
+	operator vk::Buffer() const {return buffer;}
+	operator vk::Buffer()  {return buffer;}
 	void* MapMemory();
 	void UnmapMemory();
-	size_t Size();
-	void Realloc(CommandPool& queue, const size_t newsize);
-	void InsertData(uint32_t Offset, uint32_t size, void* data);
+	size_t Size() const;
+	virtual void Realloc_Copy(CommandPool& pool, const size_t newsize);
+	//virtual void Realloc(CommandBuffer& cmd_buffer,const size_t newsize);
+	virtual void Realloc_NoCopy(const size_t newsize);
+	virtual void InsertData(uint32_t Offset, uint32_t size, void* data);
 
 	void Destroy() override;
+	private:
+	std::pair<vk::Buffer,vk::DeviceMemory> MakeBuffer(const BufferProperties& ,size_t size);
 };
 
 

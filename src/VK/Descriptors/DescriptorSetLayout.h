@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 #include <VK/Devices/DeviceResource.h>
-#include <Containers/Flags.h>
+#include <Types/Flags.h>
 #include <GenericEnums.h>
 struct DescriptorSetLayoutBinding
 {
@@ -22,15 +22,15 @@ public:
     };
 
 private:
-    const std::vector<DescriptorSetLayoutBinding> bindingLayout;
-    const Flags<CreationFlags> flags;
+     std::vector<DescriptorSetLayoutBinding> bindingLayout;
+     Flags<CreationFlags> flags;
     vk::DescriptorSetLayout vk_layout;
 
 public:
     DescriptorSetLayout(const std::vector<DescriptorSetLayoutBinding> &bindings, const Flags<CreationFlags> &createFlags = CreationFlags::UPDATE_AFTER_BIND_POOL);
 
     void Destroy() override { GetvkDevice().destroyDescriptorSetLayout(vk_layout); }
-
+    operator vk::DescriptorSetLayout() const { return vk_layout; }
     vk::DescriptorSetLayout GetVkLayout() { return vk_layout; }
     vk::DescriptorSetLayout GetVkLayout() const { return vk_layout; }
 };

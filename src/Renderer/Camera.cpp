@@ -1,42 +1,22 @@
 ﻿#include "pch.h"
 #include "Camera.h"
 
-#include "Entity/EntityManager.h"
 #include "Transform/Transform.h"
 //#include "Renderer/Renderer.h"
-Camera::Camera(EntityID id): IComponent(id)//,renderFBO(Renderer::GetRenderPass(),{800,800},{ColorFormat::RGBA8SRGB})
+Camera::Camera()//,renderFBO(Renderer::GetRenderPass(),{800,800},{ColorFormat::RGBA8SRGB})
 {
 
 }
-bool Camera::IsReady()
-{
-	if (transform.isValid()) return true;
-
-	if (!EntityManager::HasComponent<Transform>(ID))
-	{
-		Enabled = false;
-		logger.Error("Entity (" + std::to_string(ID) + " ) has no transform component. Disabling!");
-		//logger << "Entiy (" << ID << ") has no transform component. Disabling!" << Log::end;
-		return false;
-	}
-
-	transform = EntityManager::GetComponent<Transform>(ID);
-
-	return true;
 
 
-
-}
-
-const mat4& Camera::GetViewMatrix()
+const mat4& Camera::GetViewMatrix(Transform& transform)
 {
 	static glm::mat4 zero = glm::mat4(0);
-	if (!Enabled || !IsReady()) return zero;
 	
-	if (transform->isDirty())
+	if (transform.isDirty())
 	{
 		//TODO : IMPROVE THIS vvvvv
-		viewMatrix = glm::inverse(transform->GetModelMatrix());
+		viewMatrix = glm::inverse(transform.GetModelMatrix());
 	}
 
 	return viewMatrix;

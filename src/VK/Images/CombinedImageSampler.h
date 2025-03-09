@@ -33,7 +33,7 @@ public:
         imageView.Destroy(); //order probably matters 
         image.Destroy();
     }
-
+    
     const Image& GetImage() const {return image;}
     const ImageView& GetImageView() const {return imageView;}
     const Sampler& GetSampler() const {return sampler;}

@@ -36,7 +36,7 @@ void Renderer::Init()
 			swapProperties.clipped = true;
 			swapProperties.alphaMode = CompositeAlphaModes::OPAQUE;
 			swapProperties.colorFormat = currentSurfaceFormat;
-			swapProperties.transform = EnumCast( capabilties.currentTransform);
+			swapProperties.transform = enum_cast( capabilties.currentTransform);
 			swapProperties.presentMode = CurrentPresentMode;
 
 			if (capabilties.currentExtent.width != std::numeric_limits<uint32_t>::max())
@@ -205,7 +205,7 @@ PresentModes Renderer::ChoosePresentMode()
 	for (auto &ideal : IdealPresents)
 	{
 		for (const auto& availMode : presentModes) {
-			if (availMode == EnumCast(ideal) )
+			if (availMode == enum_cast(ideal) )
 			return ideal;
 		}
 	}
@@ -228,7 +228,7 @@ std::pair<ColorFormat,ColorSpace> Renderer::ChooseSurfaceFormat()
 	for (auto &ideal : IdealFormats)
 	{
 		for (const auto& availFormat : surfaceFormats) {
-			if (availFormat.format == EnumCast(ideal.first) &&availFormat.colorSpace == EnumCast(ideal.second))
+			if (availFormat.format == enum_cast(ideal.first) &&availFormat.colorSpace == enum_cast(ideal.second))
 			return ideal;
 		}
 		

@@ -1,5 +1,24 @@
 #include "Vulkan_Instance.h"
 #include "Core/Window.h"
+VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessengerCallback(vk::DebugUtilsMessageSeverityFlagBitsEXT severity,
+    vk::DebugUtilsMessageTypeFlagsEXT messageType,
+    const vk::DebugUtilsMessengerCallbackDataEXT* pCallbackData,void*) {
+        static Log log = Log("Vulkan-Validation");
+    switch (severity) {
+
+        case vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose:
+        case vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo :
+            log.Debug(pCallbackData->pMessage);
+            break;
+        case vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning :
+            log.Warning(pCallbackData->pMessage);
+            break;
+        case vk::DebugUtilsMessageSeverityFlagBitsEXT::eError :
+            log.Error(pCallbackData->pMessage);
+            break;
+    }
+    return true;
+}
 Vulkan_Instance::Vulkan_Instance(const VulkanInstanceProperties &_p) : properties(_p)
 {
     CreateInstance();
@@ -12,12 +31,14 @@ Vulkan_Instance::~Vulkan_Instance()
     vk_instance.destroy();
 }
 
-std::vector<PhysicalDevice> Vulkan_Instance::EnumerateDevices(Window *window)
+std::vector<PhysicalDevice> Vulkan_Instance::EnumerateDevices(LWindow *window)
 {
     LASSERT(vk_instance != 0, "Instance not yet initialized");
     std::vector<PhysicalDevice> physical_devices;
     vk::SurfaceKHR surf = window->GetorMakeSurface(vk_instance);
-     for( const auto& phy : vk_instance.enumeratePhysicalDevices().value)
+    //const auto device_groups = vk_instance.enumeratePhysicalDeviceGroups().value;
+    const auto enumrated_devices = vk_instance.enumeratePhysicalDevices().value;
+     for( const auto& phy : enumrated_devices)
     physical_devices.emplace_back(phy, window? &surf:nullptr);
     return physical_devices;
 }
@@ -38,7 +59,7 @@ void Vulkan_Instance::CreateInstance()
 
     // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_KHR_portability_enumeration.html
     enabled_extensions.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-
+    
     if (properties.validation_enable)
     {
         enabled_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -118,4 +139,23 @@ void Vulkan_Instance::CreateInstance()
     for (auto layer : enabled_validation_layers)
         log.Debug(std::string("	") + layer);
     log.Debug("============================");
+
+    
+
+
+    vk::DebugUtilsMessengerCreateInfoEXT debug_create_info{};
+    debug_create_info.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eError|
+    vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning|
+    vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo|
+    vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose;
+    debug_create_info.messageType = 
+    vk::DebugUtilsMessageTypeFlagBitsEXT::eDeviceAddressBinding|
+    //vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral|
+    vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance|
+    vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation;
+    debug_create_info.pfnUserCallback = &DebugMessengerCallback;
+    auto createDebugUtilsMessengerEXT =
+        reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+            vk_instance.getProcAddr("vkCreateDebugUtilsMessengerEXT"));
+   createDebugUtilsMessengerEXT((VkInstance)vk_instance,reinterpret_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debug_create_info),nullptr,reinterpret_cast<VkDebugUtilsMessengerEXT*>( &debugMessenger));
 }

@@ -1,5 +1,7 @@
 #include "App.h"
 #include "Logo.h"
+#include <Debug/RenderDoc/RenderDoc.h>
+#include <ECS/SceneManager.hpp>
 App::App()
 {
 }
@@ -10,19 +12,34 @@ void App::Run(const AppProperties &_properties)
     if (_properties.default_modules)
     {
         SetupSelfInjections();
-        log_keeper = AttachModule<LogKeeper2>();
+        AttachModule<LogKeeper2>();
+        AttachModule<Renderer>();
+        AttachModule<SceneManager>();
+
         // log_keeper->
     }
-
     CallInjections(AppModule::EngineCallPoints::START);
+
+    #ifdef RENDERDOC_CAPTURE
+    RenderDoc::Init();
+    #endif
+
     while (!should_terminate)
     {
         glfwPollEvents();
-        if (main_window.has_value())
+
+        if (main_window.get())
             should_terminate |= main_window->isClosing();
 
         CallInjections(AppModule::EngineCallPoints::UPDATE);
+        #ifdef RENDERDOC_CAPTURE
+        RenderDoc::SetActiveWindow(*main_vk_instance,*main_window.get());
+        RenderDoc::StartCapture();
+        #endif
         CallInjections(AppModule::EngineCallPoints::RENDER);
+        #ifdef RENDERDOC_CAPTURE
+        RenderDoc::EndCapture();
+        #endif
     }
 
     CallInjections(AppModule::EngineCallPoints::END);
@@ -57,9 +74,11 @@ void App::SetupSelfInjections()
     logo_display.priority = INT64_MAX - 1;
     RegisterInjection(logo_display);
 
-    AppModule::EngineCallInject main_window_init_inject("Main Window Init");
+    AppModule::EngineCallInject main_window_init_inject("Main LWindow Init");
     main_window_init_inject.call = [this]()
-    { main_window.emplace(Window::Window_Properties()); };
+    { 
+        main_window = std::make_shared<LWindow>(LWindow::LWindow_Properties()); 
+        };
     main_window_init_inject.call_point = AppModule::EngineCallPoints::START;
     main_window_init_inject.priority = 0;
     RegisterInjection(main_window_init_inject);
@@ -70,7 +89,7 @@ void App::SetupSelfInjections()
     main_vulkan_init_inject.priority = 0;
     RegisterInjection(main_vulkan_init_inject);
 
-    AppModule::EngineCallInject main_window_exit_inject("Main Window destroy");
+    AppModule::EngineCallInject main_window_exit_inject("Main LWindow destroy");
     main_window_exit_inject.call = [this]()
     { main_window.reset(); };
     main_window_exit_inject.call_point = AppModule::EngineCallPoints::END;
@@ -78,22 +97,32 @@ void App::SetupSelfInjections()
     RegisterInjection(main_window_exit_inject);
 
     AppModule::EngineCallInject main_vulkan_exit_inject("Vulkan Instance destroy");
-    main_vulkan_exit_inject.call = std::bind(&App::CleanUpVulkan,this);
+    main_vulkan_exit_inject.call = std::bind(&App::CleanUpVulkan, this);
     main_vulkan_exit_inject.call_point = AppModule::EngineCallPoints::END;
     main_vulkan_exit_inject.priority = -1;
     RegisterInjection(main_vulkan_exit_inject);
 
     AppModule::EngineCallInject main_vulkan_device_init_inject("Vulkan Main Device Init");
-    main_vulkan_device_init_inject.call = std::bind(&App::SetupMainVkDevice,this);
+    main_vulkan_device_init_inject.call = std::bind(&App::SetupMainVkDevice, this);
     main_vulkan_device_init_inject.call_point = AppModule::EngineCallPoints::START;
     main_vulkan_device_init_inject.priority = -1;
     RegisterInjection(main_vulkan_device_init_inject);
+    AppModule::EngineCallInject renderer_init("Renderer init");
+    renderer_init.call = [this](){GetModule<Renderer>()->Init();};
+    renderer_init.call_point = AppModule::EngineCallPoints::START;
+    renderer_init.priority = -2;
+    RegisterInjection(renderer_init);
 }
 
 void App::InitializeVulkan()
 {
     Vulkan_Instance::VulkanInstanceProperties vulkan_properties;
-    main_vk_instance.emplace(vulkan_properties);
+    Version4 vk_version;
+    vk_version.major = 1;
+    vk_version.minor = 4;
+    vk_version.patch = 303;
+    vulkan_properties.vulkan_version = vk_version;
+    main_vk_instance = std::make_shared<Vulkan_Instance>(vulkan_properties);
 }
 
 void App::CleanUpVulkan()
@@ -104,7 +133,8 @@ void App::CleanUpVulkan()
 
 void App::SetupMainVkDevice()
 {
-    LASSERT(main_window.has_value(),"Setup of main device requires a window present");
-    PhysicalDevice chosen_device = main_vk_instance->EnumerateDevices(&main_window.value())[0];
-    main_vk_device.emplace(chosen_device);
+    LASSERT(main_window.get(), "Setup of main device requires a window present");
+    const auto& available_devices = main_vk_instance->EnumerateDevices(main_window.get());
+    PhysicalDevice chosen_device = available_devices[0];
+    main_vk_device = std::make_shared<MainDevice>(chosen_device);
 }

@@ -14,7 +14,7 @@ DescriptorSetLayout::DescriptorSetLayout(const std::vector<DescriptorSetLayoutBi
         const auto &binding = _bindingLayout[i];
 
         vkbinding.binding = i;
-        vkbinding.descriptorType = EnumCast(binding.type);
+        vkbinding.descriptorType = enum_cast(binding.type);
         vkbinding.stageFlags = binding.stageFlags;
         vkflags = binding.flags;
         vkbinding.descriptorCount = binding.descriptorCount;

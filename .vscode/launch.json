@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Debug",
+            "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/Editor/Demo",
@@ -29,8 +29,7 @@
                 }
             ],
             "preLaunchTask": "Build Editor"
-        },
-    
+        }
 
     ]
 }

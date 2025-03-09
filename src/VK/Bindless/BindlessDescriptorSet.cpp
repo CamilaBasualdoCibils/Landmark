@@ -37,7 +37,7 @@ bool BindlessDescriptorSet::ContainsResource(const BindlessResourceHandle &h)
 void BindlessDescriptorSet::WriteCombinedImageSampler(const BLImageHandle &handle, std::variant<std::nullptr_t, const CombinedImageSampler *> image)
 {
     vk::DescriptorImageInfo image_info;
-    image_info.imageLayout = EnumCast(ImageLayouts::SHADER_READ_ONLY);
+    image_info.imageLayout = enum_cast(ImageLayouts::SHADER_READ_ONLY);
     if (std::holds_alternative<std::nullptr_t>(image))
     {
         image_info.imageView = nullptr;
@@ -51,7 +51,7 @@ void BindlessDescriptorSet::WriteCombinedImageSampler(const BLImageHandle &handl
     }
 
     vk::WriteDescriptorSet write{};
-    write.descriptorType = EnumCast(DescriptorTypes::COMBINED_IMAGE_SAMPLER);
+    write.descriptorType = enum_cast(DescriptorTypes::COMBINED_IMAGE_SAMPLER);
     write.dstBinding = bindingAndCountPerType[DescriptorTypes::COMBINED_IMAGE_SAMPLER].first;
     write.dstSet = setManager.value().front();
     // Write one texture that is being added

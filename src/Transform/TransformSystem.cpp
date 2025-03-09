@@ -3,7 +3,7 @@
 #include "Transform.h"
 void TransformSystem::Update()
 {
-	auto& transforms = EntityManager::ComponentStorage<Transform>();
+	//auto& transforms = EntityManager::ComponentStorage<Transform>();
 	
 	
 }

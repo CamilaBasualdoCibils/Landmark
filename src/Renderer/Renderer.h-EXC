@@ -32,7 +32,7 @@ class Renderer
 	static inline ColorFormat currentSurfaceFormat;
 	static inline ColorSpace currentColorSpace;
 
-	static inline glm::uvec2 lastWindowResolution;
+	static inline glm::uvec2 lastLWindowResolution;
 
 	//static inline std::optional<BindlessResources> bindlessResources;
 	static inline std::optional<BindlessDescriptorSet> bindlessResources;

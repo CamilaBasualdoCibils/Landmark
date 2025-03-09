@@ -30,7 +30,7 @@ DeviceResource::~DeviceResource()
 }
 LogicalDevice &DeviceResource::GetMainDevice()
 {
-	MainDevice* main_device = App::GetInstance()->GetMainDevice();
+	MainDevice* main_device = App::GetInstance()->GetMainDevice().get();
 	LASSERT(main_device,"Main Device doesnt exist?!");
 	return *main_device;
 

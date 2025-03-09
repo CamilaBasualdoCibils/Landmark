@@ -25,7 +25,9 @@
 //GLFW
 #define GLFW_INCLUDE_VULKAN
 #define VK_USE_PLATFORM_WIN32_KHR
+#define GLFW_EXPOSE_NATIVE_X11
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 //#define GLFW_EXPOSE_NATIVE_WIN32
 //#include <GLFW/include/GLFW/glfw3native.h>
 
@@ -41,6 +43,7 @@
 
 //GLM
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#define GLM_FORCE_SWIZZLE 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -70,4 +73,5 @@ using namespace glm;
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <memory>
 #endif //PCH_H

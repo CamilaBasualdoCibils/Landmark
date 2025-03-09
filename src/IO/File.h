@@ -24,9 +24,9 @@ public:
 
 	bool Exists() const;
 
-	std::string GetPath() const;
+	const std::string& GetPath() const;
 	std::string GetName() const;
-
+	std::string GetExtension() const;
 	std::vector<char> GetContent_Binary() const;
 	std::string GetContent_Text() const;
 };

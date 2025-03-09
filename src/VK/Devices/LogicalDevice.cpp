@@ -63,9 +63,9 @@ vk::Device LogicalDevice::CreateDevice()
 {
 	std::vector<const char *> _Layers;
 	std::vector<const char *> _extensions;
+		const std::vector<float> priorities(32, 1.0f);
 	std::vector<vk::DeviceQueueCreateInfo> queue_create_infos;
 	{
-		const std::vector<float> priorities(32, 1.0f);
 
 		for (auto &finalFamily : QueueCountPerFamily)
 		{
@@ -114,6 +114,8 @@ vk::Device LogicalDevice::CreateDevice()
 
 	if (features.raytracing)
 	{
+		_extensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
+
 		raytracing_features.rayTracingPipeline = true;
 		raytracing_features.rayTracingPipelineTraceRaysIndirect = true;
 		raytracing_features.rayTraversalPrimitiveCulling = true;

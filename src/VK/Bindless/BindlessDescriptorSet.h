@@ -5,7 +5,7 @@
 #include <VK/Devices/DeviceResource.h>
 #include <GenericEnums.h>
 #include <optional>
-#include <Containers/ObjectAllocator-new.h>
+#include <Types/ObjectAllocator-new.h>
 #include "BindlessResourceHandle.h"
 #include <VK/Images/CombinedImageSampler.h>
 #include <variant>

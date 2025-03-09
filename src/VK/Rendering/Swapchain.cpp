@@ -16,21 +16,27 @@ void Swapchain::Destroy()
 
 uint32_t Swapchain::AcquireNextImage(std::optional<Semaphore> triggerSemaphore, std::optional<Fence> triggerFence, uint64_t TimeOutWait)
 {
-   
-	vk::Semaphore semaphore = nullptr;
-	if (triggerSemaphore.has_value())
-		semaphore = triggerSemaphore->GetVkSemaphore();
-	vk::Fence fence = nullptr;
-	if (triggerFence.has_value())
-		fence = triggerFence->GetVkFence();
-	auto result = GetDevice()->acquireNextImageKHR(swapchain, TimeOutWait, semaphore, fence);
 
-	if (result.result ==vk::Result::eErrorOutOfDateKHR)
-		OutOfDate = true;
-		else
-		OutOfDate = false;
+    vk::Semaphore semaphore = nullptr;
+    if (triggerSemaphore.has_value())
+        semaphore = triggerSemaphore->GetVkSemaphore();
+    vk::Fence fence = nullptr;
+    if (triggerFence.has_value())
+        fence = triggerFence->GetVkFence();
+    auto result = GetDevice()->acquireNextImageKHR(swapchain, TimeOutWait, semaphore, fence);
 
-	return result.value;
+    if (result.result == vk::Result::eErrorOutOfDateKHR)
+        OutOfDate = true;
+    else
+        OutOfDate = false;
+
+    return result.value;
+}
+
+void Swapchain::Recreate(const SwapchainProperties &_new_prop)
+{
+    properties = _new_prop;
+    LASSERT(false, "fuck");
 }
 
 void Swapchain::Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<vk::SwapchainKHR> existing)
@@ -39,9 +45,10 @@ void Swapchain::Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<
     vk::SwapchainCreateInfoKHR swapchain_create_info;
     swapchain_create_info.minImageCount = properties.imageCount.value_or(DeduceImageCount(surf));
     uvec2 extent = properties.extent.value_or(DeduceExtent(surf));
+    properties.extent = extent;
     swapchain_create_info.imageExtent = vk::Extent2D{extent.x, extent.y};
-    swapchain_create_info.imageFormat = EnumCast(properties.colorFormat);
-    swapchain_create_info.imageColorSpace = EnumCast(properties.colorSpace);
+    swapchain_create_info.imageFormat = enum_cast(properties.colorFormat);
+    swapchain_create_info.imageColorSpace = enum_cast(properties.colorSpace);
     swapchain_create_info.imageArrayLayers = 1;
     swapchain_create_info.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
 
@@ -51,23 +58,23 @@ void Swapchain::Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<
         for (const auto &q : properties.sharingQueues.value())
             queueFamilyIndicies.push_back(q.GetFamilyID());
 
-        swapchain_create_info.imageSharingMode = EnumCast(SharingMode::CONCURRENT);
+        swapchain_create_info.imageSharingMode = enum_cast(SharingMode::CONCURRENT);
         swapchain_create_info.queueFamilyIndexCount = queueFamilyIndicies.size();
         swapchain_create_info.pQueueFamilyIndices = queueFamilyIndicies.data();
     }
     else
-        swapchain_create_info.imageSharingMode = EnumCast(SharingMode::EXCLUSIVE);
+        swapchain_create_info.imageSharingMode = enum_cast(SharingMode::EXCLUSIVE);
 
-    swapchain_create_info.preTransform = EnumCast(properties.transform);
-    swapchain_create_info.compositeAlpha = EnumCast(properties.alphaMode);
-    swapchain_create_info.presentMode = EnumCast(properties.presentMode);
+    swapchain_create_info.preTransform = enum_cast(properties.transform);
+    swapchain_create_info.compositeAlpha = enum_cast(properties.alphaMode);
+    swapchain_create_info.presentMode = enum_cast(properties.presentMode);
     swapchain_create_info.clipped = properties.clipped;
     swapchain_create_info.surface = surf;
-    
+
     if (existing.has_value())
         swapchain_create_info.setOldSwapchain(existing.value());
-    //swapchain_create_info.oldSwapchain = existing.value_or(nullptr);
-        
+    // swapchain_create_info.oldSwapchain = existing.value_or(nullptr);
+
     swapchain = GetDevice()->createSwapchainKHR(swapchain_create_info).value;
     if (existing.has_value())
         GetDevice()->destroySwapchainKHR(existing.value());

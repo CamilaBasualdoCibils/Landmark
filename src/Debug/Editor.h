@@ -3,31 +3,20 @@
 #include "imgui/imgui.h"
 
 
-namespace Landmark
-{
-	class Application;
-
-}
-
-class Renderer;
-
-
-class EditorTool;
 
 class  Editor
 {
-	friend Landmark::Application;
-	friend Renderer;
+
 	//    Priority | toolset
 	//std::map<>
 	static inline EditorObjectGroup toolGroups = EditorObjectGroup("Main");
 
-protected:
-	static void Init();
 
-	static void Draw();
+
 
 public:
+	static void Init();
+	static void Draw();
 	static EditorObjectGroup& GetMainToolGroup() { return toolGroups; }
 
 };

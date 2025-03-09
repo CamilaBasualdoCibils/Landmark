@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include <string>
+
+#include <pch.h>
+
 enum class LogColors
 {
 	black = 30,
@@ -53,7 +55,7 @@ class Log
 	void printThis(const T& t,LogColors fore , LogBackgroundColors back );
 public:
 	explicit Log(const std::string& o) : origin(o) {};
-
+	//Log(const Log& l);
 	
 	void Print(const std::string& t);
 	void Print( const char* c)
@@ -102,6 +104,8 @@ inline  void Log::printThis(const T& t,LogColors fore, LogBackgroundColors back)
 {
 	const auto _fore = currentForeColor;
 	const auto _back = currentBackgroundColor;
+	const std::string ANSI_COLOR = "\\033[";
+
 	Print(t);
 
 }

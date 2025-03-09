@@ -1,5 +1,4 @@
-﻿#include "pch.h"
-#include "RenderPass.h"
+﻿#include "RenderPass.h"
 #include <VK/Devices/LogicalDevice.h>
 /*
 RenderPass::RenderPass(const std::vector< AttachmentDescription>& attachments,
@@ -48,10 +47,58 @@ RenderPass::RenderPass(const std::vector< AttachmentDescription>& attachments,
 
 }
 */
+RenderPass::RenderPass(const Renderpass_Properties &_p) : properties(_p)
+{
+	std::vector<vk::AttachmentDescription> color_attachments;
+	for (int i = 0; i < properties.color_attachments.size(); i++)
+	{
+		const attachment &att = properties.color_attachments[i];
+		vk::AttachmentDescription vk_at;
+		vk_at.format = enum_cast(att.format);
+		vk_at.samples = enum_cast(att.sampleCountFlag);
+		vk_at.loadOp = enum_cast(att.loadOp);
+		vk_at.storeOp = enum_cast(att.storeOp);
+		vk_at.stencilLoadOp = enum_cast(att.stencilLoadOp);
+		vk_at.stencilStoreOp = enum_cast(att.stencilStoreOp);
+		vk_at.initialLayout = enum_cast(att.initialLayout);
+		vk_at.finalLayout = enum_cast(att.finalLayout);
+		color_attachments.push_back(vk_at);
+	}
+	std::vector<vk::SubpassDescription> subpasses;
+	using att_ref_list = std::vector<vk::AttachmentReference>;
+	std::map<uint32_t,att_ref_list> subpass_references;
+	for (uint32_t i = 0; i < properties.subpasses.size(); i++) {
+
+		const subpass& subp = properties.subpasses[i];
+		subpass_references.insert(std::make_pair(i,att_ref_list()));
+		att_ref_list& att_list = subpass_references[i];
+		vk::SubpassDescription vk_subp;
+		vk_subp.pipelineBindPoint = enum_cast(subp.bind_point);
+
+		for (uint32_t j = 0; j < subp.color_attachments.size();j++) {
+			const subpass_attachment& subpass_att = subp.color_attachments[j];
+			vk::AttachmentReference vk_subatt;
+			vk_subatt.attachment = subpass_att.attachment;
+			vk_subatt.layout = enum_cast(subpass_att.ideal_layout);
+			att_list.push_back(vk_subatt);
+		}
+		vk_subp.colorAttachmentCount = att_list.size();
+		vk_subp.pColorAttachments = att_list.data();
+		subpasses.push_back(vk_subp);
+
+	}
+	
+	vk::RenderPassCreateInfo render_pass_info;
+	render_pass_info.setAttachments(color_attachments);
+	render_pass_info.setSubpasses(subpasses);
+	const auto result = GetDevice()->createRenderPass(render_pass_info);
+	renderPass = result.value;
+}
+/*
 RenderPass::RenderPass(ColorFormat swapchainFormat)
 {
 	vk::AttachmentDescription colorAttachment{};
-	colorAttachment.format = static_cast<vk::Format>( swapchainFormat);
+	colorAttachment.format = static_cast<vk::Format>(swapchainFormat);
 	colorAttachment.samples = vk::SampleCountFlagBits::e1;
 
 	colorAttachment.loadOp = vk::AttachmentLoadOp::eClear;
@@ -79,9 +126,9 @@ RenderPass::RenderPass(ColorFormat swapchainFormat)
 	renderPassInfo.pSubpasses = &subpass;
 
 	renderPass = GetDevice()->createRenderPass(renderPassInfo).value;
-	logger.Debug( "Renderpass Created. TODO: Make this more descriptive");
+	logger.Debug("Renderpass Created. TODO: Make this more descriptive");
 }
-
+*/
 void RenderPass::Destroy()
 {
 	GetDevice()->destroyRenderPass(renderPass);

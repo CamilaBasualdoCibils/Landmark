@@ -6,11 +6,24 @@
 class Pipeline final : public DeviceResource
 {
 public:
-	struct PipelineRenderProperties
+
+	struct VertexBinding {
+		uint32_t binding = 0; //Id of array. usually always zero unless multiple vertex buffers are supplied
+		size_t stride = 0; //size of the vertex
+		VertexInputRate input_rate = VertexInputRate::VERTEX;
+	};
+	struct VertexAttribute {
+		uint32_t binding = 0;// From which VertexBinding this data comes from
+		uint32_t location = 0; // equates to the location parameter in the shader
+		Format format = Format::RGBA_32_SFLOAT;
+		uint32_t offset = 0; //
+	};
+	struct Pipeline_Render_Properties
 	{
 		std::vector<DynamicStates> dynamicStates = {DynamicStates::VIEWPORT, DynamicStates::SCISSOR};
 		PrimitiveTopologies topology = PrimitiveTopologies::TRIANGLE;
-
+		std::vector<VertexBinding> vertex_bindings;
+		std::vector<VertexAttribute> vertex_attributes;
 		// viewport & Scissor
 		glm::vec2 ViewportMin = {0, 0};
 		glm::vec2 ViewportSize = {512, 512};
@@ -31,7 +44,7 @@ public:
 	{
 
 		std::map<ShaderStage, std::vector<char>> shaderStages;
-		PipelineRenderProperties renderProperties;
+		Pipeline_Render_Properties renderProperties;
 	};
 
 private:

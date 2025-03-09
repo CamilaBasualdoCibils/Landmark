@@ -62,7 +62,7 @@ void Framebuffer::CreateImages()
         cisProp.image.layers = 1;
         cisProp.image.mipLevels = 1;
         cisProp.image.Samples = 1;
-        cisProp.image.usage = Flags<ImageUsage>(ImageUsage::COLOR_ATTACHMENT);
+        cisProp.image.usage = at.usages;
 
         images.push_back(cisProp);
     }
