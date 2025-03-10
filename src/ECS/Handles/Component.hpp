@@ -3,9 +3,10 @@
 
 #include <ECS/Defines.hpp>
 #include "ObjectHandle.hpp"
-#include <ECS/Base/ComponentData.hpp>
+
 #include <ECS/Scene.hpp>
 #include <ECS/ComponentRegistry.hpp>
+class IComponentData;
 template <typename T>//, typename std::enable_if_t<std::is_base_of_v<IComponentData, T>>>
 class Component : public SceneObjectHandle<T>
 {

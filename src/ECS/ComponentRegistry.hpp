@@ -3,6 +3,8 @@
 #include "ComponentInfo.hpp"
 class ComponentRegistry
 {
+    inline static std::size_t nextID = 1; //0 IS RESERVED FOR NULL
+    inline static std::vector<Component_Info_Extended> registered_components;
 
 public:
     template <typename T>
@@ -12,10 +14,8 @@ public:
     static ComponentTypeID GetComponentID();
     template <typename T>
     static ComponentTypeID RegisterComponent();
-
+    constexpr static const decltype(registered_components)& GetRegisteredComponents() {return registered_components;}
 private:
-    inline static std::size_t nextID = 1; //0 IS RESERVED FOR NULL
-    inline static std::vector<Component_Info_Extended> registered_components;
 };
 
 template <typename T>

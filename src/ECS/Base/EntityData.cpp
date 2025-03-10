@@ -23,3 +23,9 @@ void EntityData::DeregisterComponent(ComponentTypeID type_id)
     
     throw "Component Not Found";
 }
+
+bool EntityData::Has_Component(ComponentTypeID type_id)
+{
+    auto pos =std::find(components.begin(),components.end(),type_id);
+    return pos != components.end();
+}

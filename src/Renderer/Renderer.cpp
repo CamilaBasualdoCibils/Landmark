@@ -34,12 +34,13 @@ Renderer::Renderer()
     ComponentRegistry::RegisterComponent<TransformComponent>();
 }
 Component<CameraComponent> camera_comp;
+Component<TransformComponent> cube_trans;
 void Renderer::Init()
 {
 
     auto scene = App::GetInstance()->GetModule<SceneManager>()->CreateScene("TestScene");
     Entity cube = scene->CreateEntity("Cube");
-    cube.AddComponent<TransformComponent>();
+    cube_trans =cube.AddComponent<TransformComponent>();
     Entity camera = scene->CreateEntity("Camera");
     camera.AddComponent<TransformComponent>();
     camera_comp = camera.AddComponent<CameraComponent>();
@@ -143,12 +144,12 @@ void Renderer::RenderBegin()
     cam_trans.Rotation() = quatLookAt(-pos, vec3(0, 1, 0));
 
     const Viewport &current_viewport = editor_viewport->getViewport();
-    camera_comp->GetCamera().SetAspectRatio(current_viewport.size.x / current_viewport.size.y);
+    camera_comp->SetAspectRatio(current_viewport.size.x / current_viewport.size.y);
     static bool inf = false;
     ImGui::Begin("Camera");
     ImGui::Checkbox("Inf_test", &inf);
     ImGui::End();
-    mat4 matrix = camera_comp->GetCamera().GetProjMatrix() * camera_comp->GetCamera().GetViewMatrix(cam_trans);
+    mat4 matrix = camera_comp->GetProjMatrix() * camera_comp->GetViewMatrix() * cube_trans->GetModelMatrix();
     std::span<mat4> sp = {&matrix, &matrix + 1};
     stage->InsertActorData(sp, 0);
 

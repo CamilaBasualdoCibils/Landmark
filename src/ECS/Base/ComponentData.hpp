@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 #include <ECS/Defines.hpp>
-#include "Object.hpp"
+#include "SceneObject.hpp"
 #include <ECS/ComponentInfo.hpp>
 #include <ECS/ComponentRegistry.hpp>
 class Component_Info;
@@ -13,10 +13,7 @@ struct IComponentData  : SceneObject{
     static Component_Info GetComponentTypeInfo() {
        throw "Any class that extends IComponentData must define this static function"; 
     }
-    template <typename T>
-    Component<T> GetComponent() {
-        
-    }
+
 
 };
 /*

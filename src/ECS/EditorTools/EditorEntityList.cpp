@@ -5,6 +5,7 @@
 #include "imgui/imgui_internal.h"
 #include <Core/App.h>
 #include <ECS/Base/EntityData.hpp>
+#include <ECS/Base/ComponentData.hpp>
 EditorEntityList::EditorEntityList() : EditorTool("Entity List")
 {
 	scene_manager = App::GetInstance()->GetModule<SceneManager>();
@@ -81,7 +82,7 @@ void EditorEntityList::Draw()
 			drawlist->AddRectFilled({rectMin.x, rectMin.y}, {rectMax.x, rectMax.y}, PlusColor, 3);
 		}
 	}
-	
+
 	ImGui::BeginChild("entities", {0, 0}, true);
 
 	ImDrawList *draw_list = ImGui::GetWindowDrawList();
@@ -95,20 +96,22 @@ void EditorEntityList::Draw()
 		Scene &scene = *(s_it->second);
 		ImGui::PushID(s_it->first);
 		std::string Full_Name = "Scene::" + scene.GetName();
-		if (ImGui::CollapsingHeader(Full_Name.c_str()))
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (ImGui::TreeNode(Full_Name.c_str()))
 		{
 
 			auto &entities = scene.GetEntities();
 			for (auto e_it = entities.begin(); e_it != entities.end(); ++e_it)
 			{
-				EntityData& data = *e_it.Get<EntityData>();
+				EntityData &data = *e_it.Get<EntityData>();
 				ImGui::PushID(e_it.GetIndex());
-				//ImGui::Text(data.GetName().data());
+				// ImGui::Text(data.GetName().data());
 				if (ImGui::Selectable(data.GetName().data(), entitySelected.isValid() && entitySelected->ID == e_it.GetIndex()))
-					entitySelected = Entity(s_it->first,e_it.GetIndex());
+					entitySelected = Entity(s_it->first, e_it.GetIndex());
 				DrawItemBackground(counter++);
 				ImGui::PopID();
 			}
+			ImGui::TreePop();
 		}
 
 		ImGui::PopID();
@@ -147,7 +150,7 @@ void EditorEntityList::DrawTool()
 
 void EditorEntityList::DrawInspector()
 {
-	
+
 	if (entitySelected.isValid())
 	{
 		ImGui::BeginChild(ImGuiID(1), {0, 0}, true);
@@ -155,27 +158,60 @@ void EditorEntityList::DrawInspector()
 		const auto &GetOwningScene = scene_manager->GetScene(entitySelected->scene_id);
 		for (const ComponentTypeID &comp_id : entitySelected->GetComponents())
 		{
-			if (comp_id == 0) continue;
+			if (comp_id == 0)
+				continue;
 
 			ImGui::PushID(i);
-			const auto& comp_info = ComponentRegistry::GetComponentInfo(comp_id);
-			if (ImGui::CollapsingHeader(comp_info.Name.c_str()))
+			const auto &comp_info = ComponentRegistry::GetComponentInfo(comp_id);
+			ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+			if (ImGui::TreeNode(comp_info.Name.c_str()))
 			{
 				IComponentData *comp = GetOwningScene->GetComponent(entitySelected->ID, comp_id);
 
 				comp->DrawInspector();
-				
+
 				// GetOwningScene
 				// const auto desc = ComponentRegistry::GetComponentDesc(comp_id);
 				// if (ImGui::CollapsingHeader(desc.Name.c_str(),ImGuiTreeNodeFlags_Framed)) {
 				//	IComponentDataData* comp = EntityManager::GetComponent(entitySelected,comp_id);
 				// ComponentRegistry::GetComponentDesc(comp_id).inspectorFunction(comp);
+				ImGui::TreePop();
 			}
 			ImGui::PopID();
+			i++;
 		}
 
+		float button_x_size = ImGui::GetContentRegionAvail().x;
+		if (ImGui::Button("Add Component", {button_x_size, 0}))
+		{
+			ImGui::OpenPopup(comp_create_popup_name.c_str());
+		}
+		ComponentTypeID selected_comp = 0;
+		if (ImGui::BeginPopup(comp_create_popup_name.c_str()))
+		{
+			ImGui::BeginChild("PopupChild", ImVec2(200, 150), true); // Scrollable area
+
+			const auto& registered_components = ComponentRegistry::GetRegisteredComponents();
+			for (int i = 1; i < registered_components.size();i++)
+			{
+				if (entitySelected->Has_Component(i)) continue;
+				const auto& comp_type = registered_components[i];
+				if (ImGui::Selectable(comp_type.Name.c_str()))
+				{
+					selected_comp = static_cast<int>(i);
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			ImGui::EndChild();
+
+			ImGui::EndPopup();
+		}
 		ImGui::EndChild();
-		i++;
+
+		if (selected_comp != 0) {
+			entitySelected->GetScene()->AddComponent(entitySelected.GetObjectID(),selected_comp);
+		}
 	}
 	/*
 	if (EntityManager::ExistsEntity(entitySelected)) {

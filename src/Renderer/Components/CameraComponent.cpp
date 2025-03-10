@@ -1,5 +1,5 @@
 #include "CameraComponent.hpp"
-
+#include <Transform/TransformComponent.hpp>
 void CameraComponent::DrawInspector()
 {
     if (ImGui::RadioButton("Perspective", GetProjectionMode() == Camera::ProjectionModes::PERSPECTIVE))
@@ -18,14 +18,16 @@ void CameraComponent::DrawInspector()
     const bool infinite =  GetProjectionMode() == Camera::ProjectionModes::INF_PERSPECTIVE ||GetProjectionMode() == Camera::ProjectionModes::INF_ORTHOGRAPHIC;
     if (perspective) {
         float FOV = GetFOV();
-        if (ImGui::DragFloat("FOV",&FOV))
+        if (ImGui::SliderAngle("FOV",&FOV,0))
         SetFOV(FOV);
 
         
 
     }
     else {
-
+        float sensize = _SensorSize;
+        if (ImGui::DragFloat("Sensor Size",&_SensorSize))
+            SetSensorSize(sensize);
     }
     vec2 zplanes = GetZPlanes();
     if (!infinite) {    
@@ -37,5 +39,10 @@ void CameraComponent::DrawInspector()
 
 const mat4 &CameraComponent::GetViewMatrix()
 {    
-    
+    const mat4& model_matrix = GetComponent<TransformComponent>()->GetModelMatrix();
+    if (model_matrix != last_model_matrix) {
+        viewMatrix = inverse(model_matrix);
+        last_model_matrix = model_matrix;
+    }
+    return viewMatrix;
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 #include <ECS/Defines.hpp>
-#include "Object.hpp"
+#include "SceneObject.hpp"
 class IComponentData;
 
 struct EntityData : SceneObject

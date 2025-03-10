@@ -1,6 +1,6 @@
 #pragma once
 #include <pch.h>
-#include <ECS/Base/Object.hpp>
+//#include <ECS/Base/Object.hpp>
 #include <ECS/Scene.hpp>
 #include <ECS/SceneManager.hpp>
 #include <Core/App.h>

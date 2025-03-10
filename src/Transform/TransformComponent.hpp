@@ -2,7 +2,7 @@
 #include <pch.h>
 #include <ECS/Base/ComponentData.hpp>
 #include "Transform.h"
-class TransformComponent : IComponentData, Transform
+class TransformComponent : IComponentData, public Transform
 {
 
     // Transform transform;
@@ -22,18 +22,18 @@ public:
     {
 
         vec3 pos = Position();
-        if (ImGui::DragFloat3("Position", &pos[0]))
+        if (ImGui::DragFloat3("Position", &pos[0],0.1))
             Position() = pos;
 
         quat rot = Rotation();
-        if (ImGui::DragFloat4("Rotation", &rot[0]))
+        if (ImGui::DragFloat4("Rotation quat", &rot[0],0.1))
             Rotation() = rot;
-        vec3 euler = eulerAngles(rot);
-            if (ImGui::DragFloat3("Rotation Euler", &euler[0]))
-                Rotation() = quat(euler);
+        vec3 euler = degrees(eulerAngles(rot));
+            if (ImGui::DragFloat3("Rotation", &euler[0],0.1))
+                Rotation() = quat(radians(euler));
 
         vec3 scale = Scale();
-        if (ImGui::DragFloat3("Scale", &scale[0]))
+        if (ImGui::DragFloat3("Scale", &scale[0],0.1))
             Scale() = scale;
     }
 };

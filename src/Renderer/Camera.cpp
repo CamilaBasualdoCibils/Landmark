@@ -36,8 +36,8 @@ const mat4& Camera::GetProjMatrix()
 			mat = infinitePerspective(GetFOVVertical(), AspectRatio,ZclipPlanes.x);
 			break;
 		case ProjectionModes::ORTHOGRAPHIC:
-			mat = glm::identity<mat4>();
-			logger.Critical("Implement this you fucking idiot");
+			mat = glm::ortho(_SensorSize,_SensorSize,_SensorSize,_SensorSize);
+			//logger.Critical("Implement this you fucking idiot");
 			//logger.Critical() << "Implement this you fucking idiot" << Log::end;
 			break;
 		case ProjectionModes::INF_ORTHOGRAPHIC:
