@@ -26,14 +26,15 @@ const mat4& Camera::GetProjMatrix()
 {
 	if (projDirty)
 	{
+		const float vertical_fov = GetFOVVertical();
 		mat4 mat;
 		switch (projectionMode) {
 		case ProjectionModes::PERSPECTIVE:
-			mat = glm::perspective(GetFOVVertical(), AspectRatio, ZclipPlanes.x, ZclipPlanes.y);
+			mat = glm::perspective(vertical_fov, AspectRatio, ZclipPlanes.x, ZclipPlanes.y);
 			break;
 		case ProjectionModes::INF_PERSPECTIVE:
 			
-			mat = infinitePerspective(GetFOVVertical(), AspectRatio,ZclipPlanes.x);
+			mat = infinitePerspective(vertical_fov, AspectRatio,ZclipPlanes.x);
 			break;
 		case ProjectionModes::ORTHOGRAPHIC:
 			mat = glm::ortho(_SensorSize,_SensorSize,_SensorSize,_SensorSize);
@@ -46,6 +47,7 @@ const mat4& Camera::GetProjMatrix()
 			//logger.Critical() << "Implement this you fucking idiot" << Log::end;
 			break;
 		}
+		mat[1][1] *= -1;  // VULKAN Y AXIS IS DOWN. THIS MAKES IT GO UP
 		projectionMatrix = mat;
 		projDirty = false;
 	}

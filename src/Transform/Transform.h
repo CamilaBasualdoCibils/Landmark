@@ -33,13 +33,13 @@ public:
 	constexpr bool isDirty() const { return ModelMatrixDirty; }
 
 
-	const decltype(pos) Position() const {return pos;}
+	const decltype(pos)& Position() const {return pos;}
 	decltype(pos)& Position() {ModelMatrixDirty = true; return pos;}
 
-	const decltype(rot) Rotation() const {return rot;}
+	const decltype(rot)& Rotation() const {return rot;}
 	decltype(rot)& Rotation() {ModelMatrixDirty = true; return rot;}
 
-	const decltype(scale) Scale() const {return scale;}
+	const decltype(scale)& Scale() const {return scale;}
 	decltype(scale)& Scale() {ModelMatrixDirty = true; return scale;}
 
 	

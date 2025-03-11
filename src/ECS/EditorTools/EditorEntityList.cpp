@@ -180,7 +180,7 @@ void EditorEntityList::DrawInspector()
 			ImGui::PopID();
 			i++;
 		}
-
+		ImGui::Separator();
 		float button_x_size = ImGui::GetContentRegionAvail().x;
 		if (ImGui::Button("Add Component", {button_x_size, 0}))
 		{

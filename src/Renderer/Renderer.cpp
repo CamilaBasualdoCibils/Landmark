@@ -40,11 +40,10 @@ void Renderer::Init()
 
     auto scene = App::GetInstance()->GetModule<SceneManager>()->CreateScene("TestScene");
     Entity cube = scene->CreateEntity("Cube");
-    cube_trans =cube.AddComponent<TransformComponent>();
+    cube_trans = cube.AddComponent<TransformComponent>();
     Entity camera = scene->CreateEntity("Camera");
     camera.AddComponent<TransformComponent>();
     camera_comp = camera.AddComponent<CameraComponent>();
-
 
     window = App::GetInstance()->GetMainWindow();
     main_device = App::GetInstance()->GetMainDevice();
@@ -113,18 +112,18 @@ void Renderer::Init()
     };
 
     uint32_t indices[] = {
-        1, 0, 2,
-        3, 2, 0,
-        4, 5, 7,
-        6, 7, 5,
-        0, 4, 3,
-        7, 3, 4,
-        5, 1, 6,
-        2, 6, 1,
-        2, 3, 6,
-        7, 6, 3,
-        5, 4, 1,
-        0, 1, 4};
+        0, 1, 2,
+        2, 3, 0,
+        5, 4, 7,
+        7, 6, 5,
+        4, 0, 3,
+        3, 7, 4,
+        1, 5, 6,
+        6, 2, 1,
+        3, 2, 6,
+        6, 7, 3,
+        4, 5, 1,
+        1, 0, 4};
     std::span<vec3> v_span = vertices;
     std::span<uint32_t> i_span = indices;
     stage->InsertVertexData(v_span, 0);
@@ -149,7 +148,10 @@ void Renderer::RenderBegin()
     ImGui::Begin("Camera");
     ImGui::Checkbox("Inf_test", &inf);
     ImGui::End();
-    mat4 matrix = camera_comp->GetProjMatrix() * camera_comp->GetViewMatrix() * cube_trans->GetModelMatrix();
+    const mat4 &model_mat = cube_trans->GetModelMatrix();
+    const mat4 &view_mat = camera_comp->GetViewMatrix();
+    const mat4 &proj_mat = camera_comp->GetProjMatrix();
+    mat4 matrix = proj_mat * view_mat * model_mat;
     std::span<mat4> sp = {&matrix, &matrix + 1};
     stage->InsertActorData(sp, 0);
 

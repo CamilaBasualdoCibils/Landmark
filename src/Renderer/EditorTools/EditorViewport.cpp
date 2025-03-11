@@ -61,19 +61,13 @@ void EditorViewport::Draw()
 
 		return;
 	}
+
+
 	const auto available_region = ImGui::GetContentRegionAvail();
 	const vec2 space = {available_region.x,available_region.y};
 	last_viewport.size = space;
+	const ImVec2 image_pos = ImGui::GetCursorPos();
 	ImGui::Image(scene_frame_ds, available_region);
-	// DrawNoCameraNotif();
-
-	return;
-	// Framebuffer& entity_frame_fbo = renderer->GetEntityFrame().lock()->getFramebuffer();
-	// CombinedImageSampler& cis = entity_frame_fbo.GetImages().front();
-	// auto dset = ImGui_ImplVulkan_AddTexture((vk::Sampler)cis.GetSampler(),(vk::ImageView)cis.GetImageView(),VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-	// ImGui::Image(dset,{500,500});
-	// ImGui_ImplVulkan_RemoveTexture(dset);
-	// renderer->entity_frame.lock()->getFramebuffer().GetImages().front();
 }
 
 void EditorViewport::DrawTool()
@@ -123,3 +117,4 @@ void EditorViewport::DrawNoCameraNotif() const
 	ImGui::GetWindowDrawList()->AddRect({ min.x,min.y }, { max.x,max.y }, UINT32_MAX, 5);
 	*/
 }
+
