@@ -7,3 +7,8 @@ EntityData *Entity::operator->()
     LASSERT(isValid(),"Invalid Entity");
     return GetScene()->GetEntityData(GetObjectID());
 }
+
+EntityData &Entity::operator*()
+{
+    return *operator->();
+}

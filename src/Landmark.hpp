@@ -5,7 +5,7 @@
 #define LANDMARK_H_
 
 #include <Core/App.h>
-
+#include <ECS/ECS.hpp>
 
 //#include <Vulkan/Buffers/VertexBuffer.h>
 //#include <Vulkan/Buffers/IndexBuffer.h>

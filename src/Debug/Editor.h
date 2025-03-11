@@ -3,7 +3,7 @@
 #include "imgui/imgui.h"
 
 
-class  Editor
+class Editor
 {
 
 	//    Priority | toolset

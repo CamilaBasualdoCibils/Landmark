@@ -7,6 +7,7 @@ class EntityData;
 class Entity : public SceneObjectHandle<EntityData> {
     public:
     EntityData* operator->() override;
+    EntityData& operator*() override;
     Entity():SceneObjectHandle() {}
     Entity(SceneID _scene_id, ObjectID _object_id):SceneObjectHandle(_scene_id,_object_id){};
 

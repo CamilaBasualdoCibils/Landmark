@@ -18,7 +18,7 @@ void CameraComponent::DrawInspector()
     const bool infinite =  GetProjectionMode() == Camera::ProjectionModes::INF_PERSPECTIVE ||GetProjectionMode() == Camera::ProjectionModes::INF_ORTHOGRAPHIC;
     if (perspective) {
         float FOV = GetFOV();
-        if (ImGui::SliderAngle("FOV",&FOV,0))
+        if (ImGui::SliderFloat("FOV",&FOV,0,360))
         SetFOV(FOV);
 
         

@@ -3,6 +3,7 @@
 #include <ECS/Defines.hpp>
 struct Component_Info {
     std::string Name;
+    bool Disablable = true;
 };
 
 struct Component_Info_Extended :Component_Info {

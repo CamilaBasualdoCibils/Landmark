@@ -10,6 +10,7 @@ class ObjectHandle {
 
     public:
     virtual T* operator->() =0;
+    virtual T& operator*() = 0;
     ObjectHandle() =default;
 };
 

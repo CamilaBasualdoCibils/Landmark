@@ -2,7 +2,6 @@
 workspace "Landmark"
    --configurations { "Debug", "Release" }
    configurations {"Editor","Minimal","Release"}
-
 project "Demo"
    kind "ConsoleApp"
    language "C++"
@@ -32,6 +31,7 @@ project "Demo"
 
 
 project "Landmark"
+
    kind "StaticLib"
    language "C++"
    cppdialect "C++20"

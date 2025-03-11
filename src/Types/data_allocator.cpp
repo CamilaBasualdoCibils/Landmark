@@ -76,6 +76,14 @@ size_t data_allocator::GetNextInsertLocation() const
     return Size(); // no free location available. first index of next increase will be available
 }
 
+std::optional<data_allocator::sector> data_allocator::Get_Empty_sector_here(INT_TYPE a)
+{
+    std::optional<data_allocator::sector> op;
+    auto it = GetContainingSector(a);
+    if (it != free_sectors.cend()) return op = *it;
+    return op;
+}
+
 void data_allocator::ReserveIndex(size_t index)
 {
     while (Size() <= index)

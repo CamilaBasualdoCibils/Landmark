@@ -103,6 +103,7 @@ void EditorEntityList::Draw()
 			auto &entities = scene.GetEntities();
 			for (auto e_it = entities.begin(); e_it != entities.end(); ++e_it)
 			{
+				if (!entities.Contains(e_it.GetIndex())) continue;
 				EntityData &data = *e_it.Get<EntityData>();
 				ImGui::PushID(e_it.GetIndex());
 				// ImGui::Text(data.GetName().data());
@@ -153,6 +154,17 @@ void EditorEntityList::DrawInspector()
 
 	if (entitySelected.isValid())
 	{
+		EntityData& data = *entitySelected;
+		bool isEnabled = data.GetEnabled();
+		if (ImGui::Checkbox("##Enabled",&isEnabled))
+			data.SetEnabled(isEnabled);
+		static std::array<char,EntityData::MAX_NAME_LENGTH> name_buffer;
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		std::memcpy(name_buffer.begin(),data.GetName().begin(),data.GetName().size());
+		if (ImGui::InputText("##name",name_buffer.data(),name_buffer.size()))
+			data.SetName(name_buffer.data());
+
 		ImGui::BeginChild(ImGuiID(1), {0, 0}, true);
 		int i = 0;
 		const auto &GetOwningScene = scene_manager->GetScene(entitySelected->scene_id);

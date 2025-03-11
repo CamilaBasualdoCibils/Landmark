@@ -1,6 +1,5 @@
 #include <iostream>
-#include "Landmark.h"
-#include "Types/ObjectAllocator-new.h"
+#include "Landmark.hpp"
 class DemoModule : public AppModule {
     public:
     DemoModule(){

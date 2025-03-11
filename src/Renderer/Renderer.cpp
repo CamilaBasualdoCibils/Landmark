@@ -32,6 +32,7 @@ Renderer::Renderer()
 {
     ComponentRegistry::RegisterComponent<CameraComponent>();
     ComponentRegistry::RegisterComponent<TransformComponent>();
+    Editor::Init();
 }
 Component<CameraComponent> camera_comp;
 Component<TransformComponent> cube_trans;
@@ -44,6 +45,7 @@ void Renderer::Init()
     Entity camera = scene->CreateEntity("Camera");
     camera.AddComponent<TransformComponent>();
     camera_comp = camera.AddComponent<CameraComponent>();
+    scene->CreateEntity("empty entity");
 
     window = App::GetInstance()->GetMainWindow();
     main_device = App::GetInstance()->GetMainDevice();

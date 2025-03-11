@@ -4,7 +4,7 @@
 #include "BST_Vector.hpp"
 #include <assert.h>
 #include <memory>
-
+#include <optional>
 class data_allocator
 {
 
@@ -73,6 +73,7 @@ public:
     iterator end() {return iterator(this,size_in_object_size);}
     void* operator[](INT_TYPE index);
     size_t GetNextInsertLocation() const;
+    std::optional<sector> Get_Empty_sector_here(INT_TYPE a);
 private:
     static bool CompareSectorIndex(const sector &s, INT_TYPE a);
     auto GetContainingSector(INT_TYPE index) const;

@@ -6,4 +6,7 @@
 #include <ECS/Scene.hpp>
 #include <ECS/SceneManager.hpp>
 #include <ECS/ComponentRegistry.hpp>
+#include <ECS/Base/ComponentData.hpp>
+#include <ECS/Base/EntityData.hpp>
+
 #endif
