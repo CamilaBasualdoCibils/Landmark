@@ -67,7 +67,7 @@ void EditorViewport::Draw()
 	const vec2 space = {available_region.x,available_region.y};
 	last_viewport.size = space;
 	const ImVec2 image_pos = ImGui::GetCursorPos();
-	ImGui::Image(scene_frame_ds, available_region);
+	ImGui::Image((ImTextureID)(VkDescriptorSet)scene_frame_ds, available_region);
 }
 
 void EditorViewport::DrawTool()

@@ -15,7 +15,8 @@ layout (location = 0) out vec3 outColor;
 void main() {
 
     const vec3 pos = inPosition;
-    gl_Position =mat*vec4(pos, 1.0);
+    vec4 gpos =mat*vec4(pos, 1.0);
+    gl_Position =gpos;
 
-    outColor = abs(gl_Position.xyz / gl_Position.w);
+    outColor = abs(gpos.xyz / gpos.w);
 }

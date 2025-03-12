@@ -22,18 +22,23 @@ public:
     {
 
         vec3 pos = Position();
-        if (ImGui::DragFloat3("Position", &pos[0],0.1))
+        if (ImGui::DragFloat3("Position", &pos[0], 0.1))
             Position() = pos;
 
         quat rot = Rotation();
-        if (ImGui::DragFloat4("Rotation quat", &rot[0],0.1))
-            Rotation() = rot;
+
         vec3 euler = degrees(eulerAngles(rot));
-            if (ImGui::DragFloat3("Rotation", &euler[0],0.1))
-                Rotation() = quat(radians(euler));
+        if (ImGui::DragFloat3("Rotation", &euler[0], 0.1))
+            Rotation() = quat(radians(euler));
+        if (ImGui::TreeNode("Quaternion"))
+        {
+            if (ImGui::DragFloat4("Rotation quat", &rot[0], 0.01))
+                Rotation() = rot;
+            ImGui::TreePop();
+        }
 
         vec3 scale = Scale();
-        if (ImGui::DragFloat3("Scale", &scale[0],0.1))
+        if (ImGui::DragFloat3("Scale", &scale[0], 0.01))
             Scale() = scale;
     }
 };

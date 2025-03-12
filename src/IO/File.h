@@ -27,7 +27,7 @@ public:
 	const std::string& GetPath() const;
 	std::string GetName() const;
 	std::string GetExtension() const;
-	std::vector<char> GetContent_Binary() const;
+	std::vector<std::byte> GetContent_Binary() const;
 	std::string GetContent_Text() const;
 };
 

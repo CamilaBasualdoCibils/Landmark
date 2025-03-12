@@ -25,8 +25,8 @@ public:
 
 		auto f = IO::GetResources().GetFolder("materials");
 		Pipeline::PipelineProperties pipeline_construction_info;
-		pipeline_construction_info.shaderStages[ShaderStage::VERTEX] = f.GetFile(vert).GetContent_Binary();
-		pipeline_construction_info.shaderStages[ShaderStage::FRAGMENT] = f.GetFile(frag).GetContent_Binary();
+		//pipeline_construction_info.shaderStages[ShaderStage::VERTEX] = f.GetFile(vert).GetContent_Binary();
+		//pipeline_construction_info.shaderStages[ShaderStage::FRAGMENT] = f.GetFile(frag).GetContent_Binary();
 		//pipeline.emplace(pipeline_construction_info, MaterialPipelineLayout.value(), Renderer::GetRenderPass());
 	}
 };

@@ -34,7 +34,10 @@ class Renderer : public AppModule
     void RenderEnd();
     void Init(); 
 
-    decltype(scene_frame) GetSceneFrame() {return scene_frame;}
+    decltype(scene_frame)& GetSceneFrame() {return scene_frame;}
+    decltype(lens)& GetSceneLens() {return lens;}
+    decltype(scene_act)& GetSceneAct() {return scene_act;}
+    decltype(stage)& GetSceneStage() {return stage;}
     
 
 };

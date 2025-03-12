@@ -42,7 +42,7 @@ void Imgui::Init(Vulkan_Instance& vkinstance,LogicalDevice& device,Queue& queue,
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
-	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
 	io.FontAllowUserScaling = true;
 	ImGuiStyle &style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -63,19 +63,19 @@ void Imgui::Init(Vulkan_Instance& vkinstance,LogicalDevice& device,Queue& queue,
 	init_info.MinImageCount = capabilties.minImageCount;
 	init_info.ImageCount = std::max(capabilties.maxImageCount, std::max(capabilties.minImageCount + 1, uint32_t(3)));
 	init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-	init_info.ColorAttachmentFormat = static_cast<VkFormat>(format);
+	init_info.RenderPass = rpp.GetVkRenderPass();
 
 	CommandPool cmdPool(queue);
 	CommandBuffer cmdBuffer(cmdPool);
 	cmdBuffer.Begin(CommandBufferUsageFlags::ONE_TIME_SUBMIT);
-	ImGui_ImplVulkan_Init(&init_info, rpp.GetVkRenderPass());
+	ImGui_ImplVulkan_Init(&init_info);
 	{
 		// Graphics::SingleUseCommandBuffer sucm;
-		ImGui_ImplVulkan_CreateFontsTexture(static_cast<vk::CommandBuffer>(cmdBuffer));
+		ImGui_ImplVulkan_CreateFontsTexture();
 	}
 	cmdBuffer.End();
 	cmdBuffer.SubmitAndWait();
-	ImGui_ImplVulkan_DestroyFontUploadObjects();
+	//ImGui_ImplVulkan_DestroyFontUploadObjects();
 
 	cmdBuffer.Destroy();
 	cmdPool.Destroy();

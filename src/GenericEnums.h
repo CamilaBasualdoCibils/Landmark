@@ -253,4 +253,6 @@ _CREATE_ENUM_(PipelineBindPoint, vk::PipelineBindPoint){
 	COMPUTE = int_cast(vk::PipelineBindPoint::eGraphics),
 	RAY_TRACING = int_cast(vk::PipelineBindPoint::eRayTracingKHR),
 };
+
+
 #endif

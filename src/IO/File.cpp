@@ -44,7 +44,7 @@ std::vector<char> GetBinaryFromFile(std::string Filename)
 	return buffer;
 }
 
-std::vector<char> File::GetContent_Binary() const
+std::vector<std::byte> File::GetContent_Binary() const
 {
 	if (!Exists()) return {};
 	std::ifstream file(FilePath, std::ios::ate | std::ios::binary);
@@ -54,10 +54,10 @@ std::vector<char> File::GetContent_Binary() const
 	}
 
 	size_t fileSize = (size_t)file.tellg();
-	std::vector<char> buffer(fileSize);
+	std::vector<std::byte> buffer(fileSize);
 
 	file.seekg(0);
-	file.read(buffer.data(), fileSize);
+	file.read(reinterpret_cast<char*>( buffer.data()), fileSize);
 	file.close();
 
 	return buffer;

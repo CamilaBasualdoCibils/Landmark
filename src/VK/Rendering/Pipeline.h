@@ -43,7 +43,7 @@ public:
 	struct PipelineProperties
 	{
 
-		std::map<ShaderStage, std::vector<char>> shaderStages;
+		std::map<ShaderStage, std::vector<uint32_t>> shaderStages;
 		Pipeline_Render_Properties renderProperties;
 	};
 

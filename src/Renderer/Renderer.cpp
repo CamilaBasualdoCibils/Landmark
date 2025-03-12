@@ -9,6 +9,78 @@
 #include "Components/CameraComponent.hpp"
 #include <Transform/TransformComponent.hpp>
 #include <ECS/ECS.hpp>
+#include <VK/Shaders/Shader.hpp>
+
+Folder shader_folder = IO::GetResources().GetFolder("shaders");
+std::string vert_source = shader_folder.GetFile("test.vert").GetContent_Text();
+std::string frag_source = shader_folder.GetFile("test.frag").GetContent_Text();
+
+class ShaderEditorTestTool : EditorTool
+{
+public:
+    ShaderEditorTestTool() : EditorTool("Shader Edit Test") {}
+    void Draw() override
+    {
+        ImGui::Text("Hello");
+        auto region_available = ImGui::GetContentRegionAvail();
+        region_available.y /=2;
+        bool modified = ImGui::InputTextMultiline("##Vertex", &vert_source,
+        region_available,ImGuiInputTextFlags_AllowTabInput);
+        modified |= ImGui::InputTextMultiline("##Fragment", &frag_source,
+        region_available,ImGuiInputTextFlags_AllowTabInput);
+        if (modified)
+        {
+
+            static Shader shader = Shader()
+            .SetSourceType(ShaderSourceType::GLSL)
+            .SetClient(ShaderClientType::VULKAN_1_4)
+            .SetTargetSpv(ShaderSpvVersion::Spv_1_6);
+
+            ShaderCompileResult vert_compile = shader.SetType(ShaderType::VERTEX)
+                                                   .SetSource({vert_source})
+                                                   .Compile();
+            ShaderCompileResult frag_compile = shader.SetType(ShaderType::FRAGMENT)
+                                                   .SetSource({frag_source})
+                                                   .Compile();
+            if (!vert_compile.compile_successful || !frag_compile.compile_successful)
+            {
+                if (!vert_compile.compile_successful)
+                {
+                    std::cout << vert_compile.compile_log << std::endl;
+                }
+                if (!frag_compile.compile_successful) {
+                    std::cout << frag_compile.compile_log << std::endl;
+                }
+                return;
+            }
+            auto renderer = App::GetInstance()->GetModule<Renderer>();
+            auto &lens = renderer->GetSceneLens();
+            lens.reset();
+            lens_properties lens_prop;
+            lens_prop.shaderStages[ShaderStage::VERTEX] = vert_compile.data;
+            lens_prop.shaderStages[ShaderStage::FRAGMENT] = frag_compile.data;
+            // lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").GetContent_Binary();
+            // lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").GetContent_Binary();
+            lens_prop.cull_mode = CullModes::BACK;
+            lens = std::make_shared<Lens>(lens_prop, *renderer->GetSceneStage(), *renderer->GetSceneAct());
+        }
+    }
+    bool open = false;
+    void DrawHandle() override
+    {
+        ImGui::MenuItem("Shader Edit Test", 0, &open);
+    }
+
+    void DrawTool() override
+    {
+        if (open && ImGui::Begin("Shader Edit Test", &open, ImGuiWindowFlags_MenuBar))
+        {
+            Draw();
+            ImGui::End();
+        }
+    }
+};
+
 std::vector<AppModule::EngineCallInject> Renderer::GetInjections()
 {
     std::vector<EngineCallInject> injections;
@@ -77,10 +149,22 @@ void Renderer::Init()
     act_prop.color_attachments = {attch};
     imgui_act = std::make_shared<Act>(act_prop);
 
-    lens_properties lens_prop;
     Folder shader_folder = IO::GetResources().GetFolder("shaders");
-    lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").GetContent_Binary();
-    lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").GetContent_Binary();
+
+    Shader shader = Shader().SetSourceType(ShaderSourceType::GLSL).SetClient(ShaderClientType::VULKAN_1_4).SetTargetSpv(ShaderSpvVersion::Spv_1_6);
+
+    ShaderCompileResult vert_compile = shader.SetType(ShaderType::VERTEX)
+                                           .SetSource({shader_folder.GetFile("test.vert").GetContent_Text()})
+                                           .Compile();
+    ShaderCompileResult frag_compile = shader.SetType(ShaderType::FRAGMENT)
+                                           .SetSource({shader_folder.GetFile("test.frag").GetContent_Text()})
+                                           .Compile();
+
+    lens_properties lens_prop;
+    lens_prop.shaderStages[ShaderStage::VERTEX] = vert_compile.data;
+    lens_prop.shaderStages[ShaderStage::FRAGMENT] = frag_compile.data;
+    // lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").GetContent_Binary();
+    // lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").GetContent_Binary();
     lens_prop.cull_mode = CullModes::BACK;
     lens = std::make_shared<Lens>(lens_prop, *stage, *scene_act);
 
@@ -132,6 +216,7 @@ void Renderer::Init()
 
     stage->InsertIndexData(i_span, 0);
     editor_viewport = &Editor::GetMainToolGroup().GetOrPushGroup("Windows").PushObject<EditorViewport>(0, this);
+    Editor::GetMainToolGroup().PushObject<ShaderEditorTestTool>();
 }
 void Renderer::RenderBegin()
 {
@@ -146,10 +231,6 @@ void Renderer::RenderBegin()
 
     const Viewport &current_viewport = editor_viewport->getViewport();
     camera_comp->SetAspectRatio(current_viewport.size.x / current_viewport.size.y);
-    static bool inf = false;
-    ImGui::Begin("Camera");
-    ImGui::Checkbox("Inf_test", &inf);
-    ImGui::End();
     const mat4 &model_mat = cube_trans->GetModelMatrix();
     const mat4 &view_mat = camera_comp->GetViewMatrix();
     const mat4 &proj_mat = camera_comp->GetProjMatrix();

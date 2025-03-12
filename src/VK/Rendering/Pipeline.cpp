@@ -100,7 +100,7 @@ Pipeline::Pipeline(const PipelineProperties& _info, const PipelineLayout& _layou
 	for (auto& stage : info.shaderStages)
 	{
 		vk::ShaderModuleCreateInfo shader_module_create;
-		shader_module_create.codeSize = stage.second.size();
+		shader_module_create.codeSize = stage.second.size() * sizeof(stage.second[0]);
 		shader_module_create.pCode = reinterpret_cast<const uint32_t*>( stage.second.data());
 		modules.push_back( GetvkDevice().createShaderModule(shader_module_create).value);
 
