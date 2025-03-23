@@ -4,8 +4,6 @@
 
 #include "Debug/Debug.h"
 
-
-
 class Resource;
 class Folder;
 class File

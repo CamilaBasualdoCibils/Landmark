@@ -15,7 +15,9 @@ class DemoModule : public AppModule {
 
 
 int main(void) {
-
+    //OBJ_File_content obj_file;
+    //MeshFile::ParseOBJ(IO::GetResources().GetFolder("models").GetFile("sphere_high.obj"), obj_file);
+    //return 0;
     App app;
     app.AttachModule<DemoModule>();
 

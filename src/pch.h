@@ -75,4 +75,7 @@ using namespace glm;
 #include <mutex>
 #include <chrono>
 #include <memory>
+#include <execution>
+#include <ranges>
+#include <cctype>
 #endif //PCH_H

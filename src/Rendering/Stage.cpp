@@ -6,7 +6,7 @@
 #include "Lens.h"
 #include "Act.hpp"
 Stage::Stage(const stage_properties &_prop) : properties(_prop),
-                                              v_vertex_data(1024), v_actor_data(1024), v_index_data(1024)
+                                              v_vertex_data(10240), v_actor_data(1024), v_index_data(10240)
 {
     descriptor_set_layout.emplace(_prop.descriptor_set_layouts_bindings);
     DescriptorPool::DescriptorPoolProperties ds_pool_properties;

@@ -23,18 +23,18 @@ public:
     {
         ImGui::Text("Hello");
         auto region_available = ImGui::GetContentRegionAvail();
-        region_available.y /=2;
+        region_available.y /= 2;
         bool modified = ImGui::InputTextMultiline("##Vertex", &vert_source,
-        region_available,ImGuiInputTextFlags_AllowTabInput);
+                                                  region_available, ImGuiInputTextFlags_AllowTabInput);
         modified |= ImGui::InputTextMultiline("##Fragment", &frag_source,
-        region_available,ImGuiInputTextFlags_AllowTabInput);
+                                              region_available, ImGuiInputTextFlags_AllowTabInput);
         if (modified)
         {
 
             static Shader shader = Shader()
-            .SetSourceType(ShaderSourceType::GLSL)
-            .SetClient(ShaderClientType::VULKAN_1_4)
-            .SetTargetSpv(ShaderSpvVersion::Spv_1_6);
+                                       .SetSourceType(ShaderSourceType::GLSL)
+                                       .SetClient(ShaderClientType::VULKAN_1_4)
+                                       .SetTargetSpv(ShaderSpvVersion::Spv_1_6);
 
             ShaderCompileResult vert_compile = shader.SetType(ShaderType::VERTEX)
                                                    .SetSource({vert_source})
@@ -48,7 +48,8 @@ public:
                 {
                     std::cout << vert_compile.compile_log << std::endl;
                 }
-                if (!frag_compile.compile_successful) {
+                if (!frag_compile.compile_successful)
+                {
                     std::cout << frag_compile.compile_log << std::endl;
                 }
                 return;
@@ -183,6 +184,7 @@ void Renderer::Init()
                imgui_act->GetProperties().color_attachments[0].format);
 
     const float v_size_x = 1.0f, v_size_y = 1.0f, v_size_z = 1.0f;
+
     vec3 vertices[] = {
         // Front face
         {-v_size_x, -v_size_y, v_size_z}, // 0
@@ -210,8 +212,20 @@ void Renderer::Init()
         6, 7, 3,
         4, 5, 1,
         1, 0, 4};
-    std::span<vec3> v_span = vertices;
-    std::span<uint32_t> i_span = indices;
+
+    OBJ_File_content obj_file;
+    MeshFile::ParseOBJ(IO::GetResources().GetFolder("models").GetFile("monkey.obj"), obj_file);
+    std::vector<vec3> positions;
+        std::vector<uint32_t> indicies;
+    std::for_each(obj_file.verticies.begin(),obj_file.verticies.end(),[&](const OBJ_File_content::Vertex& v){
+        positions.push_back(v.position);
+    });
+    std::for_each(obj_file.indicies.begin(),obj_file.indicies.end(),[&](const uint64_t& v){
+        indicies.push_back(v);
+    });
+        std::span<vec3>v_span = positions;
+    std::span<uint32_t> i_span = indicies;
+
     stage->InsertVertexData(v_span, 0);
 
     stage->InsertIndexData(i_span, 0);
