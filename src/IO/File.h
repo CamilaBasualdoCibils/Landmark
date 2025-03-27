@@ -2,30 +2,33 @@
 #include <filesystem>
 #include <string>
 
-#include "Debug/Debug.h"
-
+#include "Editor/Debug.h"
+#include "FileSystemObject.hpp"
 class Resource;
 class Folder;
-class File
+class File : public FileSystemObject
 {
 	friend Resource;
 	friend Folder;
 
-
-	File(const std::string& _File);
-
-
-	const std::string FilePath;
-	static inline Log LOGGER = Log("Resource>File");
+	static inline Log LOGGER = Log("File");
 
 public:
+	File(const std::string &_File);
+	File &operator=(const File &) = default;
 
 	bool Exists() const;
 
-	const std::string& GetPath() const;
-	std::string GetName() const;
-	std::string GetExtension() const;
-	std::vector<std::byte> GetContent_Binary() const;
-	std::string GetContent_Text() const;
-};
+	std::string GetFullExtension() const;
+	std::string GetLastExtension() const;
 
+	std::vector<std::byte> ReadBinary() const;
+	std::string ReadText() const;
+	Json ReadJson() const;
+
+	bool WriteBinary(const std::vector<std::byte> &data);
+	bool WriteText(const std::string &text);
+	std::filesystem::file_time_type GetLastWriteTime() const;
+	bool PathEndsWith(const std::string& end) const;
+
+};

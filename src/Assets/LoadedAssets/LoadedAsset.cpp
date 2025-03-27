@@ -1,0 +1,1 @@
+#include "LoadedAsset.hpp"

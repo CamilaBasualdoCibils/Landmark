@@ -3,7 +3,7 @@
 #include <ECS/EditorTools/EditorEntityList.h>
 void SceneManager::Init()
 {
-    editor_inspector = &Editor::GetMainToolGroup().GetOrPushGroup("Windows").PushObject<EditorEntityList>(0);
+    editor_inspector = &Editor::GetInstance()->GetMainToolGroup().GetOrPushGroup("Windows").PushObject<EditorEntityList>(0);
 }
 
 

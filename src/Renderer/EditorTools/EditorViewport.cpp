@@ -13,10 +13,6 @@ EditorViewport::EditorViewport(Renderer *_renderer) : EditorTool("Viewport"), re
 	scene_frame_ds = ImGui_ImplVulkan_AddTexture((vk::Sampler)cis.GetSampler(), (vk::ImageView)cis.GetImageView(), VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-void EditorViewport::DrawHandle()
-{
-	ImGui::MenuItem("Viewport", 0, &ViewportOpen);
-}
 
 void EditorViewport::Draw()
 {
@@ -72,9 +68,9 @@ void EditorViewport::Draw()
 
 void EditorViewport::DrawTool()
 {
-	if (!ViewportOpen)
+	if (!open)
 		return;
-	if (ImGui::Begin(GetName().c_str(), &ViewportOpen, ImGuiWindowFlags_MenuBar))
+	if (ImGui::Begin(GetName().c_str(), &open, ImGuiWindowFlags_MenuBar))
 		Draw();
 	ImGui::End();
 }

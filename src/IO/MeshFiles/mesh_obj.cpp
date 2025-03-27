@@ -14,7 +14,7 @@ static constexpr uint64_t CharMask(std::vector<char> chars)
 }
 bool MeshFile::ParseOBJ(File file, OBJ_File_content &output)
 {
-    // const std::string file_string = file.GetContent_Text();
+    // const std::string file_string = file.ReadText();
     // std::optional<size_t> pos_start,pos_end,element_start,element_end,normal_start,normal_end,texcoord_start,texcoord_end;
     std::vector<std::string> v_lines, f_lines, vn_lines, vt_lines;
 

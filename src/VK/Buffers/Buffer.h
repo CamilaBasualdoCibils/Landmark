@@ -2,7 +2,7 @@
 #include <VK/Operations/CommandBuffer.h>
 
 #include "GenericEnums.h"
-#include "Debug/Debug.h"
+
 #include "VK/Devices/DeviceResource.h"
 #include "VK/Devices/PhysicalDevice.h"
 #include <VK/Operations/CommandPool.h>

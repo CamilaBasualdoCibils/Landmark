@@ -1,5 +1,5 @@
 #pragma once
-#include "Debug/Debug.h"
+#include "Editor/Debug.h"
 
 namespace Landmark
 {

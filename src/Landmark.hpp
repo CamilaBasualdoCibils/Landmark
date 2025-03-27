@@ -6,7 +6,7 @@
 
 #include <Core/App.h>
 #include <ECS/ECS.hpp>
-#include <Debug/Debug.h>
+#include <Editor/Debug.h>
 #include <IO/IO.h>
 //#include <Vulkan/Buffers/VertexBuffer.h>
 //#include <Vulkan/Buffers/IndexBuffer.h>

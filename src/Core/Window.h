@@ -1,6 +1,6 @@
 #include <pch.h>
 #pragma once
-#include <Debug/Logging/Log.h>
+#include <Editor/Logging/Log.h>
 #include <VK/Rendering/Swapchain.h>
 
 class GLFW_Instance
@@ -49,7 +49,7 @@ using internal_window_handle = Window;
         bool resizable = true;
         bool decoration = true;
         bool transparent = false;
-        uvec2 window_size = {1920, 1080};
+        uvec2 window_size = {2560, 1400};
         LWindow_Properties() = default;
     };
 

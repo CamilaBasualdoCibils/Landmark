@@ -8,53 +8,53 @@
 #define PCH_H
 #include <assert.h>
 
-#define LASSERT(a,b) assert(a && b)
-
+#define LASSERT(a, b) assert(a &&b)
 
 // add headers that you want to pre-compile here
-//#include "framework.h"
+// #include "framework.h"
 
-//VULKAN
+// VULKAN
 #define VULKAN_HPP_ASSERT_ON_RESULT(x)
 #define VULKAN_HPP_NO_EXCEPTIONS
 #include <vulkan/vulkan.hpp>
-//#include <vulkan/vk_enum_string_helper.h>
+// #include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan_to_string.hpp>
 
-
-//GLFW
+// GLFW
 #define GLFW_INCLUDE_VULKAN
 #define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_EXPOSE_NATIVE_X11
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
-//#define GLFW_EXPOSE_NATIVE_WIN32
-//#include <GLFW/include/GLFW/glfw3native.h>
+// #define GLFW_EXPOSE_NATIVE_WIN32
+// #include <GLFW/include/GLFW/glfw3native.h>
 
-
-
-//IMGUI
+// IMGUI
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_vulkan.h>
 
-
 #include <implot/implot.h>
 
-//GLM
+// GLM
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
-#define GLM_FORCE_SWIZZLE 
+#define GLM_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/constants.hpp>
 using namespace glm;
 
-
-//JSON
+// JSON
 #include <JSON/json.hpp>
+using Json = nlohmann::json;
+using Json_Ordered = nlohmann::ordered_json;
+namespace stb
+{
+#include "stb/stb_image.h"
 
+}
 
 #include <iostream>
 #include <string>
@@ -78,4 +78,6 @@ using namespace glm;
 #include <execution>
 #include <ranges>
 #include <cctype>
-#endif //PCH_H
+#include <random>
+#include <algorithm>
+#endif // PCH_H

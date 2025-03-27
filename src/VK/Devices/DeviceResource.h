@@ -1,6 +1,7 @@
 ﻿#pragma once
-#include "Debug/Logging/Log.h"
+#include "Editor/Logging/Log.h"
 #include <algorithm>
+#include <Editor/Debug.h>
 #include <pch.h>
 #ifndef _DEVICEOBJECT_H_
 #define _DEVICEOBJECT_H_

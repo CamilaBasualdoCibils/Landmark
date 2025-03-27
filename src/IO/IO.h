@@ -5,7 +5,7 @@ class IO
 {
 
 private:
-    static inline std::string resourcePath = "res";
+    static inline std::string assetsPath = "assets";
     static inline std::string cachePath = "cache";
 
     static Folder GetOrCreate(const std::string &path)
@@ -17,9 +17,9 @@ private:
     }
 
 public:
-    static Folder GetResources()
+    static Folder GetAssets()
     {
-        return GetOrCreate(resourcePath);
+        return GetOrCreate(assetsPath);
     }
     static Folder GetCache()
     {

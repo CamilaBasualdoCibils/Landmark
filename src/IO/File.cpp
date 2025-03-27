@@ -1,29 +1,25 @@
 #include "pch.h"
 #include "File.h"
 #include <fstream>
-File::File(const std::string& _File) : FilePath(_File)
+File::File(const std::string& _File) : FileSystemObject(_File)
 {
 }
 
 bool File::Exists() const
 {
-	return std::filesystem::exists(FilePath) && std::filesystem::is_regular_file(FilePath);
+	return std::filesystem::exists(GetPath()) && std::filesystem::is_regular_file(GetPath());
 }
 
-const std::string& File::GetPath() const
+std::string File::GetFullExtension() const
 {
-	return FilePath;
+	const auto pos_of_dot = GetPath().find_first_of('.');
+    return GetPath().substr(pos_of_dot+1);
 }
 
-std::string File::GetName() const
-{
-	return FilePath.substr(FilePath.find_last_of("/")+1);
-}
-
-std::string File::GetExtension() const
+std::string File::GetLastExtension() const
 {
 	const auto pos_of_dot = GetPath().find_last_of('.');
-    return GetPath().substr();
+    return GetPath().substr(pos_of_dot+1);
 }
 
 std::vector<char> GetBinaryFromFile(std::string Filename)
@@ -44,10 +40,10 @@ std::vector<char> GetBinaryFromFile(std::string Filename)
 	return buffer;
 }
 
-std::vector<std::byte> File::GetContent_Binary() const
+std::vector<std::byte> File::ReadBinary() const
 {
 	if (!Exists()) return {};
-	std::ifstream file(FilePath, std::ios::ate | std::ios::binary);
+	std::ifstream file(GetPath(), std::ios::ate | std::ios::binary);
 
 	if (!file.is_open()) {
 		throw std::runtime_error("failed to open file!");
@@ -63,14 +59,14 @@ std::vector<std::byte> File::GetContent_Binary() const
 	return buffer;
 }
 
-std::string File::GetContent_Text() const
+std::string File::ReadText() const
 {
-	if (!Exists()) return {};
+	if (!Exists()) throw std::runtime_error("failed to open file!");
 
-	std::ifstream inFile(FilePath);
+	std::ifstream inFile(GetPath());
 	if (!inFile)
 	{
-		LOGGER.Error( "Failed to Open file (" + FilePath+ ") for reading!" );
+		LOGGER.Error( "Failed to Open file (" + GetPath()+ ") for reading!" );
 		return {};
 	}
 	std::string content((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
@@ -78,4 +74,43 @@ std::string File::GetContent_Text() const
 	return content;
 
 
+}
+
+Json File::ReadJson() const
+{
+    return Json::parse(ReadText());
+}
+
+bool File::WriteBinary(const std::vector<std::byte> &data)
+{
+	std::ofstream file(GetPath(), std::ios::binary);
+	if (!file) {
+		LOGGER.Error("Failed to open file for binary writing: " + GetPath());
+		return false;
+	}
+	file.write(reinterpret_cast<const char*>(data.data()), data.size());
+	return file.good();
+}
+
+bool File::WriteText(const std::string &text)
+{
+	std::ofstream file(GetPath());
+	if (!file) {
+		LOGGER.Error("Failed to open file for text writing: " + GetPath());
+		return false;
+	}
+	file << text;
+	return file.good();
+}
+
+std::filesystem::file_time_type File::GetLastWriteTime() const
+{
+	if (!Exists()) throw "Invalid File";
+    return std::filesystem::last_write_time(GetPath());
+}
+
+bool File::PathEndsWith(const std::string &end) const
+{
+	return GetPath().size() >= end.size() && 
+	GetPath().rfind(end) == (GetPath().size() - end.size());
 }

@@ -4,13 +4,13 @@
 
 #include "File.h"
 
-Folder::Folder(const std::string& path) : Path(path)
+Folder::Folder(const std::string& path) : FileSystemObject(path)
 {
 }
 
 bool Folder::Exists() const
 {
-	return std::filesystem::exists(Path) && std::filesystem::is_directory(Path);
+	return std::filesystem::exists(GetPath()) && std::filesystem::is_directory(GetPath());
 }
 
 bool Folder::Create()
@@ -18,7 +18,7 @@ bool Folder::Create()
 	if (Exists()) return false;
 
 	try {
-		std::filesystem::create_directory(Path);
+		std::filesystem::create_directory(GetPath());
 		return true;
 	}
 	catch (const std::filesystem::filesystem_error& e) {
@@ -33,7 +33,7 @@ bool Folder::Erase()
 {
 	if (Exists()) {
 		try {
-			std::filesystem::remove_all(Path);
+			std::filesystem::remove_all(GetPath());
 			return true;
 		}
 		catch (const std::filesystem::filesystem_error& e) {
@@ -51,7 +51,7 @@ bool Folder::EraseContents()
 		return false;
 
 	try {
-		for (const auto& entry : std::filesystem::directory_iterator(Path)) {
+		for (const auto& entry : std::filesystem::directory_iterator(GetPath())) {
 			std::filesystem::remove_all(entry.path());
 		}
 		return true;
@@ -65,7 +65,7 @@ bool Folder::EraseContents()
 
 File Folder::GetFile(const std::string& file)
 {
-	return File(std::string(Path + "/" + file));
+	return File(std::string(GetPath() + "/" + file));
 }
 
 const File Folder::GetFile(const std::string& file) const
@@ -75,7 +75,7 @@ const File Folder::GetFile(const std::string& file) const
 
 Folder Folder::GetFolder(const std::string& folder)
 {
-	return Folder(Path + "/" + folder);
+	return Folder(GetPath() + "/" + folder);
 }
 
 const Folder Folder::GetFolder(const std::string& folder) const
@@ -85,7 +85,16 @@ const Folder Folder::GetFolder(const std::string& folder) const
 
 const std::vector< Folder> Folder::GetSubFolders() const
 {
-	return GetSubFolders();
+	if (!Exists())
+		return {};
+
+	std::vector<Folder> SubFolders;
+		for (const auto& entry : std::filesystem::directory_iterator(GetPath()))
+		{
+			if (std::filesystem::is_directory(entry))
+				SubFolders.push_back(Folder(entry.path().string()));
+		}
+		return SubFolders;
 }
 
 std::vector<Folder> Folder::GetSubFolders()
@@ -94,7 +103,7 @@ std::vector<Folder> Folder::GetSubFolders()
 		return {};
 
 	std::vector<Folder> SubFolders;
-		for (const auto& entry : std::filesystem::directory_iterator(Path))
+		for (const auto& entry : std::filesystem::directory_iterator(GetPath()))
 		{
 			if (std::filesystem::is_directory(entry))
 				SubFolders.push_back(Folder(entry.path().string()));
@@ -113,7 +122,7 @@ std::vector<File> Folder::GetFiles()
 		return {};
 
 	std::vector<File> SubFiles;
-	for (const auto& entry : std::filesystem::directory_iterator(Path))
+	for (const auto& entry : std::filesystem::directory_iterator(GetPath()))
 	{
 		if (std::filesystem::is_regular_file(entry))
 			SubFiles.push_back(File(entry.path().string()));

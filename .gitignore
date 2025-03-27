@@ -9,3 +9,5 @@ bin
 obj
 doc/.obsidian
 compile_commands.json
+market
+assets

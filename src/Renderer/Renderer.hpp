@@ -10,7 +10,7 @@
 #include <Rendering/Lens.h>
 #include <Rendering/Schedule.hpp>
 #include <Rendering/Act.hpp>
-#include <Debug/Imgui.h>
+#include <Editor/Imgui.h>
 
 class EditorViewport;
 class Renderer : public AppModule

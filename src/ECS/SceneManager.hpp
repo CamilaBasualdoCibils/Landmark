@@ -4,7 +4,7 @@
 #include <Types/ObjectAllocator-new.h>
 #include <ECS/Base/Object.hpp>
 class EditorEntityList;
-#include "Debug/Editor.h"
+#include "Editor/Editor.h"
 
 class Scene;
 class SceneManager : public AppModule

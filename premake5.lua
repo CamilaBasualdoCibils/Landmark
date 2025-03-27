@@ -122,7 +122,7 @@ function customClean()
         "ImGui.make",
         "ImPlot.make",
         "Landmark.make",
-        "imgui.ini",
+      --"imgui.ini",
         "log.txt",
         "Demo.vcxproj",
         "ImGui.vcxproj",

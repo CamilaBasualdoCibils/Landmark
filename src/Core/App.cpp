@@ -1,7 +1,9 @@
 #include "App.h"
 #include "Logo.h"
-#include <Debug/RenderDoc/RenderDoc.h>
+#include <Editor/RenderDoc/RenderDoc.h>
 #include <ECS/SceneManager.hpp>
+#include <Assets/AssetManager.hpp>
+#include <Editor/Editor.h>
 App::App()
 {
 }
@@ -15,8 +17,8 @@ void App::Run(const AppProperties &_properties)
         AttachModule<LogKeeper2>();
         AttachModule<Renderer>();
         AttachModule<SceneManager>();
-
-        // log_keeper->
+        AttachModule<AssetManager>();
+        AttachModule<Editor>();
     }
     CallInjections(AppModule::EngineCallPoints::START);
 

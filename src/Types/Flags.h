@@ -55,7 +55,14 @@ public:
 		return *this;
 	}
 
-
+	void Set(T t, bool state) {
+		if (state) {
+			operator|=(t);
+		}
+		else {
+			operator&=( !(underlying_type)t);
+		}
+	}
 	template <typename R>
 	Flags operator&(const R& r) const
 	{
@@ -76,8 +83,8 @@ public:
 
 	constexpr underlying_type operator*() const { return underlyingMask; }
 
-	explicit constexpr operator bool() const { return underlyingMask; }
-	explicit constexpr operator underlying_type() const { return underlyingMask; }
+	constexpr operator bool() const { return bool(underlyingMask); }
+	constexpr operator underlying_type() const { return underlyingMask; }
 	
 	template <typename B>
 	constexpr operator vk::Flags<B>() const { return vk::Flags<B>(underlyingMask); }

@@ -1,7 +1,7 @@
 #include "Renderer.hpp"
 #include "Core/App.h"
 #include "IO/IO.h"
-#include <Debug/Editor.h>
+#include <Editor/Editor.h>
 #include <Renderer/EditorTools/EditorViewport.h>
 #include <Transform/Transform.h>
 #include "Camera.h"
@@ -11,9 +11,9 @@
 #include <ECS/ECS.hpp>
 #include <VK/Shaders/Shader.hpp>
 
-Folder shader_folder = IO::GetResources().GetFolder("shaders");
-std::string vert_source = shader_folder.GetFile("test.vert").GetContent_Text();
-std::string frag_source = shader_folder.GetFile("test.frag").GetContent_Text();
+Folder shader_folder = IO::GetFolder("assets").GetFolder("shaders");
+std::string vert_source = shader_folder.GetFile("test.vert").ReadText();
+std::string frag_source = shader_folder.GetFile("test.frag").ReadText();
 
 class ShaderEditorTestTool : EditorTool
 {
@@ -60,8 +60,8 @@ public:
             lens_properties lens_prop;
             lens_prop.shaderStages[ShaderStage::VERTEX] = vert_compile.data;
             lens_prop.shaderStages[ShaderStage::FRAGMENT] = frag_compile.data;
-            // lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").GetContent_Binary();
-            // lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").GetContent_Binary();
+            // lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").ReadBinary();
+            // lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").ReadBinary();
             lens_prop.cull_mode = CullModes::BACK;
             lens = std::make_shared<Lens>(lens_prop, *renderer->GetSceneStage(), *renderer->GetSceneAct());
         }
@@ -105,7 +105,7 @@ Renderer::Renderer()
 {
     ComponentRegistry::RegisterComponent<CameraComponent>();
     ComponentRegistry::RegisterComponent<TransformComponent>();
-    Editor::Init();
+
 }
 Component<CameraComponent> camera_comp;
 Component<TransformComponent> cube_trans;
@@ -150,22 +150,22 @@ void Renderer::Init()
     act_prop.color_attachments = {attch};
     imgui_act = std::make_shared<Act>(act_prop);
 
-    Folder shader_folder = IO::GetResources().GetFolder("shaders");
+    Folder shader_folder = IO::GetFolder("assets").GetFolder("shaders");
 
     Shader shader = Shader().SetSourceType(ShaderSourceType::GLSL).SetClient(ShaderClientType::VULKAN_1_4).SetTargetSpv(ShaderSpvVersion::Spv_1_6);
 
     ShaderCompileResult vert_compile = shader.SetType(ShaderType::VERTEX)
-                                           .SetSource({shader_folder.GetFile("test.vert").GetContent_Text()})
+                                           .SetSource({shader_folder.GetFile("test.vert").ReadText()})
                                            .Compile();
     ShaderCompileResult frag_compile = shader.SetType(ShaderType::FRAGMENT)
-                                           .SetSource({shader_folder.GetFile("test.frag").GetContent_Text()})
+                                           .SetSource({shader_folder.GetFile("test.frag").ReadText()})
                                            .Compile();
 
     lens_properties lens_prop;
     lens_prop.shaderStages[ShaderStage::VERTEX] = vert_compile.data;
     lens_prop.shaderStages[ShaderStage::FRAGMENT] = frag_compile.data;
-    // lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").GetContent_Binary();
-    // lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").GetContent_Binary();
+    // lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").ReadBinary();
+    // lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").ReadBinary();
     lens_prop.cull_mode = CullModes::BACK;
     lens = std::make_shared<Lens>(lens_prop, *stage, *scene_act);
 
@@ -214,7 +214,7 @@ void Renderer::Init()
         1, 0, 4};
 
     OBJ_File_content obj_file;
-    MeshFile::ParseOBJ(IO::GetResources().GetFolder("models").GetFile("monkey.obj"), obj_file);
+    MeshFile::ParseOBJ(IO::GetFolder("assets").GetFolder("models").GetFile("cube.obj"), obj_file);
     std::vector<vec3> positions;
         std::vector<uint32_t> indicies;
     std::for_each(obj_file.verticies.begin(),obj_file.verticies.end(),[&](const OBJ_File_content::Vertex& v){
@@ -229,8 +229,9 @@ void Renderer::Init()
     stage->InsertVertexData(v_span, 0);
 
     stage->InsertIndexData(i_span, 0);
-    editor_viewport = &Editor::GetMainToolGroup().GetOrPushGroup("Windows").PushObject<EditorViewport>(0, this);
-    Editor::GetMainToolGroup().PushObject<ShaderEditorTestTool>();
+    editor_viewport = &Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup().PushObject<EditorViewport>(0, this);
+    editor_viewport->SetIsOpen(true);
+    Editor::GetInstance()->GetMainToolGroup().PushObject<ShaderEditorTestTool>();
 }
 void Renderer::RenderBegin()
 {
@@ -252,7 +253,7 @@ void Renderer::RenderBegin()
     std::span<mat4> sp = {&matrix, &matrix + 1};
     stage->InsertActorData(sp, 0);
 
-    Editor::Draw();
+    Editor::GetInstance()->Draw();
     imgui.EndFrame();
 
     // schedule->SetViewport()

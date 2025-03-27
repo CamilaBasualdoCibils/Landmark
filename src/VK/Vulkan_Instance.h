@@ -1,6 +1,6 @@
 #pragma once
 #include <pch.h>
-#include "Debug/Debug.h"
+#include "Editor/Debug.h"
 #include "VK/Devices/LogicalDevice.h"
 #include "Shared_Structs.h"
 class LWindow;

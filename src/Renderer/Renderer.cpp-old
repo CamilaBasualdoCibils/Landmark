@@ -81,8 +81,8 @@ void Renderer::Init(std::shared_ptr<LWindow> _window)
             lens_prop.color_attachments = {RenderPass::attachment{Format::BGRA8unorm}};
             lens_prop.color_attachments.back().finalLayout = ImageLayouts::SHADER_READ_ONLY;
             Folder shader_folder = IO::GetResources().GetFolder("shaders");
-            lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").GetContent_Binary();
-            lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").GetContent_Binary();
+            lens_prop.shaderStages[ShaderStage::VERTEX] = shader_folder.GetFile("test.vert.spv").ReadBinary();
+            lens_prop.shaderStages[ShaderStage::FRAGMENT] = shader_folder.GetFile("test.frag.spv").ReadBinary();
         }
 
         entity_lens = entity_stage->makeLens(lens_prop);

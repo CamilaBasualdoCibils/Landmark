@@ -1,8 +1,8 @@
 #include "Image.h"
 #include <VK/Devices/LogicalDevice.h>
-Image::Image(const ImageProperties &properties):properties(properties)
+Image::Image(const ImageProperties &properties) : properties(properties)
 {
-    MakeImage();
+	MakeImage();
 }
 
 Image::Image(const vk::Image &_image, const ImageProperties &ci)
@@ -17,9 +17,20 @@ void Image::Destroy()
 	GetDevice()->freeMemory(imageMemory);
 }
 
+void *Image::MapMemory()
+{
+	return GetDevice()->mapMemory(imageMemory, 0, memorysize).value;
+}
+void Image::UnmapMemory()
+{
+	GetDevice()->unmapMemory(imageMemory);
+}
+
+
+
 void Image::MakeImage()
 {
-const bool hasZ = properties.dimensions.z > 1;
+	const bool hasZ = properties.dimensions.z > 1;
 	const bool hasY = properties.dimensions.y > 1;
 	const bool HasLayers = properties.layers > 1;
 	if (hasZ && hasY && HasLayers)
@@ -42,12 +53,14 @@ const bool hasZ = properties.dimensions.z > 1;
 	vk::MemoryRequirements memory_requirements = GetDevice()->getImageMemoryRequirements(image);
 	vk::MemoryAllocateInfo memory_allocate_info;
 	memory_allocate_info.allocationSize = memory_requirements.size;
-	auto supportedMemoryType = GetDevice().GetMemoryTypeThatFits(memory_requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	memorysize = memory_requirements.size;
+	auto supportedMemoryType = GetDevice().GetMemoryTypeThatFits(memory_requirements.memoryTypeBits,
+		properties.memory_properties);
 	memory_allocate_info.memoryTypeIndex = supportedMemoryType.index;
 	if (!supportedMemoryType.isValid())
 	{
 		logger.Error("No compatible memory type found in " + GetDevice().GetName());
-		//logger.Error() << "No compatible memory type found in " << GetDevice().GetName() << Log::end;
+		// logger.Error() << "No compatible memory type found in " << GetDevice().GetName() << Log::end;
 		return;
 	}
 

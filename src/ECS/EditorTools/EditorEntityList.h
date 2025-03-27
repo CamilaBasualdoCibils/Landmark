@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <pch.h>
-#include "Debug/EditorTool.h"
+#include "Editor/EditorTool.h"
 #include <ECS/ECS_Forward.hpp>
 #include <ECS/Handles/Entity.hpp>
 class EditorEntityList : public EditorTool

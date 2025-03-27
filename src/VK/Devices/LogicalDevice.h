@@ -4,7 +4,7 @@
 
 #include "PhysicalDevice.h"
 
-#include "Debug/Debug.h"
+#include "Editor/Debug.h"
 #include "VK/Operations/Queue.h"
 
 struct QueueRequest

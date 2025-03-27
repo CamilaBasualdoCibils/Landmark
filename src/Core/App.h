@@ -3,7 +3,7 @@
 #include <Time/TimeTypes.h>
 #include <VK/Vulkan_Instance.h>
 #include <Core/AppModule.h>
-#include <Debug/Logging/LogKeeper2.h>
+#include <Editor/Logging/LogKeeper2.h>
 #include <Core/Window.h>
 #include <VK/Devices/MainDevice.h>
 #include <Renderer/Renderer.hpp>
