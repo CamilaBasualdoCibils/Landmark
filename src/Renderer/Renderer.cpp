@@ -19,7 +19,7 @@ class ShaderEditorTestTool : EditorTool
 {
 public:
     ShaderEditorTestTool() : EditorTool("Shader Edit Test") {}
-    void Draw() override
+    void DrawWindowContents() override
     {
         ImGui::Text("Hello");
         auto region_available = ImGui::GetContentRegionAvail();

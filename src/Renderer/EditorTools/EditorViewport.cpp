@@ -14,7 +14,7 @@ EditorViewport::EditorViewport(Renderer *_renderer) : EditorTool("Viewport"), re
 }
 
 
-void EditorViewport::Draw()
+void EditorViewport::DrawWindowContents()
 {
 
 	if (ImGui::BeginMenuBar())

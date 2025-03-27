@@ -1,7 +1,8 @@
 #pragma once
 #include <pch.h>
 #include <IO/File.h>
-#include "AssetDescriptor.hpp"
+#include "Descriptors/AssetDescriptor.hpp"
+class LoadedAsset;
 class Asset : public File
 {
 public:
@@ -23,8 +24,17 @@ public:
     AssetType GetType();
     const AssetDescriptor &GetDescriptor();
 
+    template <typename T, std::enable_if_t<std::is_base_of_v<LoadedAsset, T>>>
+    T Load();
+
 private:
     void CheckForUpdate();
     AssetType AssetTypeFromExtension() const;
     static inline Log LOGGER = Log("Asset");
 };
+
+template <typename T, std::enable_if_t<std::is_base_of_v<LoadedAsset, T>>>
+inline T Asset::Load()
+{
+    return T(*this);
+}

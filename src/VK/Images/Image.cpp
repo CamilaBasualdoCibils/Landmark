@@ -1,5 +1,7 @@
 #include "Image.h"
 #include <VK/Devices/LogicalDevice.h>
+#include <VK/Operations/CommandBuffer.h>
+#include <VK/Buffers/Buffer.h>
 Image::Image(const ImageProperties &properties) : properties(properties)
 {
 	MakeImage();
@@ -26,7 +28,62 @@ void Image::UnmapMemory()
 	GetDevice()->unmapMemory(imageMemory);
 }
 
+void Image::TransferLayout(CommandBuffer &cmdbuf, ImageLayouts old_layout, ImageLayouts new_layout)
+{
+	vk::ImageMemoryBarrier barrier{};
+    barrier.oldLayout = (vk::ImageLayout)old_layout;
+    barrier.newLayout = (vk::ImageLayout)new_layout;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = image;
+    barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = properties.mipLevels;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = properties.layers;
 
+    vk::PipelineStageFlags sourceStage;
+    vk::PipelineStageFlags destinationStage;
+
+    if (old_layout == ImageLayouts::UNDEFINED && new_layout == ImageLayouts::TRANSFER_DST)
+    {
+        barrier.srcAccessMask = vk::AccessFlagBits::eNone;
+        barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+        sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+        destinationStage = vk::PipelineStageFlagBits::eTransfer;
+    }
+    else if (old_layout == ImageLayouts::TRANSFER_DST && new_layout == ImageLayouts::SHADER_READ_ONLY)
+    {
+        barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+        barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        sourceStage = vk::PipelineStageFlagBits::eTransfer;
+        destinationStage = vk::PipelineStageFlagBits::eFragmentShader;
+    }
+    else
+    {
+        throw std::invalid_argument("Unsupported layout transition");
+    }
+
+    cmdbuf->pipelineBarrier(
+        sourceStage, destinationStage, {}, nullptr, nullptr, barrier);
+}
+
+void Image::CopyFromBuffer(CommandBuffer &cmdbuf, Buffer &buffer)
+{
+	vk::BufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;  // Tightly packed
+    region.bufferImageHeight = 0; // Tightly packed
+
+    region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+
+    region.imageOffset = vk::Offset3D{0, 0, 0};
+    region.imageExtent = vk::Extent3D{properties.dimensions.x, properties.dimensions.y, 1};
+	cmdbuf->copyBufferToImage(buffer,image,(vk::ImageLayout)ImageLayouts::TRANSFER_DST,{region});
+}
 
 void Image::MakeImage()
 {

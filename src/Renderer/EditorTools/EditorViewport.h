@@ -30,7 +30,7 @@ public:
 	const Viewport& getViewport() const {return last_viewport;}
 
 protected:
-	void Draw() override;
+	void DrawWindowContents() override;
 
 
 public:

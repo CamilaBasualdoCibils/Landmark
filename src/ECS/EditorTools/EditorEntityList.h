@@ -18,7 +18,7 @@ public:
 	void DrawHandle() override;
 
 protected:
-	void Draw() override;
+	void DrawWindowContents() override;
 
 
 public:

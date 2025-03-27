@@ -6,15 +6,17 @@
 class MainDevice : public LogicalDevice
 {
 	static inline Log logger = Log("Main Device");
-	const static inline DeviceFeatures mainDeviceFeatures = [](){
+	const static inline DeviceFeatures mainDeviceFeatures = []()
+	{
 		DeviceFeatures f;
 		f.queues = {
 			// Graphics Queue
-		{1, {true, true, true, true, false}},
-		// Compute Queue
-		{1, {false, false, true, true, false}},
-		// Present Queue
-		{1, {false, true, false, true, false}}};
+			{1, {true, true, true, true, false}},
+			// Compute Queue
+			{1, {false, false, true, true, false}},
+			// Present Queue
+			{1, {false, true, false, true, false}},
+			{1, {false, false, false, true, false}}};
 		f.wideLines = true;
 		f.geometryShader = true;
 		f.descriptorIndexding = true;
@@ -27,6 +29,7 @@ class MainDevice : public LogicalDevice
 
 		return f;
 	}();
+
 public:
 	MainDevice(const PhysicalDevice &pd);
 	Queue &GetGraphicsQueue()
@@ -40,6 +43,10 @@ public:
 	Queue &GetPresentQueue()
 	{
 		return FetchQueue(2);
+	}
+	Queue &GetTransferQueue()
+	{
+		return FetchQueue(3);
 	}
 
 private:

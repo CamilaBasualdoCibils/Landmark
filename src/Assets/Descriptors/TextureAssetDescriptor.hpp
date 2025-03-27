@@ -1,8 +1,8 @@
 #pragma once
 #include <pch.h>
 #include <IO/File.h>
-#include "AssetJsonUtils.hpp"
-#include "AssetEnums.hpp"
+#include <Assets/AssetJsonUtils.hpp>
+#include <Assets/AssetEnums.hpp>
 #include <Types/Flags.h>
 struct TextureAssetInfo
 {
@@ -17,13 +17,13 @@ struct TextureAssetInfo
     };
     enum TextureFormat
     {
-        e16BIT = 1 << 0,
-        eHDR = 1 << 1
+        e8BIT,
+        e16BIT,
+        eHDR 
     };
-    using TextureFormatFlags = uint32_t;
     ivec2 dimensions;
     int32_t channel_count;
-    TextureFormatFlags format = 0;
+    TextureFormat format = TextureFormat::e8BIT;
     SpriteSheetInfo spritesheet;
     static TextureAssetInfo FromTextureFile(const File &file);
 };

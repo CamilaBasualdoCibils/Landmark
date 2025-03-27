@@ -18,5 +18,5 @@ class AssetManager : public AppModule {
 template <typename T,  std::enable_if_t<std::is_base_of_v<AssetPayload,T>>>
 inline std::shared_ptr<T> AssetManager::GetOrLoadAsset(Asset &asset)
 {
-    //std::shared_ptr<AssetPayload>
+    
 }

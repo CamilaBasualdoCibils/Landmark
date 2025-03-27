@@ -20,7 +20,7 @@ static void TreeViewRecursive(const Folder &folder, Folder& selected_folder,bool
 
     // ImGui::TreeNodeEx(folder.GetName(),0)
 }
-void AssetExplorer::Draw()
+void AssetExplorer::DrawWindowContents()
 {
 
     ImGui::BeginChild("options",ImVec2(0,0),ImGuiChildFlags_AutoResizeY);

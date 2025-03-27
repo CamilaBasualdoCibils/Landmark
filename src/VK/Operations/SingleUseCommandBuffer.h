@@ -5,22 +5,20 @@
 
 #include "VK/Devices/DeviceResource.h"
 
-
 class SingleUseCommandBuffer
 {
 	CommandBuffer cmdBuffer;
 
-
 public:
-	SingleUseCommandBuffer(CommandPool& );
+	SingleUseCommandBuffer(CommandPool &);
 	~SingleUseCommandBuffer();
-	SingleUseCommandBuffer(const SingleUseCommandBuffer& o) = delete;
-	SingleUseCommandBuffer& operator=(const SingleUseCommandBuffer& o) = delete;
-	
-	vk::CommandBuffer* operator->() { return cmdBuffer.operator->(); }
-	CommandBuffer& operator*() {return cmdBuffer;}
+	SingleUseCommandBuffer(const SingleUseCommandBuffer &o) = delete;
+	SingleUseCommandBuffer &operator=(const SingleUseCommandBuffer &o) = delete;
+	operator CommandBuffer&(){return cmdBuffer;}
+	operator const CommandBuffer&() const { return cmdBuffer; }
 
+	vk::CommandBuffer *operator->() { return cmdBuffer.operator->(); }
+	CommandBuffer &operator*() { return cmdBuffer; }
 };
-
 
 #endif

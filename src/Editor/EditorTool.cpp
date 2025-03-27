@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "EditorTool.h"
 
-EditorTool::EditorTool(const std::string& name) :EditorObject(name)
+EditorTool::EditorTool(const std::string& name) :EditorObject(name),EditorWindow(name)
 {
 
 }
@@ -10,14 +10,7 @@ EditorTool::EditorTool(const std::string& name) :EditorObject(name)
 
 void EditorTool::DrawTool()
 {
-	if (!open) return;
-	if (ImGui::Begin(GetName().c_str(),&open))
-	{
-		Draw();
-		
-	}
-	ImGui::End();
-
+	EditorWindow<>::Draw();
 	
 }
 

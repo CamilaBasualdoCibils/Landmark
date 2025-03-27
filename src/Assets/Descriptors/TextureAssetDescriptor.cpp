@@ -6,8 +6,8 @@ TextureAssetInfo TextureAssetInfo::FromTextureFile(const File &file)
     std::string path = file.GetPath();
 
     int ok = stb::stbi_info(path.c_str(), &info.dimensions.x, &info.dimensions.y, &info.channel_count);
-    info.format |= TextureFormat::e16BIT * stb::stbi_is_16_bit(path.c_str()) != 0;
-    info.format |= TextureFormat::eHDR * stb::stbi_is_hdr(path.c_str()) != 0;
+    if (stb::stbi_is_16_bit(path.c_str())) info.format = TextureFormat::e16BIT;
+    else if (stb::stbi_is_hdr(path.c_str())) info.format = TextureFormat::eHDR;
     return info;
 }
 

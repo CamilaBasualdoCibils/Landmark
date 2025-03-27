@@ -2,6 +2,7 @@
 #include <pch.h>
 #include <VK/Devices/DeviceResource.h>
 #include <GenericEnums.h>
+class Buffer;
 class CommandBuffer;
 class Image : DeviceResource
 {
@@ -38,6 +39,9 @@ public:
     void *MapMemory();
     void UnmapMemory();
     size_t GetMemorySize() const {return memorysize;}
+
+    void TransferLayout(CommandBuffer& cmdbuf,ImageLayouts old_layout, ImageLayouts new_layout);
+    void CopyFromBuffer(CommandBuffer& cmdbuf,Buffer& buffer);
 
 private:
     void MakeImage();

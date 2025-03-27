@@ -17,7 +17,7 @@ public:
     {
     }
 
-    void Draw() override;
+    void DrawWindowContents() override;
     void DrawTool() override;
 
 private:

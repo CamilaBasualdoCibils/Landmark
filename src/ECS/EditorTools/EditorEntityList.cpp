@@ -42,7 +42,7 @@ static void DrawItemBackground(int iterator)
 
 	draw_list->ChannelsSetCurrent(1);
 }
-void EditorEntityList::Draw()
+void EditorEntityList::DrawWindowContents()
 {
 
 	{

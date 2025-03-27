@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 #include "TextureAssetDescriptor.hpp"
-#include "AssetJsonUtils.hpp"
+#include <Assets/AssetJsonUtils.hpp>
 enum class AssetType {
     eINVALID,
     eUNKNOWN,

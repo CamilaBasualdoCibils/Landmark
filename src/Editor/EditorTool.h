@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "EditorObject.h"
+#include "EditorWindow.hpp"
 class Editor;
+/*
 class EditorTool : public EditorObject
 {
 	friend Editor;
@@ -11,7 +13,7 @@ class EditorTool : public EditorObject
 
 	bool Docked = true;
 
-	
+
 protected:
 bool open = false;
 	EditorTool(const std::string& name);
@@ -24,4 +26,22 @@ public:
 	void DrawHandle() override;
 	void SetIsOpen(bool o) {open = o;}
 	constexpr bool GetIsOpen() const {return open;}
+};
+*/
+class EditorTool : public EditorObject, public EditorWindow<>
+{
+
+private:
+	/* data */
+protected:
+	bool open = false;
+
+	
+
+public:
+	EditorTool(const std::string &name);
+	void DrawTool() override;
+	void DrawHandle() override;
+	void SetIsOpen(bool o) { open = o; }
+	constexpr bool GetIsOpen() const { return open; }
 };

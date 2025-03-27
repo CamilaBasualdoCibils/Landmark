@@ -47,6 +47,7 @@ _CREATE_ENUM_(Format, vk::Format){
 	BGRA8unorm = int_cast(vk::Format::eB8G8R8A8Unorm),
 	BGRA8SRGB = int_cast(vk::Format::eB8G8R8A8Srgb),
 	RGBA8SRGB = int_cast(vk::Format::eR8G8B8A8Srgb),
+	RGB8SRGB = int_cast(vk::Format::eR8G8B8Srgb),
 	R_32_SFLOAT = int_cast(vk::Format::eR32Sfloat), // scalar 4 byte signed float
 	RG_32_SFLOAT = int_cast(vk::Format::eR32G32Sfloat), // vec2 4 byte signed float
 	RGB_32_SFLOAT = int_cast(vk::Format::eR32G32B32Sfloat), // vec3 4 byte signed float
