@@ -10,7 +10,7 @@ public:
 	using attachmentID = uint32_t;
 	struct attachment
 	{
-		Format format = Format::BGRA8unorm;
+		Format format = Format::BGRA_8_UNORM;
 		SampleCountFlags sampleCountFlag = SampleCountFlags::e1;
 		// operations
 		AttachmentLoadOp loadOp = AttachmentLoadOp::CLEAR;

@@ -49,7 +49,7 @@ using internal_window_handle = Window;
         bool resizable = true;
         bool decoration = true;
         bool transparent = false;
-        uvec2 window_size = {2560, 1400};
+        uvec2 window_size = {1920, 1080};
         LWindow_Properties() = default;
     };
 

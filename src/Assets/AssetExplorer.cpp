@@ -63,7 +63,7 @@ void AssetExplorer::DrawTool()
     EditorTool::DrawTool();
     for( auto it = inspectors.begin(); it != inspectors.end();it++) {
         AssetInspector& inspector = **it;
-        if (!inspector.isOpen()) {
+        if (!inspector.IsOpen()) {
             inspectors.erase(it);
             it--;
             continue;

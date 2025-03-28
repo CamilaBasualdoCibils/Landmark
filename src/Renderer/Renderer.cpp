@@ -140,12 +140,12 @@ void Renderer::Init()
 
     act_properties act_prop;
     RenderPass::attachment attch;
-    attch.format = Format::BGRA8unorm;
+    attch.format = Format::BGRA_8_UNORM;
     attch.finalLayout = ImageLayouts::SHADER_READ_ONLY;
     act_prop.color_attachments = {attch};
     scene_act = std::make_shared<Act>(act_prop);
 
-    attch.format = Format::BGRA8unorm;
+    attch.format = Format::BGRA_8_UNORM;
     attch.finalLayout = ImageLayouts::PRESENT_SRC;
     act_prop.color_attachments = {attch};
     imgui_act = std::make_shared<Act>(act_prop);
@@ -257,7 +257,7 @@ void Renderer::RenderBegin()
     imgui.EndFrame();
 
     // schedule->SetViewport()
-    schedule->PrepareNextFrame(*film);
+    schedule->PrepareNextFrame(*film,*imgui_act);
     schedule->Begin();
     schedule->PrepareStage(*stage);
     schedule->UseLens(*lens)

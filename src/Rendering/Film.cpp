@@ -13,14 +13,15 @@ Film::Film(const film_properties &_properties, Act &act) : properties(_propertie
     image_ready_semaphore.emplace();
 }
 
-void Film::Reconstruct(const film_properties &_new_prop)
+void Film::Reconstruct(const film_properties &_new_prop, Act &act)
 {
     std::optional<Format> og_format = properties.format;
     properties = _new_prop;
     if (!_new_prop.format.has_value())
         properties.format = og_format;
 
-    swapchain->Recreate(MakeSwapChainProperties());
+    swapchain->Recreate(act.getRenderPass(),properties.surface,MakeSwapChainProperties());
+    current_image_index = 0;
 }
 
 Semaphore &Film::NextFrame()

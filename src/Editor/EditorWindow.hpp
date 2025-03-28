@@ -18,6 +18,9 @@ public:
     EditorWindow(const std::string &_name) : titlebar(_name)
     {
     }
+    EditorWindow() : titlebar("Default Titlebar")
+    {
+    }
     virtual void Draw();
     template <typename U = ReturnType,typename std::enable_if<!std::is_void<U>::value, int>::type = 0>
      const decltype(return_value) &GetResult() const { return return_value; }
@@ -30,11 +33,10 @@ public:
 template <typename ReturnType>
 inline void EditorWindow<ReturnType>::Draw()
 {
-    if (!open)
-        return;
-    if (ImGui::Begin(titlebar.c_str()))
+
+    if (ImGui::Begin(titlebar.c_str(),&open))
     {
         DrawWindowContents();
-        ImGui::End();
     }
+    ImGui::End(); 
 }

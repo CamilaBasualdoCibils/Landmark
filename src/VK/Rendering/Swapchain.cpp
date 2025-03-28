@@ -25,18 +25,15 @@ uint32_t Swapchain::AcquireNextImage(std::optional<Semaphore> triggerSemaphore, 
         fence = triggerFence->GetVkFence();
     auto result = GetDevice()->acquireNextImageKHR(swapchain, TimeOutWait, semaphore, fence);
 
-    if (result.result == vk::Result::eErrorOutOfDateKHR)
-        OutOfDate = true;
-    else
-        OutOfDate = false;
+    OutOfDate = result.result != vk::Result::eSuccess;
 
     return result.value;
 }
 
-void Swapchain::Recreate(const SwapchainProperties &_new_prop)
+void Swapchain::Recreate(const RenderPass &rp, vk::SurfaceKHR surf, const SwapchainProperties &_new_prop)
 {
     properties = _new_prop;
-    LASSERT(false, "fuck");
+    Create(rp, surf, swapchain);
 }
 
 void Swapchain::Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<vk::SwapchainKHR> existing)
@@ -76,17 +73,19 @@ void Swapchain::Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<
     // swapchain_create_info.oldSwapchain = existing.value_or(nullptr);
 
     swapchain = GetDevice()->createSwapchainKHR(swapchain_create_info).value;
-    if (existing.has_value())
-        GetDevice()->destroySwapchainKHR(existing.value());
 
     /**************** fRAMEBUFFERS************ */
     if (existing.has_value())
     {
+        GetDevice()->destroySwapchainKHR(existing.value());
         for (auto &fbo : framebuffers)
-            fbo.Destroy();
+            fbo.DestroyFBOOnly();
+        logger.Debug("ImageViews and Samplers leaked");
         framebuffers.clear();
+        existing.reset();
     }
     const auto &images = GetDevice()->getSwapchainImagesKHR(swapchain).value;
+    LASSERT(!images.empty(), "Images Empty??");
     framebuffers.reserve(images.size());
 
     Image::ImageProperties imageProperties;
@@ -106,6 +105,7 @@ void Swapchain::Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<
         Framebuffer framebuffer(std::vector<CombinedImageSampler>{CImage}, rp);
         framebuffers.push_back(framebuffer);
     }
+    OutOfDate = false;
 }
 
 uint32_t Swapchain::DeduceImageCount(vk::SurfaceKHR surf)

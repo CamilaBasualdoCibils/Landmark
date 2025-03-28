@@ -43,11 +43,21 @@ _CREATE_ENUM_(SharingMode, vk::SharingMode){
 };
 
 _CREATE_ENUM_(Format, vk::Format){
-	RGBA8uint = int_cast(vk::Format::eR8G8B8A8Uint),
-	BGRA8unorm = int_cast(vk::Format::eB8G8R8A8Unorm),
-	BGRA8SRGB = int_cast(vk::Format::eB8G8R8A8Srgb),
-	RGBA8SRGB = int_cast(vk::Format::eR8G8B8A8Srgb),
-	RGB8SRGB = int_cast(vk::Format::eR8G8B8Srgb),
+	RGBA_8_UINT = int_cast(vk::Format::eR8G8B8A8Uint),
+	BGRA_8_UNORM = int_cast(vk::Format::eB8G8R8A8Unorm),
+
+	BGRA_8_SRGB = int_cast(vk::Format::eB8G8R8A8Srgb),
+
+	RGBA_8_SRGB = int_cast(vk::Format::eR8G8B8A8Srgb),
+	RGB_8_SRGB = int_cast(vk::Format::eR8G8B8Srgb),
+	RG_8_SRGB = int_cast(vk::Format::eR8G8Srgb),
+	R_8_SRGB = int_cast(vk::Format::eR8Srgb),
+
+	RGBA_16_UNORM = int_cast(vk::Format::eR16G16B16A16Unorm),
+	RGB_16_UNORM = int_cast(vk::Format::eR16G16B16Unorm),
+	RG_16_UNORM = int_cast(vk::Format::eR16G16Unorm),
+	R_16_UNORM = int_cast(vk::Format::eR16Unorm),
+
 	R_32_SFLOAT = int_cast(vk::Format::eR32Sfloat), // scalar 4 byte signed float
 	RG_32_SFLOAT = int_cast(vk::Format::eR32G32Sfloat), // vec2 4 byte signed float
 	RGB_32_SFLOAT = int_cast(vk::Format::eR32G32B32Sfloat), // vec3 4 byte signed float

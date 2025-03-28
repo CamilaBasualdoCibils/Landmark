@@ -2,6 +2,7 @@
 #include <pch.h>
 #include <IO/File.h>
 #include "Descriptors/AssetDescriptor.hpp"
+#include <Assets/AssetManager.hpp>
 class LoadedAsset;
 class Asset : public File
 {
@@ -23,9 +24,11 @@ public:
 
     AssetType GetType();
     const AssetDescriptor &GetDescriptor();
+    
+    template <typename T>//, std::enable_if_t<std::is_base_of_v<LoadedAsset,T>>>
+    std::shared_ptr<T> Load();
+    private:
 
-    template <typename T, std::enable_if_t<std::is_base_of_v<LoadedAsset, T>>>
-    T Load();
 
 private:
     void CheckForUpdate();
@@ -33,8 +36,8 @@ private:
     static inline Log LOGGER = Log("Asset");
 };
 
-template <typename T, std::enable_if_t<std::is_base_of_v<LoadedAsset, T>>>
-inline T Asset::Load()
+template <typename T>//, std::enable_if_t<std::is_base_of_v<LoadedAsset,T>>>
+inline std::shared_ptr<T> Asset::Load()
 {
-    return T(*this);
+    return AssetManager::GetInstance()->GetOrLoadAsset<T>(*this);
 }

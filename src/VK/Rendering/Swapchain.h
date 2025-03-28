@@ -12,7 +12,7 @@ public:
     struct SwapchainProperties
     {
         ColorSpace colorSpace = ColorSpace::SRGB_NON_LINEAR;
-        Format colorFormat = Format::RGBA8SRGB;
+        Format colorFormat = Format::RGBA_8_SRGB;
         PresentModes presentMode;
 
         // leave empty for swapchain to autodeduce imageCount
@@ -44,7 +44,7 @@ public:
     Framebuffer& GetFramebuffer(uint32_t index) {return framebuffers[index];}
     uvec2 GetExtent() const {return properties.extent.value();}
     const SwapchainProperties& GetProperties() const {return properties;}
-    void Recreate(const SwapchainProperties&);
+    void Recreate(const RenderPass &rp, vk::SurfaceKHR surf,const SwapchainProperties &_new_prop);
 private:
     void Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<vk::SwapchainKHR> = {});
     uint32_t DeduceImageCount(vk::SurfaceKHR surf);

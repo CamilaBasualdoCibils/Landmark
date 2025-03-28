@@ -12,7 +12,7 @@ class Film : public Canvas {
 public:
     Film(const film_properties& _properties, Act& act) ;
     bool isOutOfDate() const {return swapchain->GetIsOutOfDate();}
-    void Reconstruct(const film_properties &_new_prop);
+    void Reconstruct(const film_properties &_new_prop, Act &act);
     Semaphore& NextFrame();
     Framebuffer& GetFramebuffer() override {return swapchain->GetFramebuffer(current_image_index);}
     ivec2 GetFramebufferSize() const override {return swapchain->GetExtent();}

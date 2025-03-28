@@ -77,11 +77,15 @@ Schedule &Schedule::SetScissor(IRect2D bounds)
     return *this;
 }
 
-Schedule &Schedule::PrepareNextFrame(Film &proj)
+Schedule &Schedule::PrepareNextFrame(Film &proj, Act &act)
 {
-    if (proj.isOutOfDate())
-        proj.Reconstruct(proj.GetProperties());
     Semaphores_before_execute.push_back(proj.NextFrame());
+    while (proj.isOutOfDate())
+    {
+
+        proj.Reconstruct(proj.GetProperties(), act);
+        Semaphores_before_execute.back() = proj.NextFrame();
+    }
     return *this;
 }
 
@@ -132,7 +136,7 @@ Schedule &Schedule::FullScissor()
 
 Schedule &Schedule::PrepareStage(Stage &stg)
 {
-    LASSERT(!act_ongoing,"Cannot prepare a stage while an act is ongoing");
+    LASSERT(!act_ongoing, "Cannot prepare a stage while an act is ongoing");
     stg.TransferData(*cmd_buffer);
     return *this;
 }

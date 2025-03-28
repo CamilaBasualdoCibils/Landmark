@@ -22,9 +22,15 @@ Framebuffer::Framebuffer(const std::vector<CombinedImageSampler> &_images, const
 
 void Framebuffer::Destroy()
 {
-    GetvkDevice().destroyFramebuffer(framebuffer);
+    DestroyFBOOnly();
     for (auto &im : images)
         im.Destroy();
+}
+
+void Framebuffer::DestroyFBOOnly()
+{
+    GetvkDevice().destroyFramebuffer(framebuffer);
+
 }
 
 void Framebuffer::CreateFramebuffer(const RenderPass &rp)

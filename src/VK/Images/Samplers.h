@@ -35,6 +35,7 @@ public:
     }
     vk::Sampler GetVkSampler() const {return sampler;}
     operator vk::Sampler() const {return sampler;}
+    const SamplerProperties& GetProperties() const {return properties;}
 private:
     void CreateSampler()
     {

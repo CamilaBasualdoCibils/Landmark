@@ -30,7 +30,7 @@ Schedule& BeginAct(Canvas& target,Act& act);
 Schedule& EndAct();
 Schedule& SetViewport(Viewport bounds);
 Schedule& SetScissor(IRect2D bounds);
-Schedule& PrepareNextFrame(Film& proj);
+Schedule& PrepareNextFrame(Film& proj,Act& act);
 Schedule& Present(Film& proj);
 Schedule& WaitUntilIdle();
 Schedule& Capture(Stage& stg, const schedule_capture_stage_properties& prop);

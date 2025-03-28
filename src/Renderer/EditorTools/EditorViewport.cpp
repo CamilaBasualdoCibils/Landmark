@@ -70,7 +70,7 @@ void EditorViewport::DrawTool()
 {
 	if (!open)
 		return;
-	if (ImGui::Begin(GetName().c_str(), &open, ImGuiWindowFlags_MenuBar))
+	if (ImGui::Begin(GetLabel().c_str(), &open, ImGuiWindowFlags_MenuBar))
 		Draw();
 	ImGui::End();
 }

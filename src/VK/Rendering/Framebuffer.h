@@ -9,7 +9,7 @@ class Framebuffer : public DeviceResource
 public:
     struct FramebufferAttachmentProperties
     {
-        Format format = Format::RGBA8SRGB;
+        Format format = Format::RGBA_8_SRGB;
         MemoryTillingType tilling = MemoryTillingType::OPTIMAL;
         Flags<ImageUsage> usages = ImageUsage::COLOR_ATTACHMENT;
     };
@@ -35,6 +35,7 @@ public:
     const decltype(images)& GetImages() const {return images;}
     decltype(images)& GetImages() {return images;}
     decltype(FramebufferProperties::dimensions) GetSize() const {return properties.dimensions;}
+    void DestroyFBOOnly();
 
 private:
     void CreateFramebuffer(const RenderPass &rp);

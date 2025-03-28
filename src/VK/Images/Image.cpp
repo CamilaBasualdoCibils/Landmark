@@ -107,7 +107,7 @@ void Image::MakeImage()
 	image_create_info.imageType = properties.dimensions.y > 1 ? (properties.dimensions.z > 1 ? vk::ImageType::e3D : vk::ImageType::e2D) : vk::ImageType::e1D;
 	image = GetDevice()->createImage(image_create_info).value;
 
-	vk::MemoryRequirements memory_requirements = GetDevice()->getImageMemoryRequirements(image);
+  	vk::MemoryRequirements memory_requirements = GetDevice()->getImageMemoryRequirements(image);
 	vk::MemoryAllocateInfo memory_allocate_info;
 	memory_allocate_info.allocationSize = memory_requirements.size;
 	memorysize = memory_requirements.size;

@@ -16,5 +16,5 @@ void EditorTool::DrawTool()
 
 void EditorTool::DrawHandle()
 {
-	ImGui::MenuItem(GetName().c_str(), 0, &open);
+	ImGui::MenuItem(GetLabel().c_str(), 0, &open);
 }

@@ -27,7 +27,7 @@ void EditorObjectGroup::DrawHandleWithoutMenu()
 
 void EditorObjectGroup::DrawHandle()
 {
-	if (ImGui::BeginMenu(GetName().c_str()))
+	if (ImGui::BeginMenu(GetLabel().c_str()))
 	{
 
 		for (auto& object : tools)

@@ -50,7 +50,7 @@ public:
 	{
 		for (auto it = tools.begin(); it != tools.end(); ++it)
 		{
-			if (it->second->GetName() == name)
+			if (it->second->GetLabel() == name)
 				return std::make_pair( true,reinterpret_cast<T*>( it->second ));
 		}
 		return std::make_pair( false,nullptr );

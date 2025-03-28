@@ -5,115 +5,72 @@
 #include <VK/Operations/SingleUseCommandBuffer.h>
 #include <VK/Devices/LogicalDevice.h>
 #include <Core/App.h>
+#include <Assets/AssetManager.hpp>
+#include <Assets/LoadedAsset/LoadedTextureAsset.hpp>
+void TextureAssetInspector::RebuildDescriptorSet()
+{
+    if (imgui_ds.has_value())
+    {
+        ImGui_ImplVulkan_RemoveTexture(*imgui_ds);
+        imgui_ds.reset();
+    }
+
+    if (sampler.has_value())
+    {
+        sampler->Destroy();
+        sampler.reset();
+    }
+    Sampler::SamplerProperties samp_prop;
+    samp_prop.magFilter = Filter::NEAREST;
+    samp_prop.minFilter = Filter::NEAREST;
+    sampler.emplace(samp_prop);
+
+    imgui_ds.emplace();
+    imgui_ds = ImGui_ImplVulkan_AddTexture((vk::Sampler)*sampler, (vk::ImageView)vkimage->GetImageView(), (VkImageLayout)(vk::ImageLayout)ImageLayouts::SHADER_READ_ONLY);
+}
+void TextureAssetInspector::SaveChanges()
+{
+}
 void TextureAssetInspector::SetAsset(const Asset &_asset)
 {
     AssetInspector::SetAsset(_asset);
-    SetName(GetAsset().GetName());
+    SetTitleBar(GetAsset().GetName());
+
     if (vkimage.has_value())
     {
 
         vkimage->Destroy();
         vkimage.reset();
     }
-    if (imgui_ds != 0)
-    {
-        ImGui_ImplVulkan_RemoveTexture(imgui_ds);
-        imgui_ds = vk::DescriptorSet{};
-    }
+
     Asset asset = GetAsset();
-    if (asset.GetType() != AssetType::eTEXTURE)
-        throw "oops";
-    const AssetDescriptor &desc = asset.GetDescriptor();
-    const TextureAssetDescriptor texture_info = desc.GetTextureDescription();
-    CombinedImageSampler::CISProperties prop;
-    prop.image.dimensions = uvec3{texture_info.info.dimensions.x, texture_info.info.dimensions.y, 1};
-    prop.image.format = Format::RGBA8SRGB;
-    prop.image.usage = ImageUsage::SAMPLED | ImageUsage::TRANSFER_DST;
-    // prop.image.memory_properties |= MemoryProperties::HOST_VISIBLE;
-    // prop.image.;
-    vkimage.emplace(prop);
+    original_descriptor = asset.GetDescriptor().GetTextureDescription();
+    modified_descriptor = original_descriptor;
+    modified = false;
 
-    Buffer::BufferProperties staging_buffer_prop;
-    staging_buffer_prop.size = vkimage->GetImage().GetMemorySize();
-    staging_buffer_prop.memory_properties = {MemoryProperties::HOST_VISIBLE, MemoryProperties::HOST_COHERENT, MemoryProperties::DEVICE_LOCAL};
-    staging_buffer_prop.usage_flags = BufferUsage::TRANSFER_SRC;
-    Buffer staging_buffer(staging_buffer_prop);
-    int x, y, channels;
-    void *image_data = stb::stbi_load(GetAsset().GetPath().c_str(), &x, &y, &channels, 4);
-    void *mapped = staging_buffer.MapMemory();
-    std::memcpy(mapped, image_data, staging_buffer_prop.size);
-    staging_buffer.UnmapMemory();
-    stb::stbi_image_free(image_data);
-    {
-
-        CommandPool pool(App::GetInstance()->GetMainDevice()->GetGraphicsQueue());
-        SingleUseCommandBuffer dispatch(pool);
-        /*
-        vk::ImageMemoryBarrier barrier;
-        barrier.oldLayout = vk::ImageLayout::eUndefined;
-        barrier.newLayout = vk::ImageLayout::eTransferDstOptimal;
-        barrier.srcQueueFamilyIndex = vk::QueueFamilyIgnored;
-        barrier.dstQueueFamilyIndex = vk::QueueFamilyIgnored;
-        barrier.image = vkimage->GetImage();
-        barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-        barrier.subresourceRange.baseMipLevel = 0;
-        barrier.subresourceRange.levelCount = 1;
-        barrier.subresourceRange.baseArrayLayer = 0;
-        barrier.subresourceRange.layerCount = 1;
-        barrier.srcAccessMask = vk::AccessFlagBits::eNone;
-        barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
-        dispatch->pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer, vk::DependencyFlags{}, {}, {}, barrier);
-       */
-        vkimage->GetImage().TransferLayout(dispatch, ImageLayouts::UNDEFINED, ImageLayouts::TRANSFER_DST);
-
-        /*vk::BufferImageCopy copy;
-        copy.bufferOffset = 0;
-        copy.bufferRowLength = 0;
-        copy.bufferImageHeight = 0;
-        copy.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-        copy.imageSubresource.mipLevel = 0;
-        copy.imageSubresource.baseArrayLayer = 0;
-        copy.imageSubresource.layerCount = 1;
-        copy.imageOffset = vk::Offset3D{0, 0, 0};
-        copy.imageExtent = vk::Extent3D{texture_info.info.dimensions.x, texture_info.info.dimensions.y, 1};
-        dispatch->copyBufferToImage(staging_buffer, vkimage->GetImage(),
-                                    (vk::ImageLayout)ImageLayouts::TRANSFER_DST, {copy});*/
-        vkimage->GetImage().CopyFromBuffer(dispatch, staging_buffer);
-        vkimage->GetImage().TransferLayout(dispatch, ImageLayouts::TRANSFER_DST, ImageLayouts::SHADER_READ_ONLY);
-
-        /*
-vk::ImageMemoryBarrier barrier2;
-barrier2.oldLayout = vk::ImageLayout::eTransferDstOptimal;
-barrier2.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-barrier2.srcQueueFamilyIndex = vk::QueueFamilyIgnored;
-barrier2.dstQueueFamilyIndex = vk::QueueFamilyIgnored;
-barrier2.image = vkimage->GetImage();
-barrier2.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-barrier2.subresourceRange.baseMipLevel = 0;
-barrier2.subresourceRange.levelCount = 1;
-barrier2.subresourceRange.baseArrayLayer = 0;
-barrier2.subresourceRange.layerCount = 1;
-barrier2.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
-barrier2.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-dispatch->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, vk::DependencyFlags{}, {}, {}, barrier2);
-*/
-    }
-    staging_buffer.Destroy();
-    imgui_ds = ImGui_ImplVulkan_AddTexture((vk::Sampler)vkimage->GetSampler(), (vk::ImageView)vkimage->GetImageView(), VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    vkimage = asset.Load<LoadedTextureAsset>()->LoadNewGpuImage();
+    // imgui_ds = ImGui_ImplVulkan_AddTexture((vk::Sampler)vkimage->GetSampler(), (vk::ImageView)vkimage->GetImageView(), VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    RebuildDescriptorSet();
 }
 
-void TextureAssetInspector::DrawContents()
+void TextureAssetInspector::DrawWindowContents()
 {
-    ImGui::BeginChild("Topbar", ImVec2(0, 0), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Borders);
 
-    ImGui::BeginDisabled();
-    ImGui::Button("Save");
-    ImGui::EndDisabled();
-    ImGui::EndChild();
+    if (ImGui::BeginChild("Topbar", ImVec2(0, 0), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Borders))
+    {
+        if (!modified)
+            ImGui::BeginDisabled();
+        if (ImGui::Button("Save", ImVec2(50, 50)))
+            SaveChanges();
+        if (!modified)
+            ImGui::EndDisabled();
+        }
+        ImGui::EndChild();
+
     const int min_image_display_x_size = ImGui::GetContentRegionAvail().x * 0.5f;
     const int max_image_display_x_size = ImGui::GetContentRegionAvail().x * 0.8f;
     ImGui::SetNextWindowSizeConstraints(ImVec2{min_image_display_x_size, -1}, ImVec2{max_image_display_x_size, -1});
-    ImGui::BeginChild("image_display", ImVec2{max_image_display_x_size, -1}, ImGuiChildFlags_ResizeX);
+    if (ImGui::BeginChild("image_display", ImVec2{max_image_display_x_size, -1}, ImGuiChildFlags_ResizeX))
     {
         // std::cerr << ImGui::GetWindowSize().x << " " << max_image_display_x_size << std::endl;
         // if (ImGui::GetWindowSize().x > max_image_display_x_size)
@@ -131,7 +88,7 @@ void TextureAssetInspector::DrawContents()
             ImPlot::SetupAxisZoomConstraints(ImAxis_Y1, 1, image_size.y * 2);
 
             // ImPlot::SetupAxes(nullptr,nullptr,ImPlotAxisFlags_NoHighlight|,ImPlotAxisFlags_NoHighlight);
-            ImPlot::PlotImage("Image", (ImTextureID)(VkDescriptorSet)imgui_ds, ImPlotPoint{0, 0}, ImPlotPoint{image_size.x, image_size.y});
+            ImPlot::PlotImage("Image", (ImTextureID)(VkDescriptorSet)*imgui_ds, ImPlotPoint{0, 0}, ImPlotPoint{image_size.x, image_size.y});
             ImPlot::GetPlotDrawList()->AddRect(ImPlot::PlotToPixels(ImVec2{0, 0}), ImPlot::PlotToPixels(ImVec2{image_size.x, image_size.y}), ImGui::ColorConvertFloat4ToU32(ImVec4{1, 1, 1, 1}));
             ImPlot::EndPlot();
             // ImGui::Image((ImTextureID)(VkDescriptorSet)imgui_ds, ImGui::GetContentRegionAvail());
@@ -141,8 +98,19 @@ void TextureAssetInspector::DrawContents()
     ImGui::SameLine();
     // ImGui::SetNextWindowSizeConstraints(ImVec2{0,-1},ImVec2{max_image_display_x_size,-1});
 
-    ImGui::BeginChild("parameters", ImVec2(0, 0), ImGuiChildFlags_Borders);
-    TextureAssetDescriptor desc = GetAsset().GetDescriptor().GetTextureDescription();
-    desc.DisplayProperties();
+    if (ImGui::BeginChild("parameters", ImVec2(0, 0), ImGuiChildFlags_Borders))
+    {
+
+        modified |= modified_descriptor.DisplayProperties();
+    }
     ImGui::EndChild();
+}
+
+TextureAssetInspector::~TextureAssetInspector()
+{
+    if (sampler.has_value())
+    {
+        sampler->Destroy();
+        sampler.reset();
+    }
 }

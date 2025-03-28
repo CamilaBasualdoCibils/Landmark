@@ -60,7 +60,7 @@ public:
 			operator|=(t);
 		}
 		else {
-			operator&=( !(underlying_type)t);
+			operator&=( ~(underlying_type)t);
 		}
 	}
 	template <typename R>
@@ -80,6 +80,8 @@ public:
 	Flags operator!() const { return Flags(!underlyingMask); }
 
 	constexpr bool operator==(const Flags& o) const { return underlyingMask == o.underlyingMask; }
+	constexpr bool operator!=(const Flags& o) const { return !operator==(o); }
+
 
 	constexpr underlying_type operator*() const { return underlyingMask; }
 

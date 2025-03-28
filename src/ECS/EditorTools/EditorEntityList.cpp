@@ -13,7 +13,7 @@ EditorEntityList::EditorEntityList() : EditorTool("Entity List")
 
 void EditorEntityList::DrawHandle()
 {
-	ImGui::MenuItem(GetName().c_str(), 0, &Open);
+	ImGui::MenuItem(GetLabel().c_str(), 0, &Open);
 	ImGui::MenuItem(InspectorName.c_str(), 0, &InspectorOpen);
 }
 static void DrawItemBackground(int iterator)
@@ -136,7 +136,7 @@ void EditorEntityList::DrawWindowContents()
 
 void EditorEntityList::DrawTool()
 {
-	if (ImGui::Begin(GetName().c_str(), &Open))
+	if (ImGui::Begin(GetLabel().c_str(), &Open))
 	{
 		Draw();
 	}
