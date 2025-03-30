@@ -7,19 +7,16 @@ class EditorObjectGroup : public EditorObject
 	
 	//         order    Tool
 	//          V        V
-	std::map<int64_t, EditorObject*> tools;
+	std::map<int64_t, std::shared_ptr<EditorObject>> tools;
 
 
 public:
 
 	EditorObjectGroup(const std::string& _name);
 	~EditorObjectGroup() {
-		for (auto& t:tools) {
-			delete t.second;
-		}
 	}
 	template <typename T, typename... Args>
-	T& PushObject(int64_t order = 0, Args&&... args)
+	std::shared_ptr<T> PushObject(int64_t order = 0, Args&&... args)
 	{
 		if (tools.find(order) != tools.end())
 		{
@@ -35,34 +32,35 @@ public:
 			}
 
 		}
-		tools.emplace(order, reinterpret_cast<EditorObject*>( new T(std::forward<Args>(args)...)));
+		auto new_t = std::make_shared<T>(std::forward<Args>(args)...);
+		tools.emplace(order, std::reinterpret_pointer_cast<EditorObject>(new_t ));
 		
-		return *reinterpret_cast<T*>(tools.at(order));
+		return new_t;
 	}
 	template <typename T>
-	T& GetObject(const std::string& name)
+	std::shared_ptr<T> GetObject(const std::string& name)
 	{
 
-		return  *TryGetObject<T*>(name).second;
+		return TryGetObject<T>(name).second;
 	}
 	template <typename T>
-	std::pair<bool, T*> TryGetObject(const std::string& name)
+	std::pair<bool, std::shared_ptr<T>> TryGetObject(const std::string& name)
 	{
 		for (auto it = tools.begin(); it != tools.end(); ++it)
 		{
 			if (it->second->GetLabel() == name)
-				return std::make_pair( true,reinterpret_cast<T*>( it->second ));
+				return std::make_pair( true,std::reinterpret_pointer_cast<T>(it->second));
 		}
 		return std::make_pair( false,nullptr );
 	}
 
-	EditorObjectGroup& GetOrPushGroup( const std::string& name)
+	std::shared_ptr<EditorObjectGroup> GetOrPushGroup( const std::string& name)
 	{
 		auto result = TryGetObject<EditorObjectGroup>(name);
 		if (!result.first)
 			return PushObject<EditorObjectGroup>(tools.empty() ? 0: tools.rbegin()->first, name);
 
-		return *result.second;
+		return result.second;
 	}
 
 

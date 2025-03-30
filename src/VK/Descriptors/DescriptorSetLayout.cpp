@@ -32,5 +32,5 @@ DescriptorSetLayout::DescriptorSetLayout(const std::vector<DescriptorSetLayoutBi
     createInfo.pNext = &vkbindingFlags;
 
     vk_layout = GetvkDevice().createDescriptorSetLayout(createInfo).value;
-    logger.Debug("DescriptorSetLayout Created");
+
 }

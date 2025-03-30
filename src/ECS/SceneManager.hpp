@@ -14,7 +14,7 @@ class SceneManager : public AppModule
     SceneID next_id = 0;
     std::map<SceneID,ScenePointer> scenes;
     //ObjectAllocator_new<ScenePointer, SceneID> scenes;
-    EditorEntityList* editor_inspector;
+    std::shared_ptr<EditorEntityList> editor_inspector;
     void Init();
     
 public:

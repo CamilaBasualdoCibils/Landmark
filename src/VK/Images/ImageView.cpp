@@ -27,5 +27,4 @@ void ImageView::Create(Image &image)
     
 
     imageView = GetvkDevice().createImageView(image_view_create_info).value;
-    logger.Debug("ImageView Created");
 }

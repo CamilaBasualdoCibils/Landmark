@@ -27,7 +27,7 @@ public:
         LASSERT(instance != nullptr, "Instance doesnt exists. Not initialized?");
         return instance;
     }
-
+    LogKeeper2();
 private:
     void Init();
     void Shutdown();

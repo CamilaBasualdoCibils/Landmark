@@ -8,7 +8,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Editor/Demo",
+            "program": "${workspaceFolder}/bin/Debug/Landmark",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -28,7 +28,33 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "Build Editor"
+            "preLaunchTask": "Build Debug"
+        },
+        {
+            "name": "Release",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Release/Landmark",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing\nskip -gfi /usr/include/c++/*/*/*\nskip -gfi /usr/include/c++/*/*\nskip -gfi /usr/include/c++/*",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build Release"
         }
 
     ]

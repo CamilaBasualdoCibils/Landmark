@@ -26,14 +26,16 @@
 #define GLFW_EXPOSE_NATIVE_X11
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
-// #define GLFW_EXPOSE_NATIVE_WIN32
-// #include <GLFW/include/GLFW/glfw3native.h>
+
 
 // IMGUI
+//#define IMGUI_USE_WCHAR32
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_vulkan.h>
+#include <imgui/imstb_truetype.h>
 
 #include <implot/implot.h>
 

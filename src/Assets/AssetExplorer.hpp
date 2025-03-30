@@ -23,4 +23,5 @@ public:
 private:
     void DrawFolderContents();
     std::shared_ptr<AssetInspector> openAssetInspector(Asset &asset);
+    void DrawFileSystemObjectIcon(const FileSystemObject& f,int size);
 };

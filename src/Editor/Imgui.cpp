@@ -7,7 +7,7 @@
 #include "VK/Rendering/RenderPass.h"
 //#include <Renderer/Renderer.h>
 #include "Editor.h"
-
+#include <IO/IO.h>
 void Imgui::Init(Vulkan_Instance& vkinstance,LogicalDevice& device,Queue& queue, RenderPass& rpp,LWindow& window,Format format)
 {
 	
@@ -43,6 +43,7 @@ void Imgui::Init(Vulkan_Instance& vkinstance,LogicalDevice& device,Queue& queue,
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
+	
 	io.FontAllowUserScaling = true;
 	ImGuiStyle &style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -50,6 +51,20 @@ void Imgui::Init(Vulkan_Instance& vkinstance,LogicalDevice& device,Queue& queue,
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
+
+	std::string font_path = IO::GetAssets().
+	GetFolder("editor").
+	GetFolder("fonts").
+	GetFile("JetBrainsMono-Regular.ttf"). 
+	GetPath();
+	//ImFontConfig font_config;
+	
+	io.FontGlobalScale = 0.7;
+	
+    ImFont* my_font =  io.Fonts->AddFontFromFileTTF(font_path.c_str(), 32.0f);
+	io.Fonts->AddFontDefault();
+	io.Fonts->Build();
+	
 	ImPlot::CreateContext();
 	const auto capabilties = device.GetSurfaceCapabilities(window.GetSurface());
 	
@@ -82,6 +97,9 @@ void Imgui::Init(Vulkan_Instance& vkinstance,LogicalDevice& device,Queue& queue,
 
 	PushEditorTools();
 	logger.Debug("Init");
+	
+
+	//ImGui::PushFont(my_font);
 	// logger << "Init" << Log::end;
 }
 
@@ -126,14 +144,14 @@ void Imgui::Clear()
 void Imgui::PushEditorTools()
 {
 
-	auto &imguiGroup = Editor::GetInstance()->GetMainToolGroup().PushObject<EditorObjectGroup>(5, "ImGui");
+	auto imguiGroup = Editor::GetInstance()->GetMainToolGroup().PushObject<EditorObjectGroup>(5, "ImGui");
 	static bool ShowImguiDemo = false;
 	static bool ShowImplotDemo = false;
 
-	imguiGroup.PushObject<EditorLambda>(0, "Imgui Demo", [&]()
+	imguiGroup->PushObject<EditorLambda>(0, "Imgui Demo", [&]()
 										{ ImGui::MenuItem("Imgui Demo", 0, &ShowImguiDemo); }, [&]()
 										{ if (ShowImguiDemo) ImGui::ShowDemoWindow(); });
-	imguiGroup.PushObject<EditorLambda>(1, "Implot Demo", [&]()
+	imguiGroup->PushObject<EditorLambda>(1, "Implot Demo", [&]()
 										{ ImGui::MenuItem("Implot Demo", 0, &ShowImplotDemo); }, [&]()
 										{ if (ShowImplotDemo) ImPlot::ShowDemoWindow(); });
 }

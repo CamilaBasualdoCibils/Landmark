@@ -16,5 +16,7 @@ void EditorTool::DrawTool()
 
 void EditorTool::DrawHandle()
 {
+	 bool open = GetIsOpen();
 	ImGui::MenuItem(GetLabel().c_str(), 0, &open);
+	SetIsOpen(open);
 }

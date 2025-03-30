@@ -1,5 +1,30 @@
-[Logger] Logging Init
-[App]                     
+[Logger] [39m[48mLogging Init[0m
+[LWindow] [39m[48mLWindow Created[0m
+[Vulkan] [39m [48m ===== Vulkan Instance  ===== 
+Extensions:[0m
+[Vulkan] [39m[48m	VK_KHR_surface[0m
+[Vulkan] [39m[48m	VK_KHR_xcb_surface[0m
+[NVIDIA GeForce RTX 3070 Laptop GPU] [39m[48m
+====== Logical Device Init ======
+Extensions:
+	VK_EXT_descriptor_indexing
+	VK_KHR_swapchain
+	VK_KHR_ray_tracing_pipeline
+	VK_KHR_acceleration_structure
+	VK_KHR_ray_tracing_pipeline
+	VK_KHR_ray_query
+	VK_KHR_pipeline_library
+	VK_KHR_deferred_host_operations
+Layers:
+	VK_LAYER_KHRONOS_validation
+Queues: 
+  Family_ID : Count
+	0 : 1
+	1 : 1
+	2 : 2
+=================================[0m
+[Main Device] [39m[48mInit[0m
+[App] [39m[48m                    
                        /\
                        ||
                        ||
@@ -28,5 +53,4 @@
        |               ]I               |       
        |               ]I               |       
        |               ]I               |     
-
-[GLFW] Init
+[0m

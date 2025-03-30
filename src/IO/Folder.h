@@ -30,4 +30,6 @@ public:
 	std::vector<Folder> GetSubFolders();
 	const std::vector<File> GetFiles() const;
 	std::vector<File> GetFiles();
+
+	bool isEmpty() const;
 };

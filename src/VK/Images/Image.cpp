@@ -125,5 +125,5 @@ void Image::MakeImage()
 
 	auto result = GetDevice()->bindImageMemory(image, imageMemory, 0);
 
-	logger.Debug("Image Created. TODO: make this more descriptive");
+	//logger.Debug("Image Created. TODO: make this more descriptive");
 }

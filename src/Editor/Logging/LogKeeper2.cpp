@@ -33,7 +33,7 @@ void LogKeeper2::PushLog(const std::string &origin, const std::string &log)
     std::copy(f_push.data(), f_push.data() + f_push.size(), log_buffer.data()+existing_size);
 }
 
-void LogKeeper2::Init()
+LogKeeper2::LogKeeper2()
 {
     LASSERT(!instance, "LogKeeper instance already exists");
     instance = this;
@@ -46,6 +46,11 @@ void LogKeeper2::Init()
     }
     logger.Debug("Logging Init");
     flushing_thread = std::thread(&LogKeeper2::flush_thread_entry, this);
+}
+
+void LogKeeper2::Init()
+{
+   
 }
 
 void LogKeeper2::Shutdown()

@@ -10,7 +10,7 @@ class EditorWindow
     ReturnTypeValue return_value;
 
 protected:
-    template <typename U = ReturnType,typename std::enable_if<!std::is_void<U>::value, int>::type = 0>
+    template <typename U = ReturnType, typename std::enable_if<!std::is_void<U>::value, int>::type = 0>
     void SetReturnValue(const decltype(return_value) &v) { return_value = v; }
     virtual void DrawWindowContents() = 0;
 
@@ -22,8 +22,10 @@ public:
     {
     }
     virtual void Draw();
-    template <typename U = ReturnType,typename std::enable_if<!std::is_void<U>::value, int>::type = 0>
-     const decltype(return_value) &GetResult() const { return return_value; }
+    template <typename U = ReturnType, typename std::enable_if<!std::is_void<U>::value, int>::type = 0>
+    const decltype(return_value) &GetResult() const { return return_value; }
+    template <typename U = ReturnType, typename std::enable_if<!std::is_void<U>::value, int>::type = 0>
+    void ResetResult() { return_value.reset(); }
     constexpr bool IsOpen() const { return open; }
     constexpr void SetOpen(bool s) { open = s; }
     constexpr void SetTitleBar(const std::string &_name) { titlebar = _name; }
@@ -33,10 +35,11 @@ public:
 template <typename ReturnType>
 inline void EditorWindow<ReturnType>::Draw()
 {
-
-    if (ImGui::Begin(titlebar.c_str(),&open))
+    if (!open)
+        return;
+    if (ImGui::Begin(titlebar.c_str(), &open))
     {
         DrawWindowContents();
     }
-    ImGui::End(); 
+    ImGui::End();
 }

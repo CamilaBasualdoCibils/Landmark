@@ -104,8 +104,10 @@ inline  void Log::printThis(const T& t,LogColors fore, LogBackgroundColors back)
 {
 	const auto _fore = currentForeColor;
 	const auto _back = currentBackgroundColor;
-	const std::string ANSI_COLOR = "\\033[";
+	const std::string ANSI_COLOR = "\033[";
+	std::string fore_a = ANSI_COLOR+std::to_string((int)fore) + 'm';
+	std::string back_a = ANSI_COLOR+std::to_string((int)back) + 'm';
 
-	Print(t);
+	Print(fore_a+back_a+ t + std::string("\033[0m"));
 
 }

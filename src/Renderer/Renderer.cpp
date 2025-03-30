@@ -229,7 +229,7 @@ void Renderer::Init()
     stage->InsertVertexData(v_span, 0);
 
     stage->InsertIndexData(i_span, 0);
-    editor_viewport = &Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup().PushObject<EditorViewport>(0, this);
+    editor_viewport = Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup()->PushObject<EditorViewport>(0, this);
     editor_viewport->SetIsOpen(true);
     Editor::GetInstance()->GetMainToolGroup().PushObject<ShaderEditorTestTool>();
 }

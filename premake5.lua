@@ -1,7 +1,8 @@
 -- premake5.lua
 workspace "Landmark"
-   --configurations { "Debug", "Release" }
-   configurations {"Editor","Minimal","Release"}
+   configurations { "Debug", "Release" }
+
+   --[[
 project "Demo"
    kind "ConsoleApp"
    language "C++"
@@ -28,11 +29,11 @@ project "Demo"
    filter "configurations:Release"
       defines { "_NDEBUG","_RELEASE" }
       optimize "On"
-
+]]
 
 project "Landmark"
 
-   kind "StaticLib"
+   kind "ConsoleApp"
    language "C++"
    cppdialect "C++20"
    targetdir "bin/%{cfg.buildcfg}"
@@ -42,24 +43,13 @@ project "Landmark"
    pchheader "pch.h"
    includedirs {"src","lib","imgui","glslang","lib/RenderDoc/include"}
    links { "ImGui","ImPlot","vulkan","glfw",
-   "glslang","MachineIndependent","OSDependent","GenericCodeGen" ,"librenderdoc" }
+   "glslang","MachineIndependent","OSDependent","GenericCodeGen" }
    libdirs{"lib/RenderDoc/lib"}
    dependson {"ImGui","ImPlot"}
 
-   --filter "configurations:Debug"
-    --  defines { "_DEBUG" }
-    --  symbols "On"
-
-   filter "configurations:Editor"
-      defines {"_EDITOR"}
+   filter "configurations:Debug"
+      defines { "_DEBUG" }
       symbols "On"
-   
-   filter "configurations:Minimal"
-      defines { "_MINIMAL" }
-      symbols "On"
-      optimize "On"
-
-
 
    filter "configurations:Release"
       defines { "_NDEBUG","_RELEASE" }
@@ -77,15 +67,12 @@ project "ImGui"
 
    files { "lib/imgui/**.h","lib/imgui/**.cpp"  }
    
-   filter "configurations:Editor"
+   filter "configurations:Debug"
       defines { "_DEBUG" }
       symbols "On"
-   
-   filter "configurations:Minimal"   
-      symbols "On"
-      optimize "On"
 
    filter "configurations:Release"
+      defines { "_NDEBUG","_RELEASE" }
       optimize "On"
 
 project "ImPlot"
@@ -97,14 +84,12 @@ project "ImPlot"
    files { "lib/implot/**.h","lib/implot/**.cpp"  }
    includedirs {"lib"}
    
-   filter "configurations:Editor"
+   filter "configurations:Debug"
       defines { "_DEBUG" }
       symbols "On"
-   filter "configurations:Minimal"
-      symbols "On"
-      optimize "On"
-      
+
    filter "configurations:Release"
+      defines { "_NDEBUG","_RELEASE" }
       optimize "On"
 
 function customClean()

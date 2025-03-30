@@ -14,7 +14,7 @@ DescriptorSet::DescriptorSet(const DescriptorPool &pool, const DescriptorSetLayo
     const auto allocations = GetvkDevice().allocateDescriptorSets(allocateInfo).value;
     vk_set = allocations.front();
 
-    logger.Debug("DescriptorSet Created");
+
 
 }
 

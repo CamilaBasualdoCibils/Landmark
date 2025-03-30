@@ -7,13 +7,15 @@ enum class AssetType {
     eUNKNOWN,
     eTEXTURE,
     eMESH,
+    eASEPRITE
 };
 
 const static inline std::unordered_map<AssetType,std::string> AssetTypeString = 
 {{AssetType::eINVALID,"Invalid"},
 {AssetType::eUNKNOWN,"Unknown"},
 {AssetType::eTEXTURE,"Texture"},
-{AssetType::eMESH, "Mesh"}};
+{AssetType::eMESH, "Mesh"},
+{AssetType::eASEPRITE,"Aseprite"}};
 const static inline std::unordered_map<std::string,AssetType> AssetTypeStringReverse = [](){
     std::unordered_map<std::string,AssetType> a;
     for (const auto& e :AssetTypeString ) {

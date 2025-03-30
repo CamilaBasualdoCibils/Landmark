@@ -34,7 +34,7 @@ class EditorTool : public EditorObject, public EditorWindow<>
 private:
 	/* data */
 protected:
-	bool open = false;
+
 
 	
 
@@ -42,6 +42,6 @@ public:
 	EditorTool(const std::string &name);
 	void DrawTool() override;
 	void DrawHandle() override;
-	void SetIsOpen(bool o) { open = o; }
-	constexpr bool GetIsOpen() const { return open; }
+	void SetIsOpen(bool o) { EditorWindow::SetOpen(o); }
+	constexpr bool GetIsOpen() const { return EditorWindow::IsOpen(); }
 };

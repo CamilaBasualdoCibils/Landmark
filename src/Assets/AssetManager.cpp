@@ -3,10 +3,11 @@
 #include "AssetExplorer.hpp"
 #include <Core/App.h>
 #include "Asset.hpp"
-#include "Inspectors/TextureAssetInspector.hpp"
+#include "Inspectors/Texture/TextureAssetInspector.hpp"
+#include <Assets/Descriptors/AssetDescriptor.hpp>
 void AssetManager::Init()
 {
-    Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup().PushObject<AssetExplorer>().SetIsOpen(true);
+    Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup()->PushObject<AssetExplorer>()->SetIsOpen(true);
 }
 
 
@@ -25,9 +26,18 @@ decltype(AssetManager::INSTANCE) AssetManager::GetInstance()
 
 void AssetManager::ReloadAsset(Asset &asset)
 {
+    logger.Error("Asset Reloading not implemented");
 }
 
-constexpr std::string AssetManager::GetAssetIdentifier(Asset &asset)
+void AssetManager::OverwriteAssetDescriptor(Asset& asset,const AssetDescriptor& desc)
+{
+
+asset.GetDescriptorFile().WriteText(desc.ToJson().dump(4));
+logger.Debug("Asset " + asset.GetPath() + "'s descriptor overwritten");
+ReloadAsset(asset);
+}
+
+std::string AssetManager::GetAssetIdentifier(Asset &asset)
 {
    return asset.GetPath();
 }

@@ -13,5 +13,7 @@ class FileSystemObject {
     std::string GetParentPath() const;
     Folder GetParentFolder() const;
     bool operator==(const FileSystemObject& o) const {return path == o.path;}
+    bool isFolder() const;
+    bool isFile() const;
 
 };

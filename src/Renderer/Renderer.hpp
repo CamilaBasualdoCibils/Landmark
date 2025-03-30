@@ -25,7 +25,7 @@ class Renderer : public AppModule
     std::shared_ptr<Film> film;
     std::shared_ptr<Frame> scene_frame;
     Imgui imgui;
-    EditorViewport* editor_viewport;
+    std::shared_ptr<EditorViewport> editor_viewport;
     public:
       std::vector<EngineCallInject> GetInjections() override;
     Renderer();

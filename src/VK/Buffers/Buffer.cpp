@@ -51,7 +51,7 @@ Buffer::Buffer(const BufferProperties& _prop) :DeviceResource(),properties(_prop
 		<< "	Sharing Mode: " << vk::to_string(static_cast<vk::SharingMode>(properties.sharing_mode.share_mode)) << "\n"
 		<< "	Memory Type: " << properties.memory_properties
 		;
-	logger.Debug(ss);
+	//logger.Debug(ss);
 
 }
 
@@ -130,7 +130,7 @@ void Buffer::Destroy()
 	GetvkDevice().destroyBuffer(buffer);
 	GetvkDevice().freeMemory(bufferMemory);
 
-	logger.Debug( "Buffer Deallocated. " + getVulkanHandle_Str(buffer));
+	//logger.Debug( "Buffer Deallocated. " + getVulkanHandle_Str(buffer));
 }
 
 std::pair<vk::Buffer, vk::DeviceMemory> Buffer::MakeBuffer(const BufferProperties &prop,size_t size) {

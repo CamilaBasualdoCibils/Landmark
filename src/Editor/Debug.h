@@ -6,9 +6,6 @@
 
 #include "Editor.h"
 #include "EditorTool.h"
-#if defined(_EDITOR) || defined(_MINIMAL)
 
-
-#endif
 
 #endif

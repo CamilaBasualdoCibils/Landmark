@@ -129,3 +129,8 @@ std::vector<File> Folder::GetFiles()
 	}
 	return SubFiles;
 }
+
+bool Folder::isEmpty() const
+{
+    return std::filesystem::is_empty(GetPath());
+}

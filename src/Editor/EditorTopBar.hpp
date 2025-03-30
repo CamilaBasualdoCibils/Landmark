@@ -16,9 +16,9 @@ class EditorTopBar : public EditorObjectGroup  {
         PushObject<EditorObjectGroup>(INT64_MIN+2,view_group_name);
         PushObject<EditorObjectGroup>(INT64_MIN+3,panel_group_name);
     }
-    EditorObjectGroup& GetFileGroup( ) {return GetOrPushGroup(file_group_name);}
-    EditorObjectGroup& GetEditGroup( ) {return GetOrPushGroup(edit_group_name);}
-    EditorObjectGroup& GetViewGroup( ) {return GetOrPushGroup(view_group_name);}
-    EditorObjectGroup& GetPanelsGroup( ) {return GetOrPushGroup(panel_group_name);}
+    std::shared_ptr<EditorObjectGroup> GetFileGroup( ) {return GetOrPushGroup(file_group_name);}
+    std::shared_ptr<EditorObjectGroup> GetEditGroup( ) {return GetOrPushGroup(edit_group_name);}
+    std::shared_ptr<EditorObjectGroup> GetViewGroup( ) {return GetOrPushGroup(view_group_name);}
+    std::shared_ptr<EditorObjectGroup> GetPanelsGroup( ) {return GetOrPushGroup(panel_group_name);}
 
 };

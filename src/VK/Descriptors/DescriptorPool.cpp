@@ -13,7 +13,7 @@ DescriptorPool::DescriptorPool(const DescriptorPoolProperties &_properties):prop
     poolInfo.maxSets = static_cast<uint32_t>(properties._maxSets);
 
     vk_pool = GetvkDevice().createDescriptorPool(poolInfo).value;
-    logger.Debug("DescriptorPool Created");
+
 }
 
 void DescriptorPool::Destroy()

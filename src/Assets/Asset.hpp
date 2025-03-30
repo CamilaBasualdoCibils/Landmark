@@ -11,7 +11,8 @@ public:
 
 private:
     const static inline std::unordered_map<AssetType, std::vector<std::string>> known_type_extensions = {{AssetType::eTEXTURE, {"png", "jpeg", "jpg"}},
-                                                                                                         {AssetType::eMESH, {"obj", "fbx", "gltf"}}};
+                                                                                                         {AssetType::eMESH, {"obj", "fbx", "gltf"}},
+                                                                                                        {AssetType::eASEPRITE,{"aseprite","ase"}}};
 
 public:
     mutable std::optional<AssetDescriptor> descriptor;

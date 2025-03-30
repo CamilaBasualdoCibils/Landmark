@@ -47,7 +47,7 @@ void Queue::Present(uint32_t imageIndex, bool *swapchainOutOfDate, Swapchain &sc
 	LASSERT(result == vk::Result::eSuccess ||
 				result == vk::Result::eErrorOutOfDateKHR ||
 				result == vk::Result::eSuboptimalKHR,
-			"Failed to presnset");
+			"Failed to present");
 }
 
 void Queue::Destroy()

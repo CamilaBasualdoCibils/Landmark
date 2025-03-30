@@ -20,6 +20,9 @@ void App::Run(const AppProperties &_properties)
         AttachModule<AssetManager>();
         AttachModule<Editor>();
     }
+    main_window = std::make_shared<LWindow>(LWindow::LWindow_Properties()); 
+    InitializeVulkan();
+    SetupMainVkDevice();
     CallInjections(AppModule::EngineCallPoints::START);
 
     #ifdef RENDERDOC_CAPTURE
@@ -76,20 +79,7 @@ void App::SetupSelfInjections()
     logo_display.priority = INT64_MAX - 1;
     RegisterInjection(logo_display);
 
-    AppModule::EngineCallInject main_window_init_inject("Main LWindow Init");
-    main_window_init_inject.call = [this]()
-    { 
-        main_window = std::make_shared<LWindow>(LWindow::LWindow_Properties()); 
-        };
-    main_window_init_inject.call_point = AppModule::EngineCallPoints::START;
-    main_window_init_inject.priority = 0;
-    RegisterInjection(main_window_init_inject);
 
-    AppModule::EngineCallInject main_vulkan_init_inject("Vulkan Instance Init");
-    main_vulkan_init_inject.call = std::bind(&App::InitializeVulkan, this);
-    main_vulkan_init_inject.call_point = AppModule::EngineCallPoints::START;
-    main_vulkan_init_inject.priority = 0;
-    RegisterInjection(main_vulkan_init_inject);
 
     AppModule::EngineCallInject main_window_exit_inject("Main LWindow destroy");
     main_window_exit_inject.call = [this]()
@@ -104,11 +94,6 @@ void App::SetupSelfInjections()
     main_vulkan_exit_inject.priority = -1;
     RegisterInjection(main_vulkan_exit_inject);
 
-    AppModule::EngineCallInject main_vulkan_device_init_inject("Vulkan Main Device Init");
-    main_vulkan_device_init_inject.call = std::bind(&App::SetupMainVkDevice, this);
-    main_vulkan_device_init_inject.call_point = AppModule::EngineCallPoints::START;
-    main_vulkan_device_init_inject.priority = -1;
-    RegisterInjection(main_vulkan_device_init_inject);
     AppModule::EngineCallInject renderer_init("Renderer init");
     renderer_init.call = [this](){GetModule<Renderer>()->Init();};
     renderer_init.call_point = AppModule::EngineCallPoints::START;

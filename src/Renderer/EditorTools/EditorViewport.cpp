@@ -68,9 +68,9 @@ void EditorViewport::DrawWindowContents()
 
 void EditorViewport::DrawTool()
 {
-	if (!open)
+	if (!GetIsOpen())
 		return;
-	if (ImGui::Begin(GetLabel().c_str(), &open, ImGuiWindowFlags_MenuBar))
+	if (ImGui::Begin(GetLabel().c_str(), nullptr, ImGuiWindowFlags_MenuBar))
 		Draw();
 	ImGui::End();
 }

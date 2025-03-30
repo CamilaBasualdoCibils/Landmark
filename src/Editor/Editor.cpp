@@ -5,6 +5,7 @@
 #include "Logo.h"
 #include "EditorIcons.hpp"
 #include <Core/App.h>
+#include "Console/Console.hpp"
 Editor::Editor()
 {
 
@@ -17,7 +18,7 @@ Editor::Editor()
 void Editor::Init()
 {
 
-	topbar.GetViewGroup().PushObject<EditorLambda>(INT64_MIN, "Font Scale", []()
+	topbar.GetViewGroup()->PushObject<EditorLambda>(INT64_MIN, "Font Scale", []()
 												   {
 			float& scale = ImGui::GetIO().FontGlobalScale;
 			if (ImGui::InputFloat("Font Scale", &scale, 0.1, 0.25))
@@ -25,7 +26,7 @@ void Editor::Init()
 				scale = std::max(std::min(scale, 5.0f), 0.25f);
 				//ImGui::GetStyle().ScaleAllSizes(scale / Previous);
 			} });
-
+	topbar.GetPanelsGroup()->PushObject<Console>(0);
 	Asset asset("assets/editor/icons/EditorUI.png");
 	EditorIcons::LoadIconSheet(asset);
 }

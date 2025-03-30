@@ -10,7 +10,7 @@ Semaphore::Semaphore()
 	create_info.sType = vk::StructureType::eSemaphoreCreateInfo;
 
 	semaphore = GetvkDevice().createSemaphore(create_info).value;
-	logger.Debug("Semaphore Created");
+
 }
 
 Semaphore::Semaphore(const Semaphore& o):semaphore(o.semaphore)
@@ -21,7 +21,7 @@ Semaphore::Semaphore(const Semaphore& o):semaphore(o.semaphore)
 void Semaphore::Destroy()
 {
 	GetvkDevice().destroySemaphore(semaphore);
-	logger.Debug("Semaphore Destroyed");
+
 }
 
 uint64_t Semaphore::CounterValue() const

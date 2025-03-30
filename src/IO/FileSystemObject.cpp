@@ -26,3 +26,13 @@ Folder FileSystemObject::GetParentFolder() const
     
     return Folder(GetParentPath());
 }
+
+bool FileSystemObject::isFolder() const
+{
+    return std::filesystem::is_directory(GetPath());
+}
+
+bool FileSystemObject::isFile() const
+{
+    return std::filesystem::is_regular_file(GetPath());
+}
