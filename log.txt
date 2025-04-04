@@ -1,6 +1,6 @@
 [Logger] [39m[48mLogging Init[0m
 [LWindow] [39m[48mLWindow Created[0m
-[Vulkan] [39m [48m ===== Vulkan Instance  ===== 
+[Vulkan] [39m[48m===== Vulkan Instance  ===== 
 Extensions:[0m
 [Vulkan] [39m[48m	VK_KHR_surface[0m
 [Vulkan] [39m[48m	VK_KHR_xcb_surface[0m

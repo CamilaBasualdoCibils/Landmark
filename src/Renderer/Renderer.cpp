@@ -232,6 +232,7 @@ void Renderer::Init()
     editor_viewport = Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup()->PushObject<EditorViewport>(0, this);
     editor_viewport->SetIsOpen(true);
     Editor::GetInstance()->GetMainToolGroup().PushObject<ShaderEditorTestTool>();
+    Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup()->PushObject<MaterialEditor>();
 }
 void Renderer::RenderBegin()
 {
