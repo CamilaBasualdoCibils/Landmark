@@ -2,14 +2,16 @@
 #include <pch.h>
 #include <ECS/Base/ComponentData.hpp>
 #include "Transform.h"
-class TransformComponent : IComponentData, public Transform
+
+static const char TransformCompName[] = "Transform";
+class TransformComponent :  public LMComponent<TransformComponent,TransformCompName,true>, public Transform
 {
 
     // Transform transform;
 public:
     // Transform& GetTransform() {return transform;}
     // const Transform& GetTransform() const {return transform;}
-    TransformComponent(SceneID scene, ObjectID id) : IComponentData(scene, id)
+    TransformComponent(SceneID scene, ObjectID id) : LMComponent(scene, id)
     {
     }
     static Component_Info GetComponentTypeInfo()
@@ -42,3 +44,6 @@ public:
             Scale() = scale;
     }
 };
+
+
+LMCOMPONENT_REGISTER(TransformComponent);

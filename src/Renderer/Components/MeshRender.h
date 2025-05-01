@@ -1,20 +1,13 @@
 #pragma once
-#include "Entity/IComponentData.h"
+#include <ECS/Base/ComponentData.hpp>
 
-
-struct MeshRender : public IComponentData<MeshRender>
+static const char MeshRenderName[] = "MeshRender";
+struct MeshRender : public LMComponent<MeshRender,MeshRenderName,true>
 {
 	int a;
-
-	MeshRender(ObjectID id)
-		: IComponentData<MeshRender>(id)
-	{
-	}
-
-	void ass()
-	{
-		std::cout << a;
-	}
+	MeshRender(SceneID s_id,ObjectID id) : LMComponent(s_id,id) {}
 	//GraphicsPipeline* shader;
+	
+	void DrawInspector() override {};
 };
-
+LMCOMPONENT_REGISTER(MeshRender);

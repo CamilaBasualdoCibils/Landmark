@@ -122,6 +122,6 @@ void App::SetupMainVkDevice()
 {
     LASSERT(main_window.get(), "Setup of main device requires a window present");
     const auto& available_devices = main_vk_instance->EnumerateDevices(main_window.get());
-    PhysicalDevice chosen_device = available_devices[0];
+    PhysicalDevice chosen_device = available_devices[1];
     main_vk_device = std::make_shared<MainDevice>(chosen_device);
 }

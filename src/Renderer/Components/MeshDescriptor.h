@@ -1,7 +1,14 @@
 ﻿#pragma once
-#include "Entity/Component.h"
+#include <ECS/Base/ComponentData.hpp>
 //#include "Renderer/Mesh.h"
-struct MeshDescriptor : public IComponentData<MeshDescriptor>
+#include <Renderer/Mesh.h>
+static const char MeshDescriptorName[] = "MeshDescriptor";
+
+struct MeshDescriptor :public LMComponent<MeshDescriptor,MeshDescriptorName,false>
 {
-	//Mesh* mesh;
+	MeshDescriptor(SceneID s_id,ObjectID id) : LMComponent(s_id,id) {}
+	Mesh mesh;
+	void DrawInspector() override {};
+
 };
+LMCOMPONENT_REGISTER(MeshDescriptor);

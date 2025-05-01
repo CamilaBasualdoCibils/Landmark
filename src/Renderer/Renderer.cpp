@@ -10,7 +10,7 @@
 #include <Transform/TransformComponent.hpp>
 #include <ECS/ECS.hpp>
 #include <VK/Shaders/Shader.hpp>
-
+// #include "EditorTools/MaterialEditor.hpp"
 Folder shader_folder = IO::GetFolder("assets").GetFolder("shaders");
 std::string vert_source = shader_folder.GetFile("test.vert").ReadText();
 std::string frag_source = shader_folder.GetFile("test.frag").ReadText();
@@ -103,8 +103,8 @@ std::vector<AppModule::EngineCallInject> Renderer::GetInjections()
 
 Renderer::Renderer()
 {
-    ComponentRegistry::RegisterComponent<CameraComponent>();
-    ComponentRegistry::RegisterComponent<TransformComponent>();
+   // ComponentRegistry::RegisterComponent<CameraComponent>();
+   // ComponentRegistry::RegisterComponent<TransformComponent>();
 
 }
 Component<CameraComponent> camera_comp;
@@ -114,11 +114,11 @@ void Renderer::Init()
 
     auto scene = App::GetInstance()->GetModule<SceneManager>()->CreateScene("TestScene");
     Entity cube = scene->CreateEntity("Cube");
-    cube_trans = cube.AddComponent<TransformComponent>();
+     cube_trans = cube.AddComponent<TransformComponent>();
     Entity camera = scene->CreateEntity("Camera");
-    camera.AddComponent<TransformComponent>();
+    Component<TransformComponent> cam_trans = camera.AddComponent<TransformComponent>();
     camera_comp = camera.AddComponent<CameraComponent>();
-    scene->CreateEntity("empty entity");
+    Entity empty_entity = scene->CreateEntity("empty entity");
 
     window = App::GetInstance()->GetMainWindow();
     main_device = App::GetInstance()->GetMainDevice();
@@ -216,14 +216,12 @@ void Renderer::Init()
     OBJ_File_content obj_file;
     MeshFile::ParseOBJ(IO::GetFolder("assets").GetFolder("models").GetFile("cube.obj"), obj_file);
     std::vector<vec3> positions;
-        std::vector<uint32_t> indicies;
-    std::for_each(obj_file.verticies.begin(),obj_file.verticies.end(),[&](const OBJ_File_content::Vertex& v){
-        positions.push_back(v.position);
-    });
-    std::for_each(obj_file.indicies.begin(),obj_file.indicies.end(),[&](const uint64_t& v){
-        indicies.push_back(v);
-    });
-        std::span<vec3>v_span = positions;
+    std::vector<uint32_t> indicies;
+    std::for_each(obj_file.verticies.begin(), obj_file.verticies.end(), [&](const OBJ_File_content::Vertex &v)
+                  { positions.push_back(v.position); });
+    std::for_each(obj_file.indicies.begin(), obj_file.indicies.end(), [&](const uint64_t &v)
+                  { indicies.push_back(v); });
+    std::span<vec3> v_span = positions;
     std::span<uint32_t> i_span = indicies;
 
     stage->InsertVertexData(v_span, 0);
@@ -232,7 +230,7 @@ void Renderer::Init()
     editor_viewport = Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup()->PushObject<EditorViewport>(0, this);
     editor_viewport->SetIsOpen(true);
     Editor::GetInstance()->GetMainToolGroup().PushObject<ShaderEditorTestTool>();
-    Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup()->PushObject<MaterialEditor>();
+    // Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup()->PushObject<MaterialEditor>();
 }
 void Renderer::RenderBegin()
 {
@@ -258,7 +256,7 @@ void Renderer::RenderBegin()
     imgui.EndFrame();
 
     // schedule->SetViewport()
-    schedule->PrepareNextFrame(*film,*imgui_act);
+    schedule->PrepareNextFrame(*film, *imgui_act);
     schedule->Begin();
     schedule->PrepareStage(*stage);
     schedule->UseLens(*lens)
