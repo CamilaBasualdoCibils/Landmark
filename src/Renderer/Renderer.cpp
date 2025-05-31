@@ -278,6 +278,7 @@ void Renderer::RenderBegin()
     stage->InsertVertexData(v_span, 0);
 
     stage->InsertIndexData(i_span, 0);
+    
     // schedule->SetViewport()
     schedule->PrepareNextFrame(*film, *imgui_act);
     schedule->Begin();
