@@ -3,5 +3,5 @@
 
 void AssetInspector::SetAsset(const Asset &_asset)
 {
-    *asset = _asset;
+    asset.emplace(_asset);
 }

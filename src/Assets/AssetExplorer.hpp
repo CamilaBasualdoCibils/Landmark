@@ -9,7 +9,7 @@ class AssetExplorer : public EditorTool
 {
 
     Folder current_folder = IO::GetAssets();
-    int grid_size = 200;
+    int grid_size = 100;
     std::vector<std::shared_ptr<AssetInspector>> inspectors;
 
 public:

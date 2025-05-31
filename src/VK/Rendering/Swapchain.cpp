@@ -40,7 +40,10 @@ void Swapchain::Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<
 {
     //************** SWAPCHAIN **************
     vk::SwapchainCreateInfoKHR swapchain_create_info;
-    swapchain_create_info.minImageCount = properties.imageCount.value_or(DeduceImageCount(surf));
+    if (!properties.imageCount.has_value())
+        properties.imageCount = DeduceImageCount(surf);
+    swapchain_create_info.minImageCount = *properties.imageCount;
+    
     uvec2 extent = properties.extent.value_or(DeduceExtent(surf));
     properties.extent = extent;
     swapchain_create_info.imageExtent = vk::Extent2D{extent.x, extent.y};

@@ -37,7 +37,7 @@ public:
 	~Buffer();
 	operator vk::Buffer() const {return buffer;}
 	operator vk::Buffer()  {return buffer;}
-	void* MapMemory();
+	[[nodiscard]] void* MapMemory();
 	void UnmapMemory();
 	size_t Size() const;
 	virtual void Realloc_Copy(CommandPool& pool, const size_t newsize);

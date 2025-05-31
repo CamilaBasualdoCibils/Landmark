@@ -4,7 +4,7 @@
 #include "Transform.h"
 
 static const char TransformCompName[] = "Transform";
-class TransformComponent :  public LMComponent<TransformComponent,TransformCompName,true>, public Transform
+class TransformComponent :  public LMComponent<TransformComponent,TransformCompName,false>, public Transform
 {
 
     // Transform transform;
@@ -13,12 +13,6 @@ public:
     // const Transform& GetTransform() const {return transform;}
     TransformComponent(SceneID scene, ObjectID id) : LMComponent(scene, id)
     {
-    }
-    static Component_Info GetComponentTypeInfo()
-    {
-        Component_Info info;
-        info.Name = "Transform";
-        return info;
     }
     void DrawInspector() override
     {

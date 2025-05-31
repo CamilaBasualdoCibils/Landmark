@@ -2,41 +2,51 @@
 #include <exception>
 #include <memory>
 #include <cstring>
-data_allocator::iterator data_allocator::Insert_Null(INT_TYPE index)
+data_allocator::iterator data_allocator::Insert(INT_TYPE index)
 {
     assert(!Contains(index) && "Index already taken");
     ReserveIndex(index);
-    const size_t offset = index * underlying_size;
-    std::memset(buffer.data() +offset ,69,underlying_size);
-    return iterator(this,index);
+    const size_t offset = index * data_properties.underlying_size;
+    if (data_properties.construct_func)
+        data_properties.construct_func(buffer.data() + offset);
+    return iterator(this, index);
 }
 void *data_allocator::operator[](INT_TYPE index)
 {
-    assert(Contains(index)&&"INVALID INDEX");
-    return buffer.data() + index*underlying_size;
+    const bool bContains = Contains(index);
+    assert(bContains && "INVALID INDEX");
+    return buffer.data() + index * data_properties.underlying_size;
 }
 bool data_allocator::CompareSectorIndex(const sector &s, INT_TYPE a)
 {
-    //idk chatgpt said this
+    // idk chatgpt said this
     return s.second <= a;
 }
 auto data_allocator::GetContainingSector(INT_TYPE index) const
 {
     auto it = std::lower_bound(free_sectors.cbegin(), free_sectors.cend(), index, CompareSectorIndex);
-    if (it == free_sectors.cend()) return it;
-    if ((*it).first <= index && (*it).second > index) //sector contains index
+    if (it == free_sectors.cend())
         return it;
-    if (it != free_sectors.begin() && (*it).first <= index && (*it).second > index) //try the previous
+    if ((*it).first <= index && (*it).second > index) // sector contains index
+        return it;
+    if (it != free_sectors.begin() && (*it).first <= index && (*it).second > index) // try the previous
         return --it;
-    return free_sectors.cend();//none found
+    return free_sectors.cend(); // none found
 }
 void data_allocator::IncreaseCapacity()
 {
 
-
     const size_t previous_size = size_in_object_size;
-    const size_t new_size = previous_size != 0 ? previous_size*2 : 1;
-    buffer.resize(new_size*underlying_size,std::byte(0));
+    const size_t new_size = previous_size != 0 ? previous_size * 2 : 1;
+    std::vector<std::byte> new_buffer(new_size * data_properties.underlying_size, std::byte(0));
+    for (int i = 0; i < previous_size; i++)
+    {
+        size_t offset = i * data_properties.underlying_size;
+        data_properties.move_func(new_buffer.data() + offset, buffer.data() + offset);
+        if (data_properties.deconstruct_func)
+            data_properties.deconstruct_func(buffer.data() + offset);
+    }
+    buffer = std::move(new_buffer);
     size_in_object_size = new_size;
     if (previous_size != 0 && !free_sectors.Empty() && free_sectors.back().second == previous_size)
     {
@@ -52,19 +62,36 @@ void data_allocator::IncreaseCapacity()
     }
 }
 
-data_allocator::data_allocator(size_t data_size):underlying_size(data_size)
+data_allocator::data_allocator(size_t underlying_size)
 {
+    data_properties.underlying_size = underlying_size;
+    data_properties.construct_func = nullptr;
+    data_properties.deconstruct_func = nullptr;
+    data_properties.copy_func = [size = data_properties.underlying_size](void *dest, void *src)
+    { std::memcpy(dest, src, size); };
+    data_properties.move_func = [size = data_properties.underlying_size](void *dest, void *src)
+    { std::memcpy(dest, src, size); };
     size_in_object_size = 0;
     IncreaseCapacity();
-    
 }
 
+data_allocator::data_allocator(const DataProperties &properties)
+{
+    assert(properties.construct_func);
+    assert(properties.copy_func);
+    assert(properties.move_func);
+    assert(properties.deconstruct_func);
+    assert(properties.underlying_size >= 1);
+
+    data_properties = properties;
+    size_in_object_size = 0;
+    IncreaseCapacity();
+}
 
 bool data_allocator::Contains(INT_TYPE index) const
 {
-    auto containing_sector = GetContainingSector(index);
-    bool sector_found = containing_sector  != free_sectors.cend(); //if sector was not found means index is taken
-    return Size() > index && !sector_found;
+
+    return Size() > index && (free_sectors.Empty() || (GetContainingSector(index) == free_sectors.cend()));
 }
 
 size_t data_allocator::GetNextInsertLocation() const
@@ -80,17 +107,18 @@ std::optional<data_allocator::sector> data_allocator::Get_Empty_sector_here(INT_
 {
     std::optional<data_allocator::sector> op;
     auto it = GetContainingSector(a);
-    if (it != free_sectors.cend()) return op = *it;
+    if (it != free_sectors.cend())
+        return op = *it;
     return op;
 }
 
-void data_allocator::ReserveIndex(size_t index)
+data_allocator::iterator data_allocator::ReserveIndex(size_t index)
 {
     while (Size() <= index)
     {
         IncreaseCapacity();
     }
-
+    const iterator ret = iterator(this,index);
     auto it = GetContainingSector(index);
     if (it == free_sectors.cend())
         throw "INVALID INDEX";
@@ -99,7 +127,7 @@ void data_allocator::ReserveIndex(size_t index)
     free_sectors.Erase(it);
 
     if (s.first + 1 == s.second)
-        return; // sector of size one. just remove
+        return ret; // sector of size one. just remove
 
     if (s.first == index)
     {
@@ -118,8 +146,8 @@ void data_allocator::ReserveIndex(size_t index)
         free_sectors.Push(new_sector);
     }
     free_sectors.Push(s);
+    return ret;
 }
-
 
 size_t data_allocator::Size() const
 {
@@ -128,6 +156,6 @@ size_t data_allocator::Size() const
 
 data_allocator::iterator::iterator(data_allocator *_owner, INT_TYPE _index)
 {
-owner = _owner;
-index = _index;
+    owner = _owner;
+    index = _index;
 }

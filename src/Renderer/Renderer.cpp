@@ -7,6 +7,9 @@
 #include "Camera.h"
 
 #include "Components/CameraComponent.hpp"
+#include "Components/MeshDescriptor.h"
+#include "Components/MeshRender.h"
+
 #include <Transform/TransformComponent.hpp>
 #include <ECS/ECS.hpp>
 #include <VK/Shaders/Shader.hpp>
@@ -103,18 +106,56 @@ std::vector<AppModule::EngineCallInject> Renderer::GetInjections()
 
 Renderer::Renderer()
 {
-   // ComponentRegistry::RegisterComponent<CameraComponent>();
-   // ComponentRegistry::RegisterComponent<TransformComponent>();
-
+    // ComponentRegistry::RegisterComponent<CameraComponent>();
+    // ComponentRegistry::RegisterComponent<TransformComponent>();
 }
 Component<CameraComponent> camera_comp;
 Component<TransformComponent> cube_trans;
+Component<MeshDescriptor> cube_mesh;
 void Renderer::Init()
 {
 
+    std::vector<vec3> vertices_pos = {
+        // Front face
+        {-1.0f, -1.0f, 1.0f}, // 0
+        {1.0f, -1.0f, 1.0f},  // 1
+        {1.0f, 1.0f, 1.0f},   // 2
+        {-1.0f, 1.0f, 1.0f},  // 3
+
+        // Back face
+        {-1.0f, -1.0f, -1.0f}, // 4
+        {1.0f, -1.0f, -1.0f},  // 5
+        {1.0f, 1.0f, -1.0f},   // 6
+        {-1.0f, 1.0f, -1.0f}   // 7
+    };
+
+    std::vector<uint32_t> indices = {
+        0, 1, 2,
+        2, 3, 0,
+        5, 4, 7,
+        7, 6, 5,
+        4, 0, 3,
+        3, 7, 4,
+        1, 5, 6,
+        6, 2, 1,
+        3, 2, 6,
+        6, 7, 3,
+        4, 5, 1,
+        1, 0, 4};
+    std::vector<Mesh::Vertex> verticies;
+    for (const auto &pos : vertices_pos)
+    {
+        Mesh::Vertex v;
+        v.Position = pos;
+        verticies.push_back(v);
+    }
     auto scene = App::GetInstance()->GetModule<SceneManager>()->CreateScene("TestScene");
     Entity cube = scene->CreateEntity("Cube");
-     cube_trans = cube.AddComponent<TransformComponent>();
+    cube_trans = cube.AddComponent<TransformComponent>();
+    cube.AddComponent<MeshRender>();
+    cube_mesh = cube.AddComponent<MeshDescriptor>();
+    Mesh &mesh = cube_mesh->mesh;
+    mesh = Mesh(verticies, indices);
     Entity camera = scene->CreateEntity("Camera");
     Component<TransformComponent> cam_trans = camera.AddComponent<TransformComponent>();
     camera_comp = camera.AddComponent<CameraComponent>();
@@ -183,36 +224,6 @@ void Renderer::Init()
                *window,
                imgui_act->GetProperties().color_attachments[0].format);
 
-    const float v_size_x = 1.0f, v_size_y = 1.0f, v_size_z = 1.0f;
-
-    vec3 vertices[] = {
-        // Front face
-        {-v_size_x, -v_size_y, v_size_z}, // 0
-        {v_size_x, -v_size_y, v_size_z},  // 1
-        {v_size_x, v_size_y, v_size_z},   // 2
-        {-v_size_x, v_size_y, v_size_z},  // 3
-
-        // Back face
-        {-v_size_x, -v_size_y, -v_size_z}, // 4
-        {v_size_x, -v_size_y, -v_size_z},  // 5
-        {v_size_x, v_size_y, -v_size_z},   // 6
-        {-v_size_x, v_size_y, -v_size_z}   // 7
-    };
-
-    uint32_t indices[] = {
-        0, 1, 2,
-        2, 3, 0,
-        5, 4, 7,
-        7, 6, 5,
-        4, 0, 3,
-        3, 7, 4,
-        1, 5, 6,
-        6, 2, 1,
-        3, 2, 6,
-        6, 7, 3,
-        4, 5, 1,
-        1, 0, 4};
-
     OBJ_File_content obj_file;
     MeshFile::ParseOBJ(IO::GetFolder("assets").GetFolder("models").GetFile("cube.obj"), obj_file);
     std::vector<vec3> positions;
@@ -227,6 +238,7 @@ void Renderer::Init()
     stage->InsertVertexData(v_span, 0);
 
     stage->InsertIndexData(i_span, 0);
+
     editor_viewport = Editor::GetInstance()->GetMainToolGroup().GetPanelsGroup()->PushObject<EditorViewport>(0, this);
     editor_viewport->SetIsOpen(true);
     Editor::GetInstance()->GetMainToolGroup().PushObject<ShaderEditorTestTool>();
@@ -254,7 +266,18 @@ void Renderer::RenderBegin()
 
     Editor::GetInstance()->Draw();
     imgui.EndFrame();
+    const auto &verts = cube_mesh->mesh.GetVerticies();
+    const std::vector<uint32_t> &indicies = cube_mesh->mesh.GetIndicies();
+    std::vector<vec3> positions;
+    for (const auto &v : verts)
+    {
+        positions.push_back(v.Position);
+    }
+    std::span<vec3> v_span = positions;
+    std::span<const uint32_t> i_span = indicies;
+    stage->InsertVertexData(v_span, 0);
 
+    stage->InsertIndexData(i_span, 0);
     // schedule->SetViewport()
     schedule->PrepareNextFrame(*film, *imgui_act);
     schedule->Begin();

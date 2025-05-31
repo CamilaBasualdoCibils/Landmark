@@ -45,6 +45,7 @@ public:
     uvec2 GetExtent() const {return properties.extent.value();}
     const SwapchainProperties& GetProperties() const {return properties;}
     void Recreate(const RenderPass &rp, vk::SurfaceKHR surf,const SwapchainProperties &_new_prop);
+    uint32_t GetImageCount() const {return properties.imageCount.value();}
 private:
     void Create(const RenderPass &rp, vk::SurfaceKHR surf, std::optional<vk::SwapchainKHR> = {});
     uint32_t DeduceImageCount(vk::SurfaceKHR surf);

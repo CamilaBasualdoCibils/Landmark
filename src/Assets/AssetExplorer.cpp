@@ -130,6 +130,7 @@ std::shared_ptr<AssetInspector> AssetExplorer::openAssetInspector(Asset &asset)
         /* code */
         inspectors.emplace_back(std::make_shared<TextureAssetInspector>());
         inspectors.back()->SetAsset(asset);
+        inspectors.back()->SetOpen(true);
         break;
 
     default:

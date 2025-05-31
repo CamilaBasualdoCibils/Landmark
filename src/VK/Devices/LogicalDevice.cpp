@@ -82,7 +82,7 @@ vk::Device LogicalDevice::CreateDevice()
 	vk::PhysicalDeviceRayTracingPipelineFeaturesKHR raytracing_features{};
 	raytracing_features.pNext = &descriptor_indexing_features;
 
-	if (features.descriptorIndexding)
+	if ( features.descriptorIndexding)
 	{
 		_extensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
 		descriptor_indexing_features.descriptorBindingPartiallyBound = true;
@@ -150,6 +150,7 @@ vk::Device LogicalDevice::CreateDevice()
 	if (result.result != vk::Result::eSuccess)
 	{
 		log.Critical(std::string("Failed to create Logical Device. error: \n"));
+		throw "fuck";
 	}
 	std::stringstream ss;
 	ss << "\n====== Logical Device Init ======\n";

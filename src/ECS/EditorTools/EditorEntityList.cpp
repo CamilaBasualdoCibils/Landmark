@@ -103,7 +103,8 @@ void EditorEntityList::DrawWindowContents()
 			auto &entities = scene.GetEntities();
 			for (auto e_it = entities.begin(); e_it != entities.end(); ++e_it)
 			{
-				if (!entities.Contains(e_it.GetIndex())) continue;
+				if (!entities.Contains(e_it.GetIndex()))
+					continue;
 				EntityData &data = *e_it.Get<EntityData>();
 				ImGui::PushID(e_it.GetIndex());
 				// ImGui::Text(data.GetName().data());
@@ -136,11 +137,9 @@ void EditorEntityList::DrawWindowContents()
 
 void EditorEntityList::DrawTool()
 {
-	if (ImGui::Begin(GetLabel().c_str(), &Open))
-	{
+
 		Draw();
-	}
-	ImGui::End();
+
 
 	if (ImGui::Begin(InspectorName.c_str()))
 	{
@@ -154,15 +153,15 @@ void EditorEntityList::DrawInspector()
 
 	if (entitySelected.isValid())
 	{
-		EntityData& data = *entitySelected;
+		EntityData &data = *entitySelected;
 		bool isEnabled = data.GetEnabled();
-		if (ImGui::Checkbox("##Enabled",&isEnabled))
+		if (ImGui::Checkbox("##Enabled", &isEnabled))
 			data.SetEnabled(isEnabled);
-		static std::array<char,EntityData::MAX_NAME_LENGTH> name_buffer;
+		static std::array<char, EntityData::MAX_NAME_LENGTH> name_buffer;
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		std::memcpy(name_buffer.begin(),data.GetName().begin(),data.GetName().size());
-		if (ImGui::InputText("##name",name_buffer.data(),name_buffer.size()))
+		std::memcpy(name_buffer.begin(), data.GetName().begin(), data.GetName().size());
+		if (ImGui::InputText("##name", name_buffer.data(), name_buffer.size()))
 			data.SetName(name_buffer.data());
 
 		ImGui::BeginChild(ImGuiID(1), {0, 0}, true);
@@ -175,20 +174,22 @@ void EditorEntityList::DrawInspector()
 
 			ImGui::PushID(i);
 			const auto &comp_info = ComponentRegistry::GetComponentInfo(comp_id);
+
+			IComponentData *comp = GetOwningScene->GetComponent(entitySelected->ID, comp_id);
+
+			bool enabled = comp->GetEnabled();
+			if (ImGui::Checkbox("##enabled", &enabled))
+				comp->SetEnabled(enabled);
+			ImGui::SameLine();
 			ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-			if (ImGui::TreeNode(comp_info.Name.c_str()))
+
+			if (ImGui::TreeNodeEx(comp_info.Name.c_str()))
 			{
-				IComponentData *comp = GetOwningScene->GetComponent(entitySelected->ID, comp_id);
 
 				comp->DrawInspector();
-
-				// GetOwningScene
-				// const auto desc = ComponentRegistry::GetComponentDesc(comp_id);
-				// if (ImGui::CollapsingHeader(desc.Name.c_str(),ImGuiTreeNodeFlags_Framed)) {
-				//	IComponentDataData* comp = EntityManager::GetComponent(entitySelected,comp_id);
-				// ComponentRegistry::GetComponentDesc(comp_id).inspectorFunction(comp);
 				ImGui::TreePop();
 			}
+
 			ImGui::PopID();
 			i++;
 		}
@@ -203,11 +204,12 @@ void EditorEntityList::DrawInspector()
 		{
 			ImGui::BeginChild("PopupChild", ImVec2(200, 150), true); // Scrollable area
 
-			const auto& registered_components = ComponentRegistry::GetRegisteredComponents();
-			for (int i = 1; i < registered_components.size();i++)
+			const auto &registered_components = ComponentRegistry::GetRegisteredComponents();
+			for (int i = 1; i < registered_components.size(); i++)
 			{
-				if (entitySelected->Has_Component(i)) continue;
-				const auto& comp_type = registered_components[i];
+				if (entitySelected->Has_Component(i))
+					continue;
+				const auto &comp_type = registered_components[i];
 				if (ImGui::Selectable(comp_type.Name.c_str()))
 				{
 					selected_comp = static_cast<int>(i);
@@ -221,8 +223,9 @@ void EditorEntityList::DrawInspector()
 		}
 		ImGui::EndChild();
 
-		if (selected_comp != 0) {
-			entitySelected->GetScene()->AddComponent(entitySelected.GetObjectID(),selected_comp);
+		if (selected_comp != 0)
+		{
+			entitySelected->GetScene()->AddComponent(entitySelected.GetObjectID(), selected_comp);
 		}
 	}
 	/*

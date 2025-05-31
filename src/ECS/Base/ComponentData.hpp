@@ -10,10 +10,17 @@ struct IComponentData  : SceneObject{
     IComponentData(SceneID s_id,ObjectID id) : SceneObject(s_id,id) {}
 
     virtual void DrawInspector() =0;
-   
+
     static Component_Info GetComponentTypeInfo() {
         throw "Any class that extends IComponentData must define this static function"; 
      }
+
+     virtual void SetEnabled(bool e) {enabled = e;}
+     virtual bool GetEnabled() {return enabled;}
+
+     private:
+     bool enabled = true;
+     
 
 };
 

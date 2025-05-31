@@ -91,6 +91,6 @@ inline void Stage::InsertIndexData(std::span<T> data, size_t offset)
 template <typename T>
 inline void Stage::InsertDataInto(std::vector<std::byte> &dest, std::span<T> span, size_t offset)
 {
-     std::span<std::byte> sp = std::span(reinterpret_cast<std::byte*>(span.data()),span.size_bytes());
+     std::span<const std::byte> sp = std::span(reinterpret_cast<const std::byte*>(span.data()),span.size_bytes());
     dest.insert(dest.begin() + offset,sp.begin(),sp.end());
 }

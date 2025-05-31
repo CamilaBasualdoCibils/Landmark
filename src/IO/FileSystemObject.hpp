@@ -7,7 +7,7 @@ class FileSystemObject {
 
     public:
     FileSystemObject(const std::string& path);
-	const std::string& GetPath() const;
+	virtual const std::string& GetPath() const;
     void SetPath(const std::string& s) {path = s;}
 	std::string GetName() const;
     std::string GetParentPath() const;

@@ -149,7 +149,7 @@ void Vulkan_Instance::CreateInstance()
     vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo|
     vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose;
     debug_create_info.messageType = 
-    vk::DebugUtilsMessageTypeFlagBitsEXT::eDeviceAddressBinding|
+    //vk::DebugUtilsMessageTypeFlagBitsEXT::eDeviceAddressBinding|
     //vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral|
     vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance|
     vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation;

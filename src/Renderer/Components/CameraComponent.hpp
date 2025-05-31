@@ -14,11 +14,7 @@ public:
     }
     void DrawInspector() override;
     const mat4& GetViewMatrix();
-    static Component_Info GetComponentTypeInfo() {
-        Component_Info info;
-        info.Name = "Camera Component";
-        return info;
-    }
+
 };
 
 LMCOMPONENT_REGISTER(CameraComponent);

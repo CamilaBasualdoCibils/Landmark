@@ -2,6 +2,7 @@
 #include <pch.h>
 #include <Assets/Inspectors/AssetInspector.hpp>
 #include <VK/Images/CombinedImageSampler.h>
+#include <Editor/GenericWindows/MessageWindow.hpp>
 class LoadedTextureAsset;
 class TextureAssetInspector : public AssetInspector {
     
@@ -27,9 +28,11 @@ class TextureAssetInspector : public AssetInspector {
             eNONE = 0,ePIXEL = 1,eGRID = 2
         };
         SnapMode snapping = SnapMode::eNONE;
+        bool show_labels = true;
     };
     SpriteInspectorVars sprite_inspector_vars;
     bool modified = false;
+    MessageWindow confirm_close_window = MessageWindow("Confirm",EditorWindowType::EPopupModal,"This asset has unsaved changes",{{"Save"},{"Cancel"},{"Discard"}});
     private:
     void RebuildDescriptorSet();
     void SaveChanges();
@@ -37,8 +40,10 @@ class TextureAssetInspector : public AssetInspector {
     void DrawSpriteSheetView();
     vec2 Uv2Screen(vec2 v);
     vec2 Screen2UV(vec2 s);
+    void OnWindowTryClose() override;
     public:
     void SetAsset(const Asset& asset) override;
     void DrawWindowContents() override;
+    TextureAssetInspector();
     ~TextureAssetInspector() override;
 };

@@ -10,18 +10,23 @@ kanban-plugin: board
 
 ## Frontburner
 
-- [ ] Console
+- [ ] PagedDeviceMemory
+- [ ] Material System
 
 
 ## Backburner
 
-- [ ] Material System
+- [ ] Console
+- [ ] Push MeshDescriptor's Mesh into PagedDeviceMemory and render with Stage::Capture()
 
 
 ## Back-Backburner
 
 - [ ] Asset Save and Reloading
 - [ ] Logger split by sources and levels
+- [ ] refactor Logical device
+- [ ] Refactor DeviceResource to be shared
+- [ ] refactor the rendering system like forreal. Rendering stack and inflight frames
 
 
 

@@ -82,7 +82,6 @@ Schedule &Schedule::PrepareNextFrame(Film &proj, Act &act)
     Semaphores_before_execute.push_back(proj.NextFrame());
     while (proj.isOutOfDate())
     {
-
         proj.Reconstruct(proj.GetProperties(), act);
         Semaphores_before_execute.back() = proj.NextFrame();
     }
@@ -93,6 +92,7 @@ Schedule &Schedule::Present(Film &proj)
 {
     if (proj.isOutOfDate())
         return *this;
+    
     proj.Present(properties.presention_queue, {*schedule_finished_semaphore});
     return *this;
 }
@@ -100,6 +100,7 @@ Schedule &Schedule::Present(Film &proj)
 Schedule &Schedule::WaitUntilIdle()
 {
     schedule_finished_fence->WaitAndReset();
+    schedule_finished_fence->GetvkDevice().waitIdle();
     return *this;
 }
 

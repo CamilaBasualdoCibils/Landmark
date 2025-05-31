@@ -7,6 +7,7 @@
 #include <Core/App.h>
 #include <Assets/AssetManager.hpp>
 #include <Assets/LoadedAsset/LoadedTextureAsset.hpp>
+
 void TextureAssetInspector::RebuildDescriptorSet()
 {
     if (imgui_ds.has_value())
@@ -28,13 +29,18 @@ void TextureAssetInspector::RebuildDescriptorSet()
     imgui_ds.emplace();
     imgui_ds = ImGui_ImplVulkan_AddTexture((vk::Sampler)*sampler, (vk::ImageView)vkimage->GetImageView(), (VkImageLayout)(vk::ImageLayout)ImageLayouts::SHADER_READ_ONLY);
 }
+void TextureAssetInspector::OnWindowTryClose()
+{
+    if (modified) confirm_close_window.SetOpen(true);
+    else SetOpen(false);
+}
 void TextureAssetInspector::SaveChanges()
 {
-   original_descriptor.descriptor_data = modified_tex_descriptor;
-   Asset asset = GetAsset();
-   AssetManager::GetInstance()->OverwriteAssetDescriptor(asset,original_descriptor);
-   modified = false;
-   //AssetManager::ReloadAsset(GetAsset());
+    original_descriptor.descriptor_data = modified_tex_descriptor;
+    Asset asset = GetAsset();
+    AssetManager::GetInstance()->OverwriteAssetDescriptor(asset, original_descriptor);
+    modified = false;
+    // AssetManager::ReloadAsset(GetAsset());
 }
 void TextureAssetInspector::DrawTextureView()
 {
@@ -117,6 +123,7 @@ void TextureAssetInspector::DrawSpriteSheetView()
                 sprite_inspector_vars.snapping = (SpriteInspectorVars::SnapMode)snap_mode;
             }
         }
+        ImGui::Checkbox("Labels", &sprite_inspector_vars.show_labels);
 
         // ImGui::SameLine();
         // ImGui::BeginCombo()
@@ -133,7 +140,7 @@ void TextureAssetInspector::DrawSpriteSheetView()
         {
             const ivec2 image_size = vkimage->GetImage().GetProperties().dimensions;
             //,ImVec2{-1,-1},ImPlotFlags_NoFrame|ImPlotFlags_NoBoxSelect|ImPlotFlags_NoLegend||ImPlotFlags_NoMenus|ImPlotFlags_NoMouseText |ImPlotFlags_NoTitle);
-            //ImPlot::SetupAxisLinks()
+            // ImPlot::SetupAxisLinks()
             ImPlot::SetupAxis(ImAxis_X1, "Texcoord", ImPlotAxisFlags_NoGridLines);
             ImPlot::SetupAxis(ImAxis_Y1, "Texcoord", ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_Invert);
             ImPlot::SetupAxisLimitsConstraints(ImAxis_X1, -0.5, 1.5f);
@@ -147,7 +154,7 @@ void TextureAssetInspector::DrawSpriteSheetView()
                 auto &sprite = sprites[sprite_inspector_vars.currently_selected_sprite_ID];
                 dvec2 min = sprite.uv_min, max = sprite.uv_max;
                 bool held = false;
-                if (ImPlot::DragRect(0, &min.x, &min.y, &max.x, &max.y, ImVec4(1, 1, 1, 1),0,nullptr,nullptr,&held))
+                if (ImPlot::DragRect(0, &min.x, &min.y, &max.x, &max.y, ImVec4(1, 1, 1, 1), 0, nullptr, nullptr, &held))
                 {
                     modified = true;
                     if (sprite_inspector_vars.snapping == SpriteInspectorVars::SnapMode::ePIXEL)
@@ -159,8 +166,29 @@ void TextureAssetInspector::DrawSpriteSheetView()
                     sprite.uv_min = min;
                 }
             }
+            if (sprite_inspector_vars.show_labels)
+            {
+                for (int i = 0; i < sprites.size(); i++)
+                {
+                    if (i == sprite_inspector_vars.currently_selected_sprite_ID)
+                        continue;
+                    const auto &sprite = sprites[i];
+                    const vec2 mid_point = (sprite.uv_max + sprite.uv_min) / 2.0f;
+                    const ImVec2 rect_min = ImPlot::PlotToPixels({sprite.uv_min.x, sprite.uv_min.y}),
+                                 rect_max = ImPlot::PlotToPixels({sprite.uv_max.x, sprite.uv_max.y});
+                    ImPlot::GetPlotDrawList()->AddRectFilled(rect_min,
+                                                             rect_max,
+                                                             ImGui::ColorConvertFloat4ToU32({0.0f, 0.0f, 0.0f, 0.5f}));
+                    ImPlot::GetPlotDrawList()->AddRect(rect_min,
+                                                       rect_max,
+                                                       ImGui::ColorConvertFloat4ToU32({1, 1, 1, 1}));
+                    ImPlot::PlotText(sprite.name.c_str(), mid_point.x, mid_point.y);
+
+                    // ImPlot::
+                }
+            }
             // ImPlot::SetupAxes(nullptr,nullptr,ImPlotAxisFlags_NoHighlight|,ImPlotAxisFlags_NoHighlight);
-           
+
             ImPlot::EndPlot();
             // ImGui::Image((ImTextureID)(VkDescriptorSet)imgui_ds, ImGui::GetContentRegionAvail());
         }
@@ -172,11 +200,10 @@ void TextureAssetInspector::DrawSpriteSheetView()
     {
         ImGui::SetNextWindowSize(ImGui::GetContentRegionAvail() * ImVec2(1, 0.6), ImGuiCond_Once);
         ImGui::SetNextWindowSizeConstraints(ImGui::GetContentRegionAvail() * ImVec2(1, 0.2), ImGui::GetContentRegionAvail() * ImVec2(1, 0.8));
-        if (ImGui::BeginChild("SpriteList", ImVec2(0, 0), ImGuiChildFlags_ResizeY))
+
         {
 
-            const int image_x_size = 30;
-            if (ImGui::SmallButton("+"))
+            if (ImGui::Button("New"))
             {
                 TextureAssetParameters::SpriteInfo spr;
                 spr.name = "default name";
@@ -185,6 +212,35 @@ void TextureAssetInspector::DrawSpriteSheetView()
                 sprites.push_back(spr);
                 modified = true;
             }
+
+            ImGui::SameLine();
+            const bool none_selected = sprite_inspector_vars.currently_selected_sprite_ID == -1;
+            if (none_selected)
+                ImGui::BeginDisabled();
+
+            if (ImGui::Button("Duplicate"))
+            {
+                sprites.push_back(sprites[sprite_inspector_vars.currently_selected_sprite_ID]);
+                sprite_inspector_vars.currently_selected_sprite_ID = sprites.size() - 1;
+                sprites.back().name += " - Copy";
+                modified = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Delete"))
+            {
+                sprites.erase(sprites.begin() + sprite_inspector_vars.currently_selected_sprite_ID);
+                sprite_inspector_vars.currently_selected_sprite_ID = -1;
+                modified = true;
+            }
+            if (none_selected)
+                ImGui::EndDisabled();
+        }
+
+        if (ImGui::BeginChild("SpriteList", ImVec2(0, 0), ImGuiChildFlags_ResizeY))
+        {
+
+            const int image_x_size = 30;
+
             for (int i = 0; i < sprites.size(); i++)
             {
                 TextureAssetParameters::SpriteInfo &sprite = sprites[i];
@@ -256,24 +312,26 @@ void TextureAssetInspector::DrawSpriteSheetView()
 
             if (sprite_inspector_vars.currently_selected_sprite_ID != -1)
             {
-                
+
                 const auto &spr = sprites[sprite_inspector_vars.currently_selected_sprite_ID];
                 const vec2 spr_size = spr.uv_max - spr.uv_min;
-                const float spr_aspect = spr_size.x/spr_size.y;
+                const float spr_aspect = spr_size.x / spr_size.y;
                 const ImVec2 avail_space = ImGui::GetContentRegionAvail();
-                const int max_size = std::min(avail_space.x,avail_space.y);
-                 ImVec2 image_size = {max_size,max_size};
+                const int max_size = std::min(avail_space.x, avail_space.y);
+                ImVec2 image_size = {max_size, max_size};
                 const bool x_greater = spr_size.x > spr_size.y;
-                if (x_greater) {
+                if (x_greater)
+                {
                     image_size.y *= spr_aspect;
                 }
-                else {
+                else
+                {
                     image_size.x /= spr_aspect;
                 }
-                ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{avail_space.x/2 - image_size.x/2,0});
+                ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2{avail_space.x / 2 - image_size.x / 2, 0});
 
                 ImVec2 min = {spr.uv_min.x, spr.uv_min.y}, max = {spr.uv_max.x, spr.uv_max.y};
-                ImGui::Image((ImTextureID)(VkDescriptorSet)*imgui_ds,image_size, min, max);
+                ImGui::Image((ImTextureID)(VkDescriptorSet)*imgui_ds, image_size, min, max);
             }
         }
         ImGui::EndChild();
@@ -312,6 +370,18 @@ void TextureAssetInspector::SetAsset(const Asset &_asset)
 
 void TextureAssetInspector::DrawWindowContents()
 {
+    if (confirm_close_window.IsOpen())
+    {
+        confirm_close_window.Draw();
+        if (confirm_close_window.HasResult())
+        {
+            const size_t result = confirm_close_window.GetResult();
+            confirm_close_window.ResetResult();
+            confirm_close_window.SetOpen(false);
+            SetOpen(false);
+            return;
+        }
+    }
 
     if (ImGui::BeginChild("Topbar", ImVec2(0, 0), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Borders))
     {
@@ -359,6 +429,11 @@ void TextureAssetInspector::DrawWindowContents()
         }
         ImGui::EndTabBar();
     }
+}
+
+TextureAssetInspector::TextureAssetInspector()
+{
+    confirm_close_window.SetOpen(false);
 }
 
 TextureAssetInspector::~TextureAssetInspector()

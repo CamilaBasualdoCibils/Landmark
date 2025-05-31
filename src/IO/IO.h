@@ -1,3 +1,4 @@
+#pragma once
 #include "Folder.h"
 #include "File.h"
 #include "MeshFiles/MeshFile.hpp"

@@ -57,7 +57,7 @@ Entity Scene::CreateEntity(const std::string &name)
     const size_t index = entities.GetNextInsertLocation();
     EntityData edata(ID, index, name);
 
-    entities.Insert(index, edata);
+    entities.Insert_Emplace<EntityData>(index, edata);
 
     return Entity(ID, index);
 }
@@ -78,7 +78,7 @@ IComponentData *Scene::AddComponent(ObjectID entity_id, ComponentTypeID type)
 {
     LASSERT(!HasComponent(entity_id, type), "Cannot add duplicate component!");
     const auto& comp_data =  GetCompDataOfType(type);
-    auto it = comp_data->Insert_Null(entity_id);
+    auto it = comp_data->ReserveIndex(entity_id);
     ComponentRegistry::GetComponentInfo(type).constructor_where(*it,ID,entity_id);
 
     GetEntityData(entity_id)->RegisterComponent(type);
@@ -95,6 +95,10 @@ std::shared_ptr<data_allocator> Scene::GetCompDataOfType(ComponentTypeID type)
     if (!components_all.contains(type))
     {
         const Component_Info_Extended comp_info = ComponentRegistry::GetComponentInfo(type);
+        data_allocator::DataProperties data_properties;
+        data_properties.copy_func = comp_info.copy_construct;
+        data_properties.move_func = comp_info.move_construct;
+        data_properties.deconstruct_func = comp_info.deconstructor;
         components_all.emplace(type, std::make_shared<data_allocator>( comp_info.size));
     }
     return components_all[type];
