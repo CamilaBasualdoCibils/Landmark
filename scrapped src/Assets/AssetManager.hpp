@@ -1,13 +1,14 @@
 #pragma once
 #include <pch.h>
-#include <Core/AppModule.h>
+
 #include <Editor/Logging/Log.h>
+#include <misc/Singleton.hpp>
 //#include "LoadedAsset/LoadedAsset.hpp"
 class AssetInspector;
 class Asset;
 class LoadedAsset;
 struct AssetDescriptor;
-class AssetManager : public AppModule
+class AssetManager : public Singleton<AssetManager>
 {
 private:
     void Init() override;

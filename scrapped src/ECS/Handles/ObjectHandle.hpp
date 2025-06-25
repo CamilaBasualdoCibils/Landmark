@@ -3,7 +3,6 @@
 //#include <ECS/Base/Object.hpp>
 #include <ECS/Scene.hpp>
 #include <ECS/SceneManager.hpp>
-#include <Core/App.h>
 class Scene;
 template <typename T>
 class ObjectHandle {
@@ -40,5 +39,5 @@ class SceneObjectHandle :public ObjectHandle<T>{
 template <typename T>
 inline std::shared_ptr<Scene> SceneObjectHandle<T>::GetScene()
 {
-    return App::GetInstance()->GetModule<SceneManager>()->GetScene(*scene_id);
+    return SceneManager::Get().GetScene(*scene_id);
 }

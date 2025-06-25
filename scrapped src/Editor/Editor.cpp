@@ -4,22 +4,11 @@
 #include "EditorLambda.h"
 #include "Logo.h"
 #include "EditorIcons.hpp"
-#include <Core/App.h>
 #include "Console/Console.hpp"
 Editor::Editor()
 {
-
-}
- std::shared_ptr<Editor> Editor::GetInstance()
-{
-	if (!INSTANCE) INSTANCE = App::GetInstance()->GetModule<Editor>();
-    return INSTANCE;
-}
-void Editor::Init()
-{
-
 	topbar.GetViewGroup()->PushObject<EditorLambda>(INT64_MIN, "Font Scale", []()
-												   {
+													{
 			float& scale = ImGui::GetIO().FontGlobalScale;
 			if (ImGui::InputFloat("Font Scale", &scale, 0.1, 0.25))
 			{

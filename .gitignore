@@ -1,5 +1,6 @@
 Landmark.code-workspace
 .vs
+.cache
 Demo.make
 ImGui.make
 ImPlot.make

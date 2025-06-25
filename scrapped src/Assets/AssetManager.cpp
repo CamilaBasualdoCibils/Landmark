@@ -1,7 +1,6 @@
 #include "AssetManager.hpp"
 #include <Editor/Editor.h>
 #include "AssetExplorer.hpp"
-#include <Core/App.h>
 #include "Asset.hpp"
 #include "Inspectors/Texture/TextureAssetInspector.hpp"
 #include <Assets/Descriptors/AssetDescriptor.hpp>

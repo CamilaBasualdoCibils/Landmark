@@ -32,7 +32,6 @@ project "Demo"
 ]]
 
 project "Landmark"
-
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++20"
@@ -43,7 +42,7 @@ project "Landmark"
    pchheader "pch.h"
    includedirs {"src","lib","imgui","glslang","lib/RenderDoc/include"}
    links { "ImGui","ImPlot","vulkan","glfw",
-   "glslang","MachineIndependent","OSDependent","GenericCodeGen" }
+   "glslang","MachineIndependent","OSDependent","GenericCodeGen","EGL","GL","GLEW" }
    libdirs{"lib/RenderDoc/lib"}
    dependson {"ImGui","ImPlot"}
 
