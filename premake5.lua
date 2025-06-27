@@ -40,10 +40,10 @@ project "Landmark"
 
    files { "src/**.h", "src/**.c","src/**.cpp"}
    pchheader "pch.h"
-   includedirs {"src","lib","imgui","glslang","lib/RenderDoc/include"}
-   links { "ImGui","ImPlot","vulkan","glfw",
+   includedirs {"src","lib","imgui","glslang","lib/RenderDoc/include","lib/GLFW/include"}
+   links { "ImGui","ImPlot","vulkan","glfw3",
    "glslang","MachineIndependent","OSDependent","GenericCodeGen","EGL","GL","GLEW" }
-   libdirs{"lib/RenderDoc/lib"}
+   libdirs{"lib/RenderDoc/lib","lib/GLFW/lib"}
    dependson {"ImGui","ImPlot"}
 
    filter "configurations:Debug"
@@ -64,8 +64,8 @@ project "ImGui"
    targetdir "bin/%{cfg.buildcfg}"
    flags{"MultiProcessorCompile"}
 
+   includedirs {"lib/GLFW/include"}
    files { "lib/imgui/**.h","lib/imgui/**.cpp"  }
-   
    filter "configurations:Debug"
       defines { "_DEBUG" }
       symbols "On"

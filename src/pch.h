@@ -47,7 +47,6 @@
 
 // GLM
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
-#define GLM_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/quaternion.hpp>

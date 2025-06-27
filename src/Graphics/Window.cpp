@@ -25,7 +25,7 @@ Graphics::Window::Window()
     glfwCreateWindowSurface((VkInstance)(vk::Instance)VK::Instance::Get(), glfwWindowHandle, nullptr, &s);
     vkSurface = (vk::SurfaceKHR)s;
 
-    Swapchain.Make(vkSurface);
+
 }
 
 vk::SurfaceKHR Graphics::Window::GetVulkanSurface() const

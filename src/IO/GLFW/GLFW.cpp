@@ -1,8 +1,9 @@
 #include "GLFW.hpp"
-#include <GLFW/glfw3.h>
+
 
 GLFW::GLFW()
 {
+    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
     if (glfwInit() != GLFW_TRUE)
     {
         throw std::runtime_error("Failed to initialize GLFW");

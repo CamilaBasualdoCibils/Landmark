@@ -9,3 +9,4 @@ inline vk::Extent2D GlmToVk(uvec2 e) {return vk::Extent2D(e.x,e.y);}
 
 inline uvec3 VkToGlm(vk::Extent3D e) {return uvec3(e.width,e.height,e.depth);}
 inline vk::Extent3D GlmToVk(uvec3 e) {return vk::Extent3D(e.x,e.y,e.z);}
+inline vk::Offset3D GlmToVk(ivec3 e) {return vk::Offset3D{e.x,e.y,e.z};}

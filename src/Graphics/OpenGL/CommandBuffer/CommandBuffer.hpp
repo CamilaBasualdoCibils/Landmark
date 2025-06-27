@@ -6,6 +6,7 @@ namespace GL
 {
 struct Command : ICommand
 {
+
 };
 class CommandBuffer : public ICommandBuffer
 {
@@ -14,7 +15,9 @@ class CommandBuffer : public ICommandBuffer
   public:
     CommandBuffer();
     void SignalSemaphore(GPURef<Graphics::Semaphore> semaphore) override;
+    [[nodiscard]] GPURef<Graphics::Semaphore> SignalSemaphore()override;
     void WaitSemaphore(GPURef<Graphics::Semaphore> semaphore) override;
+    [[nodiscard]] GPURef<Graphics::Semaphore> WaitSemaphore() override;
     void SignalFence(GPURef<Graphics::Semaphore> semaphore) override
     {
     }

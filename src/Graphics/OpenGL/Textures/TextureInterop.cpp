@@ -11,7 +11,7 @@ GL::TextureInterop::TextureInterop(const GL::TextureInteropProperties &Propertie
 void GL::TextureInterop::ImportMemory(InteropTransaction transaction)
 {
     memObject.ImportMemory(transaction);
-    GLenum GLFormat = (GLenum)Format;
+    GLenum GLFormat = (GLenum)TextureFormat;
     const bool HasZ = Dimensions.z > 1, HasY = Dimensions.y > 1;
     if (HasY)
     {

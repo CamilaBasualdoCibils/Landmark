@@ -19,7 +19,9 @@ public:
     static Type &Make(const T & args)
     {
         LASSERT(!Instance, "Singleton already exist");
-        Instance = std::make_unique<Type>(args);
+        Type* rawPtr = static_cast<Type*>(::operator new(sizeof(Type)));
+        Instance.reset(rawPtr);
+        new (rawPtr) Type(args);
         return *Instance;
     }
 

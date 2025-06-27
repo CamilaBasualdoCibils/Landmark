@@ -1,4 +1,5 @@
 #include "Device.hpp"
+#include "Graphics/GraphicsEngine.hpp"
 #include <Graphics/Vulkan/Extension.hpp>
 #include <Graphics/Vulkan/Validationlayer.hpp>
 #include <vulkan/vulkan_core.h>
@@ -34,11 +35,13 @@ VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DevicePrope
     DeviceCreateInfo.setPEnabledExtensionNames(extensions);
     DeviceCreateInfo.setPEnabledLayerNames(validationLayers);
     DeviceCreateInfo.setPEnabledFeatures(&DeviceFeatures);
+
     vk::DeviceQueueCreateInfo queueGraphics, queueCompute, queuePresent;
     queueGraphics.queueCount = 1;
     queueGraphics.queueFamilyIndex = 0;
     DeviceCreateInfo.pQueueCreateInfos = &queueGraphics;
     float p = 1.0f;
+
     queueGraphics.pQueuePriorities = &p;
     DeviceCreateInfo.queueCreateInfoCount = 1;
     const auto CreateDeviceResult = GetVkPhysicalDeviceHandle().createDevice(DeviceCreateInfo);

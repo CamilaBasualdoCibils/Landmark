@@ -44,7 +44,7 @@ struct TextureFormat
     }
     TextureFormatValues value;
 
-    constexpr std::optional<GL::TextureFormats> toGLFormat() const
+    constexpr std::optional<std::pair<GL::TextureFormats, GL::PixelFormats>> toGLFormat() const
     {
         for (auto &entry : textureFormatTable)
             if (std::get<0>(entry) == value)
@@ -58,13 +58,17 @@ struct TextureFormat
                 return std::get<1>(entry);
         return std::nullopt;
     }
-    static inline constexpr std::tuple<TextureFormatValues, VK::ImageFormats, GL::TextureFormats> textureFormatTable[] =
-        {
+    static inline constexpr std::tuple<TextureFormatValues, VK::ImageFormats,
+                                       std::pair<GL::TextureFormats, GL::PixelFormats>>
+        textureFormatTable[] = {
             {
                 TextureFormatValues::eRGBA8_UNorm,
                 VK::ImageFormats::eRGBA8_UNorm,
-                GL::TextureFormats::eRGBA8_UNorm,
+                {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eRGBA},
             },
+            {TextureFormatValues::eBGRA8_UNorm,
+             VK::ImageFormats::eBGRA8_UNorm,
+             {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eBGRA}}
 
             // Add more...
     };

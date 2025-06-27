@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GL/gl.h>
+#include <GL/glext.h>
 #include <pch.h>
 
 namespace GL
@@ -18,6 +20,15 @@ enum class TextureTypes : GLenum
     eTextureBuffer = GL_TEXTURE_BUFFER,
     eTexture2DMultiSample = GL_TEXTURE_2D_MULTISAMPLE,
     eTexture2DMultiSampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+};
+enum class PixelFormats : GLenum
+{
+    eR = GL_RED,
+    eRG = GL_RG,
+    eRGB = GL_RGB,
+    eRGBA = GL_RGBA,
+    eBGR = GL_BGR,
+    eBGRA = GL_BGRA
 };
 enum class TextureFormats : GLenum
 {
@@ -84,7 +95,8 @@ enum class TextureFormats : GLenum
 };
 struct ITextureProperties
 {
-    TextureFormats Format;
+    TextureFormats TextureFormat;
+    PixelFormats PixelFormat;
     uvec3 Dimensions;
     uint32_t Levels;
 };
@@ -93,14 +105,16 @@ class ITexture
 
   protected:
     GLuint Handle;
-    TextureFormats Format;
+    TextureFormats TextureFormat;
+    PixelFormats PixelFormat;
     uvec3 Dimensions;
     uint32_t Levels;
 
   public:
     ITexture(const ITextureProperties &Properties)
     {
-        Format = Properties.Format;
+        TextureFormat = Properties.TextureFormat;
+        PixelFormat = Properties.PixelFormat;
         Dimensions = Dimensions = max(uvec3(1), Properties.Dimensions);
         Levels = Properties.Levels;
         glCreateTextures((GLenum)TypeFromProperties(Properties), 1, &Handle);
@@ -111,6 +125,17 @@ class ITexture
     }
 
     static TextureTypes TypeFromProperties(const ITextureProperties &Properties);
-    operator GLuint() const {return Handle;}
+    operator GLuint() const
+    {
+        return Handle;
+    }
+    TextureFormats GetTextureFormat() const
+    {
+        return TextureFormat;
+    }
+     PixelFormats GetPixelFormat() const
+    {
+        return PixelFormat;
+    }
 };
 } // namespace GL

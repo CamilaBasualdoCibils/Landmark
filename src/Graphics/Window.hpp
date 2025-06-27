@@ -5,13 +5,14 @@
 #include <GLFW/glfw3.h>
 #include <pch.h>
 #include <vulkan/vulkan_handles.hpp>
-namespace Graphics {
+namespace Graphics
+{
 class Window
 {
 
     GLFWwindow *glfwWindowHandle;
     vk::SurfaceKHR vkSurface;
-    GPURef<VK::Swapchain> Swapchain;
+    mutable GPURef<VK::Swapchain> Swapchain;
 
   public:
     Window();
@@ -21,6 +22,11 @@ class Window
     }
     vk::SurfaceKHR GetVulkanSurface() const;
 
-    GPURef<VK::Swapchain> GetSwapchain() const {return Swapchain;}
+    GPURef<VK::Swapchain> GetSwapchain() const
+    {
+        if (!Swapchain)
+            Swapchain.Make(vkSurface);
+        return Swapchain;
+    }
 };
-}
+} // namespace Graphics

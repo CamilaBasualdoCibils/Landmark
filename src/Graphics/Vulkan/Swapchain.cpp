@@ -32,7 +32,7 @@ VK::Swapchain::Swapchain(vk::SurfaceKHR surface)
     CreateInfo.preTransform = vk::SurfaceTransformFlagBitsKHR::eIdentity;
     CreateInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
     CreateInfo.surface = surface;
-    CreateInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+    CreateInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc| vk::ImageUsageFlagBits::eTransferDst;
 
     const auto CreateResult =
         GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().createSwapchainKHR(CreateInfo);
@@ -50,6 +50,7 @@ VK::Swapchain::Swapchain(vk::SurfaceKHR surface)
     {
         SwapchainImage Image;
         Image.imageRaw = vkimage;
+        Images.push_back(Image);
         // Image.imageView.emplace()
     }
 }
@@ -57,5 +58,7 @@ void VK::Swapchain::AcquireNextSwapchainImage(GPURef<Graphics::Semaphore> OnComp
 {
     const auto AcquireResult = GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().acquireNextImageKHR(
         GetHandle(), UINT64_MAX, OnCompleteSemaphore ? OnCompleteSemaphore->VK().GetHandle() : nullptr, nullptr);
+        LASSERT(AcquireResult.result == vk::Result::eSuccess, "Maaaan");
+        CurrentImageIndex = AcquireResult.value;
         
 }

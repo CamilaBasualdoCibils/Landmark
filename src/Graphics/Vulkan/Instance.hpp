@@ -21,10 +21,13 @@ namespace VK
         operator vk::Instance() {return Handle;}
     private:
         vk::Instance Handle;
+        vk::DebugUtilsMessengerEXT DebugMessenger;
+        vk::detail::DispatchLoaderDynamic dldi;
         std::vector<std::shared_ptr<VK::PhysicalDevice>> PhysicalDevices;
         std::vector<Extension> EnabledExtensions;
         std::vector<ValidationLayer> EnabledValidationLayers;
         /* data */
+        
     };
 
 }

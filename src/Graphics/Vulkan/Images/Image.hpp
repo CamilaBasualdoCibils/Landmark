@@ -3,6 +3,7 @@
 #include <pch.h>
 #include <type_traits>
 #include <vulkan/vulkan_enums.hpp>
+#include <vulkan/vulkan_handles.hpp>
 #include "Graphics/Vulkan/Memory/Memory.hpp"
 #include "Types/Flags.h"
 #include "ImageEnums.hpp"
@@ -27,5 +28,8 @@ class Image : public InteropGiver
     Image(const ImageProperties& Properties);
 
     InteropTransaction ExportMemory() const {return memory->ExportMemory();}
+    vk::Image GetHandle() const {return handle;}
+    operator vk::Image() const {return GetHandle();}
+
 };
 } // namespace VK

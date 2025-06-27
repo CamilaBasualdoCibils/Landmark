@@ -17,7 +17,7 @@ VK::Image::Image(const VK::ImageProperties &Properties)
     CreateInfo.mipLevels = Properties.MipLevels;
     CreateInfo.tiling = vk::ImageTiling::eOptimal;
     CreateInfo.initialLayout = vk::ImageLayout::eUndefined;
-    CreateInfo.usage = vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled;
+    CreateInfo.usage = vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferSrc;
     CreateInfo.sharingMode = vk::SharingMode::eExclusive;
     CreateInfo.samples = vk::SampleCountFlagBits::e1;
     CreateInfo.imageType = Properties.Dimensions.y > 1

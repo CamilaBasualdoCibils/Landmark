@@ -41,6 +41,8 @@ class Device : public PhysicalDevice
 
     VKGETPROCADDRESSMEMBER(GetSemaphoreFdKHR);
     VKGETPROCADDRESSMEMBER(GetMemoryFdKHR);
+
+    [[nodiscard]] vk::Queue GetGraphicsQueue() const {return GraphicsQueue;}
     //
 };
 } // namespace VK
