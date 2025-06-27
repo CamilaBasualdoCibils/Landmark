@@ -20,4 +20,6 @@ public:
     ~GPUInstance();
 
     [[nodiscard]] auto GetDevice() const {return Device;}
+    [[nodiscard]] auto GetVulkanDevice() const {return VKDevice;}
+    [[nodiscard]] auto GetOpenGLContext() const {return GLContext;}
 };

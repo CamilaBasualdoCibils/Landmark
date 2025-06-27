@@ -21,11 +21,12 @@
 #include <vulkan/vulkan_to_string.hpp>
 
 // EGL
+
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 // GLEW
 #include <GL/glew.h>
-
+#include <GL/gl.h>
 // GLFW
 #define GLFW_INCLUDE_VULKAN
 #define VK_USE_PLATFORM_WIN32_KHR

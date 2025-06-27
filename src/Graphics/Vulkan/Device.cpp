@@ -2,7 +2,9 @@
 #include <Graphics/Vulkan/Extension.hpp>
 #include <Graphics/Vulkan/Validationlayer.hpp>
 #include <vulkan/vulkan_core.h>
-VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DeviceProperties &properties) : PhysicalDevice(phyDev->GetVkPhysicalDeviceHandle())
+#include <vulkan/vulkan_structs.hpp>
+VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DeviceProperties &properties)
+    : PhysicalDevice(phyDev->GetVkPhysicalDeviceHandle())
 {
     vk::DeviceCreateInfo DeviceCreateInfo;
     std::vector<const char *> extensions;
@@ -14,6 +16,7 @@ VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DevicePrope
     extensions.push_back(VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
     extensions.push_back(VK_KHR_EXTERNAL_FENCE_EXTENSION_NAME);
     extensions.push_back(VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME);
+    extensions.push_back(VK_KHR_IMAGELESS_FRAMEBUFFER_EXTENSION_NAME);
     // extensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
     validationLayers.push_back("VK_LAYER_KHRONOS_validation");
     vk::PhysicalDeviceFeatures DeviceFeatures;
@@ -21,7 +24,13 @@ VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DevicePrope
     DeviceFeatures.multiDrawIndirect = true;
     DeviceFeatures.samplerAnisotropy = true;
     DeviceFeatures.sampleRateShading = true;
-
+    // DeviceFeatures.frame
+    vk::PhysicalDeviceTimelineSemaphoreFeatures timelineFeatures = {};
+    timelineFeatures.timelineSemaphore = VK_TRUE;
+    DeviceCreateInfo.pNext = &timelineFeatures;
+    vk::PhysicalDeviceImagelessFramebufferFeatures ImageLessFramebuffersFeatures;
+    ImageLessFramebuffersFeatures.imagelessFramebuffer = true;
+    timelineFeatures.setPNext(ImageLessFramebuffersFeatures);
     DeviceCreateInfo.setPEnabledExtensionNames(extensions);
     DeviceCreateInfo.setPEnabledLayerNames(validationLayers);
     DeviceCreateInfo.setPEnabledFeatures(&DeviceFeatures);
@@ -35,4 +44,6 @@ VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DevicePrope
     const auto CreateDeviceResult = GetVkPhysicalDeviceHandle().createDevice(DeviceCreateInfo);
     LASSERT(CreateDeviceResult.result == vk::Result::eSuccess, "Unable to create Vulkan device");
     DeviceHandle = CreateDeviceResult.value;
+
+    GraphicsQueue = DeviceHandle.getQueue(queueGraphics.queueFamilyIndex, 0);
 }

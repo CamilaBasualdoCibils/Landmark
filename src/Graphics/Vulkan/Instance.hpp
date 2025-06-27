@@ -17,6 +17,8 @@ namespace VK
         Instance(const InstanceProperties &);
         ~Instance();
         const std::vector<std::shared_ptr<VK::PhysicalDevice>>& EnumrateDevices() const {return PhysicalDevices;}
+        operator vk::Instance() const {return Handle;}
+        operator vk::Instance() {return Handle;}
     private:
         vk::Instance Handle;
         std::vector<std::shared_ptr<VK::PhysicalDevice>> PhysicalDevices;
