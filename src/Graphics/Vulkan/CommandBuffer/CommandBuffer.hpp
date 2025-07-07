@@ -1,35 +1,41 @@
 #pragma once
 #include "Graphics/ICommandBuffer.hpp"
 #include "Graphics/Synchronization.hpp"
+#include "Graphics/Vulkan/Queue.hpp"
+#include "Graphics/Vulkan/Synchronization/Fence.hpp"
 #include <deque>
 
 #include <pch.h>
+#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_enums.hpp>
 #include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_structs.hpp>
-
 namespace VK
 {
 struct Command : ICommand
 {
 };
+using CmdCapatiblities = QueueCapabilities;
 class CommandBuffer : public ICommandBuffer
 {
     vk::CommandPool commandPool;
     struct Partition // commands split into separate buffers since semaphore/fence operations only happen on begin/end
     {
+        Partition();
+        ~Partition();
         vk::CommandBuffer cmdBufferHandle;
         std::vector<std::unique_ptr<Command>> commands;
         GPURef<Graphics::Semaphore> SignalSemaphore,
             WaitSemaphore; // waits only matter at begin, singal only at end
-
+        GPURef<VK::Fence> CompletionFence;
     };
     std::deque<Partition> Partitions;
     bool PartitionsDirty = true;
     void MakePartition();
+    const Flags<CmdCapatiblities> Capabilities;
 
   public:
-    CommandBuffer();
+    CommandBuffer(const Flags<CmdCapatiblities> &Capabilities = {CmdCapatiblities::eGeneric});
     void SignalSemaphore(GPURef<Graphics::Semaphore> semaphore) override
     {
         Partitions.back().SignalSemaphore = semaphore;
@@ -54,15 +60,27 @@ class CommandBuffer : public ICommandBuffer
         WaitSemaphore(Semaphore);
         return Semaphore;
     }
-    void SignalFence(GPURef<Graphics::Semaphore> semaphore) override
+    void SignalFence(GPURef<VK::Fence> fence)
     {
+        Partitions.back().CompletionFence = fence;
+        MakePartition();
         PartitionsDirty = true;
     }
-    void WaitFence(GPURef<Graphics::Semaphore> semaphore) override
+    [[nodiscard]] GPURef<VK::Fence> SignalFence()
     {
-        PartitionsDirty = true;
+        GPURef<VK::Fence> Fence = GPURef<VK::Fence>::MakeRef();
+        SignalFence(Fence);
+        return Fence;
     }
-    void Submit(vk::Queue queue)
+    void BeginRender(GPURef<Graphics::RenderTarget> rt) override {}
+    void EndRender(GPURef<Graphics::RenderTarget> rt)override{}
+    [[nodiscard]] vk::CommandBuffer GetReadyHandle()
+    {
+        if (Partitions.empty())
+            Partitions.emplace_back();
+        return Partitions.back().cmdBufferHandle;
+    }
+    void Submit(GPURef<VK::Queue> queue)
     {
         if (PartitionsDirty)
         {
@@ -73,12 +91,14 @@ class CommandBuffer : public ICommandBuffer
             {
                 Partition.cmdBufferHandle.reset();
 
-                Partition.cmdBufferHandle.begin(vk::CommandBufferBeginInfo{});
+                const auto BeginResult = Partition.cmdBufferHandle.begin(vk::CommandBufferBeginInfo{});
+                LASSERT(BeginResult == vk::Result::eSuccess, "Darn");
                 for (const auto &Command : Partition.commands)
                 {
                     Command->Execute(&Partition.cmdBufferHandle);
                 }
-                Partition.cmdBufferHandle.end();
+                const auto EndResult = Partition.cmdBufferHandle.end();
+                LASSERT(EndResult == vk::Result::eSuccess, "Darn");
             }
         }
 
@@ -100,7 +120,9 @@ class CommandBuffer : public ICommandBuffer
                 SignalSemaphoreHandle = Partition.SignalSemaphore->VK().GetHandle();
                 SubmitInfo.setSignalSemaphores({SignalSemaphoreHandle});
             }
-            const auto SubmitResult = queue.submit(SubmitInfo);
+
+            const auto SubmitResult = queue->GetHandle().submit(
+                SubmitInfo, Partition.CompletionFence ? Partition.CompletionFence->GetHandle() : VK_NULL_HANDLE);
         }
     }
     void Clear() override
@@ -119,5 +141,9 @@ class CommandBuffer : public ICommandBuffer
         Partitions.back().commands.push_back(std::make_unique<T>(std::forward<ARGS>(args)...));
         PartitionsDirty = true;
     };
+    [[nodiscard]] auto GetCapabilities() const
+    {
+        return Capabilities;
+    }
 };
 } // namespace VK

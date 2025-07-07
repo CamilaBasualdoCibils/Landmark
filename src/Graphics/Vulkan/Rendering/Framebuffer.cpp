@@ -35,7 +35,7 @@ VK::Framebuffer::Framebuffer(const VK::FramebufferProperties &Properties)
     AttachCreateInfo.setAttachmentImageInfos(ImageInfos);
     CreateInfo.pNext = & AttachCreateInfo;
     const auto CreateResult =
-        GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().createFramebuffer(CreateInfo);
+        GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().createFramebuffer(CreateInfo);
     LASSERT(CreateResult.result == vk::Result::eSuccess, "dang");
 
     Handle = CreateResult.value;

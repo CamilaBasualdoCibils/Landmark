@@ -3,6 +3,7 @@
 #include "Graphics/Synchronization.hpp"
 #include "Graphics/Vulkan/Images/ImageView.hpp"
 #include "Graphics/Vulkan/Images/Sampler.hpp"
+#include "Graphics/Vulkan/Queue.hpp"
 #include <pch.h>
 #include <vulkan/vulkan_enums.hpp>
 #include <vulkan/vulkan_handles.hpp>
@@ -40,7 +41,7 @@ class Swapchain
         return vkSwapchainHandle;
     }
     void AcquireNextSwapchainImage(GPURef<Graphics::Semaphore> onCompleteSemaphore);
-    void Present(vk::Queue queue, GPURef<Graphics::Semaphore> WaitSemaphore)
+    void Present(GPURef<VK::Queue> queue, GPURef<Graphics::Semaphore> WaitSemaphore)
     {
         vk::Semaphore SemaphoreHandle = WaitSemaphore->VK().GetHandle();
         vk::PresentInfoKHR PresentInfo{};
@@ -52,7 +53,7 @@ class Swapchain
         PresentInfo.waitSemaphoreCount = 1;
         PresentInfo.pResults = &PresentResult;
 
-        const auto PresentResultOverall = queue.presentKHR(PresentInfo);
+        const auto PresentResultOverall = queue->GetHandle().presentKHR(PresentInfo);
         LASSERT(PresentResultOverall == vk::Result::eSuccess && PresentResult == vk::Result::eSuccess, "oh man");
     }
     const auto& GetCurrentImage() const {return GetImage(CurrentImageIndex);}

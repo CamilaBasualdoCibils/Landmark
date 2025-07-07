@@ -45,7 +45,7 @@ VK::RenderPass::RenderPass(const VK::RenderPassProperties &Properties):Propertie
     CreateInfo.setSubpasses(SubpassDescriptions);
 
     const auto CreateResult =
-        GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().createRenderPass(CreateInfo);
+        GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().createRenderPass(CreateInfo);
     LASSERT(CreateResult.result == vk::Result::eSuccess, "my bad");
 
     Handle = CreateResult.value;

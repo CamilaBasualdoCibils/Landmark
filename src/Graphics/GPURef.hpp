@@ -1,3 +1,4 @@
+#pragma once
 #include <memory>
 #include <pch.h>
 #include <utility>

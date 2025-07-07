@@ -28,5 +28,6 @@ class Window
             Swapchain.Make(vkSurface);
         return Swapchain;
     }
+    GLFWwindow* GetGLFWHandle()const {return glfwWindowHandle;}
 };
 } // namespace Graphics

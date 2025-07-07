@@ -5,11 +5,13 @@
 #include "Graphics/Vulkan/Images/ImageEnums.hpp"
 #include "Types/Flags.h"
 #include "misc/Conversions.hpp"
+#include <optional>
 #include <pch.h>
 #include <vulkan/vulkan_structs.hpp>
 
 namespace VK
 {
+    // Copy Bitwise Image to image
 struct CopyImage : Command
 {
     const std::variant<GPURef<Graphics::Texture>, vk::Image> SrcImage, DstImage;
@@ -55,6 +57,59 @@ struct CopyImage : Command
         return "CopyImage";
     }
 };
+// Copy ComponentWise Image to image. Preserves channels
+struct BlitImage : Command
+{
+    const std::variant<GPURef<Graphics::Texture>, vk::Image> SrcImage, DstImage;
+    const ImageLayouts SrcImageLayout, DstImageLayout;
+    const ivec3 SrcOffset, DstOffset, SrcExtent, DstExtent;
+    const Filter Imagefilter;
+
+    BlitImage(std::variant<GPURef<Graphics::Texture>, vk::Image> srcImage,
+              std::variant<GPURef<Graphics::Texture>, vk::Image> dstImage, ImageLayouts srcImageLayout,
+              ImageLayouts dstImageLayout, VK::Filter imageFilter, ivec3 srcOffset, ivec3 dstOffset, ivec3 srcExtent,
+              std::optional<ivec3> dstExtent = std::nullopt)
+        : SrcImage(srcImage), DstImage(dstImage), SrcImageLayout(srcImageLayout), DstImageLayout(dstImageLayout),
+          SrcOffset(srcOffset), DstOffset(dstOffset), SrcExtent(glm::max(ivec3(1), srcExtent)),
+          DstExtent(glm::max(ivec3(1), dstExtent.value_or(srcExtent))), Imagefilter(imageFilter)
+    {
+    }
+
+    void Execute(void *context) override
+    {
+        vk::ImageBlit blitRegion{};
+        blitRegion.srcSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+        blitRegion.srcSubresource.mipLevel = 0;
+        blitRegion.srcSubresource.baseArrayLayer = 0;
+        blitRegion.srcSubresource.layerCount = 1;
+        blitRegion.srcOffsets[0] = GlmToVk(SrcOffset);
+        blitRegion.srcOffsets[1] = GlmToVk(SrcOffset + SrcExtent);
+
+        blitRegion.dstSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+        blitRegion.dstSubresource.mipLevel = 0;
+        blitRegion.dstSubresource.baseArrayLayer = 0;
+        blitRegion.dstSubresource.layerCount = 1;
+        blitRegion.dstOffsets[0] = GlmToVk(DstOffset);
+        blitRegion.dstOffsets[1] = GlmToVk(DstOffset + DstExtent);
+
+        vk::CommandBuffer *cmdBuffer = static_cast<vk::CommandBuffer *>(context);
+
+        vk::Image srcImage = std::holds_alternative<GPURef<Graphics::Texture>>(SrcImage)
+                                 ? std::get<GPURef<Graphics::Texture>>(SrcImage)->VK().GetImage().GetHandle()
+                                 : std::get<vk::Image>(SrcImage);
+        vk::Image dstImage = std::holds_alternative<GPURef<Graphics::Texture>>(DstImage)
+                                 ? std::get<GPURef<Graphics::Texture>>(DstImage)->VK().GetImage().GetHandle()
+                                 : std::get<vk::Image>(DstImage);
+
+        cmdBuffer->blitImage(srcImage, static_cast<vk::ImageLayout>(SrcImageLayout), dstImage,
+                             static_cast<vk::ImageLayout>(DstImageLayout), 1, &blitRegion, (vk::Filter)Imagefilter);
+    }
+
+    std::string GetName() override
+    {
+        return "BlitImage";
+    }
+};
 
 struct ClearColorImage : Command
 {
@@ -76,7 +131,6 @@ struct ClearColorImage : Command
                               : std::get<vk::Image>(TargetImage);
         vk::ClearColorValue clrV;
         clrV.setFloat32({ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a});
-
         cmdBuffer->clearColorImage(image, (vk::ImageLayout)TargetImageLayout, clrV, {subresourceRange});
     }
     std::string GetName() override

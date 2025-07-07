@@ -1,4 +1,6 @@
 #pragma once
+#include "Graphics/ICommandBuffer.hpp"
+
 #include "PhysicalDevice.hpp"
 #include <pch.h>
 #include <type_traits>
@@ -15,8 +17,13 @@
     }
 namespace VK
 {
+struct QueueSelection
+{
+    uint32_t FamilyIndex;
+};
 struct DeviceProperties
 {
+    std::vector<QueueSelection> Queues;
 };
 struct ProcAddresses
 {
@@ -25,11 +32,10 @@ class Device : public PhysicalDevice
 {
     friend PhysicalDevice;
     vk::Device DeviceHandle;
-    vk::Queue GraphicsQueue;
 
   public:
-    Device(std::shared_ptr<PhysicalDevice> phyDev, const DeviceProperties &properties);
-    //vk::Device* operator->() {return &DeviceHandle;}
+    Device(GPURef<PhysicalDevice> phyDev, const DeviceProperties &properties);
+    // vk::Device* operator->() {return &DeviceHandle;}
     [[nodiscard]] auto GetHandle() const
     {
         return DeviceHandle;
@@ -42,7 +48,6 @@ class Device : public PhysicalDevice
     VKGETPROCADDRESSMEMBER(GetSemaphoreFdKHR);
     VKGETPROCADDRESSMEMBER(GetMemoryFdKHR);
 
-    [[nodiscard]] vk::Queue GetGraphicsQueue() const {return GraphicsQueue;}
     //
 };
 } // namespace VK

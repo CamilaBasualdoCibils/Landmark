@@ -2,7 +2,7 @@
 #include <pch.h>
 #include <Graphics/Vulkan/PhysicalDevice.hpp>
 #include <Graphics/OpenGL/EGL.hpp>
-class GPUDevice
+class GPUPhysicalDevice
 {
 public:
     struct VulkanProperties
@@ -21,10 +21,10 @@ private:
     const std::string Name;
     /* data */
 public:
-    GPUDevice( std::shared_ptr<VK::PhysicalDevice> _VKDevice,  std::shared_ptr<GL::Device>_GLDevice);
-    ~GPUDevice();
+    GPUPhysicalDevice( std::shared_ptr<VK::PhysicalDevice> _VKDevice,  std::shared_ptr<GL::Device>_GLDevice);
+    ~GPUPhysicalDevice();
 
     [[nodiscard]] const std::string &GetName() const { return Name; }
-    [[nodiscard]] std::shared_ptr<VK::PhysicalDevice> GetVulkanDevice() const {return VKDevice;}
-    [[nodiscard]] std::shared_ptr<GL::Device> GetOpenGLDevice() const {return GLDevice;}
+    [[nodiscard]] std::shared_ptr<VK::PhysicalDevice> VK() const {return VKDevice;}
+    [[nodiscard]] std::shared_ptr<GL::Device> GL() const {return GLDevice;}
 };

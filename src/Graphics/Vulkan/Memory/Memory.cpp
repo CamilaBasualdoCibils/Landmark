@@ -13,14 +13,14 @@ VK::Memory::Memory(const VK::MemoryType& type,size_t size)
     MemAllocInfo.allocationSize = size;
     MemAllocInfo.memoryTypeIndex = type.Index;
     MemAllocInfo.pNext = &exportInfo;
-    const auto AllocResult = GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().allocateMemory(MemAllocInfo);
+    const auto AllocResult = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().allocateMemory(MemAllocInfo);
     LASSERT(AllocResult.result == vk::Result::eSuccess,"Darn");
     handle = AllocResult.value;
 
     vk::MemoryGetFdInfoKHR getFdInfo;
     getFdInfo.memory = handle,
     getFdInfo.handleType = vk::ExternalMemoryHandleTypeFlagBits::eOpaqueFd;
-    const auto GetMemoryResult = GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetMemoryFdKHR(getFdInfo,&fdHandle);
+    const auto GetMemoryResult = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetMemoryFdKHR(getFdInfo,&fdHandle);
     LASSERT(GetMemoryResult == VkResult::VK_SUCCESS, "maaan");
 
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <Graphics/GPURef.hpp>
 #include <pch.h>
 #include <type_traits>
 
@@ -27,20 +28,20 @@ enum InteropTransactionType
 template <typename VulkanObject, typename OpenGLObject, InteropTransactionType TransactionType> class InteropObject
 {
 
-    std::optional<VulkanObject> vulkanObject;
-    std::optional<OpenGLObject> openGLObject;
+    GPURef<VulkanObject> vulkanObject;
+    GPURef<OpenGLObject> openGLObject;
 
   protected:
     template <typename VulkanArg, typename GLArg> void Initialize(VulkanArg vulkanArg, GLArg glArg)
     {
-        vulkanObject.emplace(vulkanArg);
-        openGLObject.emplace(glArg);
+        vulkanObject = GPURef<VulkanObject>::MakeRef(vulkanArg);
+        openGLObject = GPURef<OpenGLObject>::MakeRef(glArg);
         TransferMemory();
     }
     void Initialize()
     {
-        vulkanObject.emplace();
-        openGLObject.emplace();
+        vulkanObject = GPURef<VulkanObject>::MakeRef();
+        openGLObject = GPURef<OpenGLObject>::MakeRef();
         TransferMemory();
     }
     void TransferMemory()
@@ -52,7 +53,7 @@ template <typename VulkanObject, typename OpenGLObject, InteropTransactionType T
     }
     void CheckObjects() const
     {
-        LASSERT(vulkanObject.has_value() && openGLObject.has_value(), "Object not initialized");
+        LASSERT(vulkanObject && openGLObject, "Object not initialized");
     }
 
   public:
@@ -90,7 +91,27 @@ template <typename VulkanObject, typename OpenGLObject, InteropTransactionType T
         CheckObjects();
         return *openGLObject;
     }
+    auto VKPtr() const
+    {
+        CheckObjects();
+        return vulkanObject;
+    }
+    auto VKPtr()
+    {
+        CheckObjects();
+        return vulkanObject;
+    }
 
+    auto GLPtr() const
+    {
+        CheckObjects();
+        return openGLObject;
+    }
+    auto GLPtr()
+    {
+        CheckObjects();
+        return openGLObject;
+    }
     operator OpenGLObject()
     {
         CheckObjects();

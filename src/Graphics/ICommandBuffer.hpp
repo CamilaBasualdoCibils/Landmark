@@ -1,4 +1,5 @@
 #pragma once
+#include "Graphics/Rendering/RenderTarget.hpp"
 #include <Graphics/GPURef.hpp>
 #include <Graphics/Synchronization.hpp>
 #include <pch.h>
@@ -24,7 +25,8 @@ class ICommandBuffer
     [[nodiscard]] virtual GPURef<Graphics::Semaphore> SignalSemaphore() = 0 ;
     virtual void WaitSemaphore(GPURef<Graphics::Semaphore> semaphore) = 0;
     [[nodiscard]] virtual GPURef<Graphics::Semaphore> WaitSemaphore() = 0 ;
-    virtual void SignalFence(GPURef<Graphics::Semaphore> semaphore) = 0;
-    virtual void WaitFence(GPURef<Graphics::Semaphore> semaphore) = 0;
+    virtual void BeginRender(GPURef<Graphics::RenderTarget> rt) = 0;
+    virtual void EndRender(GPURef<Graphics::RenderTarget> rt) = 0;
+
     virtual void Clear() = 0;
 };

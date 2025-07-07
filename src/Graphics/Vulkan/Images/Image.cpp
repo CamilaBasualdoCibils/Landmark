@@ -25,19 +25,19 @@ VK::Image::Image(const VK::ImageProperties &Properties)
                                : vk::ImageType::e1D;
     CreateInfo.pNext = &ExternalImageInfo;
     const auto CreateResult =
-        GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().createImage(CreateInfo);
+        GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().createImage(CreateInfo);
     LASSERT(CreateResult.result == vk::Result::eSuccess, "Fucking hell");
     handle = CreateResult.value;
 
     vk::MemoryRequirements MemRequirements =
-        GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().getImageMemoryRequirements(handle);
+        GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().getImageMemoryRequirements(handle);
 
-    std::optional<VK::MemoryType> MemType = GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->FindMemoryFor(
+    std::optional<VK::MemoryType> MemType = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->FindMemoryFor(
         MemRequirements, Properties.memoryProperties);
     LASSERT(MemType.has_value(), "Dang");
 
     memory.emplace(*MemType, MemRequirements.size);
     const auto BindResult =
-        GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().bindImageMemory(handle, *memory, 0);
+        GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().bindImageMemory(handle, *memory, 0);
     LASSERT(BindResult == vk::Result::eSuccess, "shiet");
 }

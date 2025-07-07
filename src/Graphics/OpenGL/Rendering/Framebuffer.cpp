@@ -2,7 +2,7 @@
 #include "pch.h"
 #include <GL/glext.h>
 
-GL::Framebuffer &GL::Framebuffer::Attach(uint32_t Index, GPURef<GL::ITexture> Attachment)
+GL::Framebuffer &GL::Framebuffer::AttachColor(uint32_t Index, GPURef<GL::ITexture> Attachment)
 {
     LASSERT(Attachment, "Invalid Attachment");
     LASSERT(Index < 8 && Index >= 0, "Invalid Index");
@@ -10,7 +10,7 @@ GL::Framebuffer &GL::Framebuffer::Attach(uint32_t Index, GPURef<GL::ITexture> At
     Dirty = true;
     return *this;
 }
-GL::Framebuffer &GL::Framebuffer::Detach(uint32_t Index)
+GL::Framebuffer &GL::Framebuffer::DetachColor(uint32_t Index)
 {
     LASSERT(Index < 8 && Index >= 0, "Invalid Index");
     if (ColorAttachments[Index])

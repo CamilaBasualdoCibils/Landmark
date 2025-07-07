@@ -1,9 +1,15 @@
 #pragma once
 #include <pch.h>
+#include <type_traits>
 #include <vulkan/vulkan_enums.hpp>
 
 namespace VK
 {
+enum class Filter : std::underlying_type_t<vk::Filter>
+{
+    eNearest = (size_t)vk::Filter::eNearest,
+    eLinear = (size_t)vk::Filter::eLinear
+};
 enum class ImageFormats : std::underlying_type<vk::Format>::type
 {
     eRGBA8_UInt = (int)vk::Format::eR8G8B8A8Uint,

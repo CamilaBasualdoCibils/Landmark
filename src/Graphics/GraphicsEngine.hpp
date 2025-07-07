@@ -5,6 +5,7 @@
 #include <Graphics/OpenGL/CommandBuffer/CommandBuffer.hpp>
 #include <memory>
 #include <misc/Singleton.hpp>
+#include <queue>
 struct GraphicsEngineProperties
 {
 };
@@ -13,13 +14,19 @@ class GraphicsEngine : public Singleton<GraphicsEngine, GraphicsEngineProperties
     std::shared_ptr<GPUInstance> MainGPU;
     std::unordered_map<std::string, std::shared_ptr<Graphics::Window>> ActiveWindows;
     const std::string MAINWINDOWNAME = "Main";
+    std::queue<GPURef<ICommandBuffer>> ExecuteCommandBuffers;
 
+    void Dispatch(GPURef<ICommandBuffer> CmdBuffer);
   public:
     GraphicsEngine(const GraphicsEngineProperties &);
 
-    [[nodiscard]] std::shared_ptr<GL::CommandBuffer> MakeGLCommandBuffer();
+    //[[nodiscard]] std::shared_ptr<GL::CommandBuffer> MakeGLCommandBuffer();
 
-    void Execute(const std::vector<std::shared_ptr<ICommandBuffer>> &CmdBuffers);
+    void Push(const std::vector<GPURef<ICommandBuffer>> &CmdBuffers);
+    void ExecuteNow(const std::vector<GPURef<ICommandBuffer>> &CmdBuffers);
+    void BeginFrame();
+    void EndFrame();
+    void Render();
     [[nodiscard]] decltype(MainGPU) GetMainGPU() const
     {
         return MainGPU;

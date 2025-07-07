@@ -1,8 +1,8 @@
 #pragma once
-#include <pch.h>
-#include <vulkan/vulkan_handles.hpp>
 #include "Graphics/Vulkan/Images/ImageEnums.hpp"
 #include "Graphics/Vulkan/Pipeline/PipelineEnums.hpp"
+#include <pch.h>
+#include <vulkan/vulkan_handles.hpp>
 
 namespace VK
 {
@@ -46,12 +46,22 @@ struct RenderPassProperties
 };
 class RenderPass
 {
-vk::RenderPass Handle;
-RenderPassProperties Properties;
+    vk::RenderPass Handle;
+    RenderPassProperties Properties;
+
   public:
     RenderPass(const RenderPassProperties &Properties);
-    operator vk::RenderPass() const {return Handle;}
-    const RenderPassProperties& GetProperties() const {return Properties;}
-    
+    operator vk::RenderPass() const
+    {
+        return Handle;
+    }
+    const RenderPassProperties &GetProperties() const
+    {
+        return Properties;
+    }
+    [[nodiscard]] vk::RenderPass GetHandle() const
+    {
+        return Handle;
+    }
 };
 } // namespace VK

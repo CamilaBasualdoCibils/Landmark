@@ -30,9 +30,9 @@ struct ClearTextureImage : Command
     const GPURef<Graphics::Texture> Texture;
     const std::optional<uint32_t> Level;
     const std::optional<uvec3> Offset, Size;
-    const uvec4 ClearColor;
+    const vec<4,uint8_t> ClearColor;
 
-    ClearTextureImage(GPURef<Graphics::Texture> _Texture, uvec4 clearColor, std::optional<uvec3> offset = std::nullopt,
+    ClearTextureImage(GPURef<Graphics::Texture> _Texture, vec<4,uint8_t> clearColor, std::optional<uvec3> offset = std::nullopt,
                       std::optional<uvec3> size = std::nullopt, std::optional<uint32_t> level = std::nullopt)
         : Texture(_Texture), Level(level), ClearColor(clearColor), Offset(offset), Size(size)
     {

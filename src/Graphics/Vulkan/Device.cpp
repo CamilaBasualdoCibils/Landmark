@@ -1,10 +1,12 @@
 #include "Device.hpp"
 #include "Graphics/GraphicsEngine.hpp"
+#include "Graphics/ICommandBuffer.hpp"
+#include "Graphics/Vulkan/Queue.hpp"
 #include <Graphics/Vulkan/Extension.hpp>
 #include <Graphics/Vulkan/Validationlayer.hpp>
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_structs.hpp>
-VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DeviceProperties &properties)
+VK::Device::Device(GPURef<PhysicalDevice> phyDev, const VK::DeviceProperties &properties)
     : PhysicalDevice(phyDev->GetVkPhysicalDeviceHandle())
 {
     vk::DeviceCreateInfo DeviceCreateInfo;
@@ -32,10 +34,14 @@ VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DevicePrope
     vk::PhysicalDeviceImagelessFramebufferFeatures ImageLessFramebuffersFeatures;
     ImageLessFramebuffersFeatures.imagelessFramebuffer = true;
     timelineFeatures.setPNext(ImageLessFramebuffersFeatures);
+    vk::PhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures{};
+dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
+ImageLessFramebuffersFeatures.setPNext(&dynamicRenderingFeatures);
     DeviceCreateInfo.setPEnabledExtensionNames(extensions);
     DeviceCreateInfo.setPEnabledLayerNames(validationLayers);
     DeviceCreateInfo.setPEnabledFeatures(&DeviceFeatures);
 
+    
     vk::DeviceQueueCreateInfo queueGraphics, queueCompute, queuePresent;
     queueGraphics.queueCount = 1;
     queueGraphics.queueFamilyIndex = 0;
@@ -47,6 +53,4 @@ VK::Device::Device(std::shared_ptr<PhysicalDevice> phyDev, const VK::DevicePrope
     const auto CreateDeviceResult = GetVkPhysicalDeviceHandle().createDevice(DeviceCreateInfo);
     LASSERT(CreateDeviceResult.result == vk::Result::eSuccess, "Unable to create Vulkan device");
     DeviceHandle = CreateDeviceResult.value;
-
-    GraphicsQueue = DeviceHandle.getQueue(queueGraphics.queueFamilyIndex, 0);
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
+#include "Graphics/GPURef.hpp"
 #include "Graphics/OpenGL/Textures/ITexture.hpp"
 #include <pch.h>
 
@@ -13,8 +13,8 @@ class Framebuffer
     GLuint Handle;
 void CheckDirty();
   public:
-    Framebuffer &Attach(uint32_t Index, GPURef<GL::ITexture> Attachment);
-    Framebuffer &Detach(uint32_t Index);
+    Framebuffer &AttachColor(uint32_t Index, GPURef<GL::ITexture> Attachment);
+    Framebuffer &DetachColor(uint32_t Index);
     Framebuffer &AttachDepth(GPURef<GL::ITexture> Attachment);
     Framebuffer &AttachStencil(GPURef<GL::ITexture> Attachment);
     Framebuffer &AttachDepthStencil(GPURef<GL::ITexture> Attachment);
@@ -24,6 +24,7 @@ void CheckDirty();
     void BindReadDraw();
     void BindDraw();
     void BindRead();
+    static void UnBind() {glBindFramebuffer(GL_FRAMEBUFFER, 0);}
 
 
 };

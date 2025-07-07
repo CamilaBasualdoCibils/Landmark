@@ -17,7 +17,7 @@ GPUSelector::GPUSelector()
 
             if (!std::memcmp(VKDevice->GetDeviceUUID().data(), EGLDevice->DeviceUUID.data(), 16))
             {
-                AvailableDevices.emplace_back(std::make_shared<GPUDevice>(VKDevice, EGLDevice));
+                AvailableDevices.emplace_back(std::make_shared<GPUPhysicalDevice>(VKDevice, EGLDevice));
                 // EGLDevices.erase(EGLDevices.begin() + j);
                 // VulkanDevices.erase(VulkanDevices.begin()+ i);
                 // j--;i--;
@@ -33,12 +33,12 @@ GPUSelector::GPUSelector()
     }
 }
 
-std::vector<std::shared_ptr<GPUDevice>> GPUSelector::FilterDevices(const GPUSelectorFilter &filter)
+std::vector<std::shared_ptr<GPUPhysicalDevice>> GPUSelector::FilterDevices(const GPUSelectorFilter &filter)
 {
-    return std::vector<std::shared_ptr<GPUDevice>>();
+    return std::vector<std::shared_ptr<GPUPhysicalDevice>>();
 }
 
-const std::vector<std::shared_ptr<GPUDevice>> &GPUSelector::AllDevices()
+const std::vector<std::shared_ptr<GPUPhysicalDevice>> &GPUSelector::AllDevices()
 {
     return AvailableDevices;
 }

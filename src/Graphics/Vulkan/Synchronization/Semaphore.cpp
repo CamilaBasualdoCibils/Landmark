@@ -18,7 +18,7 @@ VK::Semaphore::Semaphore()
     CreateInfo.setPNext(TypeInfo);
     TypeInfo.setPNext(&ExportInfo);
 
-    std::shared_ptr<VK::Device> DeviceHandle = GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice();
+    std::shared_ptr<VK::Device> DeviceHandle = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice();
     const auto CreateResult = DeviceHandle->GetHandle().createSemaphore(CreateInfo);
     LASSERT(CreateResult.result == vk::Result::eSuccess, "Shit");
     Handle = CreateResult.value;
@@ -34,5 +34,5 @@ VK::Semaphore::Semaphore()
 }
 VK::Semaphore::~Semaphore()
 {
-    GraphicsEngine::Get().GetMainGPU()->GetVulkanDevice()->GetHandle().destroy(Handle);
+    GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().destroy(Handle);
 }
