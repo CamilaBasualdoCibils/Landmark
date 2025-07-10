@@ -14,23 +14,34 @@ struct TextureProperties
 };
 class Texture : public InteropGiver
 {
-    VK::Image image;
-    VK::ImageView imageView;
-    VK::Sampler sampler;
+    GPURef<VK::Image> image;
+    GPURef<VK::ImageView> imageView;
+    GPURef<VK::Sampler> sampler;
 
   public:
-    Texture(const TextureProperties& Properties);
+    Texture(const TextureProperties &Properties);
 
-    InteropTransaction ExportMemory() const override {return image.ExportMemory();}
+    InteropTransaction ExportMemory() const override
+    {
+        return image->ExportMemory();
+    }
 
-    const auto& GetImage() const {return image;}
-    auto& GetImage() {return image;}
+    auto GetImage() const
+    {
+        return image;
+    }
 
-        const auto& GetImageView() const {return imageView;}
-    auto& GetImageView() {return imageView;}
 
-        const auto& GetSampler() const {return sampler;}
-    auto& GetSampler() {return sampler;}
+    auto GetImageView() const
+    {
+        return imageView;
+    }
+
+
+    auto GetSampler() const
+    {
+        return sampler;
+    }
 
 };
 } // namespace VK

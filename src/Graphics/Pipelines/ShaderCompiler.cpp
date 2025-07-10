@@ -1,12 +1,11 @@
 #include "ShaderCompiler.hpp"
 
-Graphics::ShaderCompileResult Graphics::ShaderCompiler::Compile(const Graphics::ShaderCompileInfo& Info)
+Graphics::ShaderCompileResult Graphics::ShaderCompiler::Compile(const Graphics::ShaderCompileInfo &Info)
 {
     ShaderCompileResult result;
 
     std::vector<const char *> strings;
-    for (const auto &source : Info.Sources)
-        strings.push_back(source.data());
+    strings.push_back(Info.Source.c_str());
 
     glslang::EShClient client;
     std::string Preamble;
@@ -56,9 +55,33 @@ Graphics::ShaderCompileResult Graphics::ShaderCompiler::Compile(const Graphics::
     {
         return result;
     }
+    std::vector<uint32_t> TrueData;
+    glslang::GlslangToSpv(*program.getIntermediate((EShLanguage)Info.shader_type), TrueData);
+    result.data.resize(TrueData.size() * sizeof(TrueData[0]));
+    std::memcpy(result.data.data(), TrueData.data(), result.data.size());
 
-    glslang::GlslangToSpv(*program.getIntermediate((EShLanguage)Info.shader_type), result.data);
+    return result;
+}
 
+Graphics::InteropShaderCompileResult Graphics::ShaderCompiler::CompileInterop(const InteropShaderCompileInfo &info)
+{
+    InteropShaderCompileResult result;
+
+    ShaderCompileInfo GLCompile{.shader_type = info.shader_type,
+                                .source_type = info.source_type,
+                                .client_type = ShaderClientType::eOpenGL_450,
+                                .spv_version = info.spv_version,
+                                .Source = info.Source};
+
+    ShaderCompileInfo VKCompile{.shader_type = info.shader_type,
+                                .source_type = info.source_type,
+                                .client_type = ShaderClientType::eVulkan_1_4,
+                                .spv_version = info.spv_version,
+                                .Source = info.Source};
+    result.GLResult = Compile(GLCompile);
+    result.VKResult = Compile(VKCompile);
+    result.CompileSuccessful = result.GLResult.compile_successful && result.VKResult.compile_successful;
+    result.CompileLog = "VK:\n" + result.VKResult.compile_log +"\nGL:\n"+result.GLResult.compile_log + '\n';
     return result;
 }
 

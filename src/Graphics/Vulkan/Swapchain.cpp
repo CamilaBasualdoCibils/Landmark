@@ -13,8 +13,8 @@ VK::Swapchain::Swapchain(vk::SurfaceKHR surface)
     ImageCount = std::min(SurfaceCapabilities.minImageCount + 1,
                           SurfaceCapabilities.maxImageCount != 0 ? SurfaceCapabilities.maxImageCount : UINT32_MAX);
 
-    uvec2 CurrentExtent = VkToGlm(SurfaceCapabilities.currentExtent),
-          MaxExtent = VkToGlm(SurfaceCapabilities.maxImageExtent),
+    CurrentExtent = VkToGlm(SurfaceCapabilities.currentExtent);
+    uvec2 MaxExtent = VkToGlm(SurfaceCapabilities.maxImageExtent),
           MinExtent = VkToGlm(SurfaceCapabilities.minImageExtent);
     CurrentExtent = clamp(CurrentExtent, MinExtent, MaxExtent);
     const auto formats =
@@ -24,9 +24,10 @@ VK::Swapchain::Swapchain(vk::SurfaceKHR surface)
     CreateInfo.clipped = true;
     CreateInfo.imageArrayLayers = 1;
     CreateInfo.imageColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
-    CreateInfo.imageFormat = vk::Format::eB8G8R8A8Srgb;
+    ImageFormat = VK::Format::eBGRA8_SRGB;
+    CreateInfo.imageFormat = (vk::Format)ImageFormat;
     CreateInfo.presentMode = vk::PresentModeKHR::eImmediate;
-    CreateInfo.imageExtent = GlmToVk(CurrentExtent);
+    CreateInfo.imageExtent = GlmToVkExtent(CurrentExtent);
     CreateInfo.minImageCount = ImageCount;
     CreateInfo.imageSharingMode = vk::SharingMode::eExclusive;
     CreateInfo.preTransform = vk::SurfaceTransformFlagBitsKHR::eIdentity;
@@ -50,10 +51,10 @@ VK::Swapchain::Swapchain(vk::SurfaceKHR surface)
     Images.reserve(Retrievedimages.size());
     for (const auto &vkimage : Retrievedimages)
     {
-        SwapchainImage Image;
+        Images.emplace_back();
+        SwapchainImage& Image = Images.back();
         Image.imageRaw = vkimage;
-        Images.push_back(Image);
-        // Image.imageView.emplace()
+        Image.imageView.emplace(vkimage,ImageViewProperties{});
     }
 }
 void VK::Swapchain::AcquireNextSwapchainImage(GPURef<Graphics::Semaphore> OnCompleteSemaphore)
@@ -63,4 +64,11 @@ void VK::Swapchain::AcquireNextSwapchainImage(GPURef<Graphics::Semaphore> OnComp
             GetHandle(), UINT64_MAX, OnCompleteSemaphore ? OnCompleteSemaphore->VK().GetHandle() : nullptr, nullptr);
     LASSERT(AcquireResult.result == vk::Result::eSuccess, "Maaaan");
     CurrentImageIndex = AcquireResult.value;
+}
+
+[[nodiscard]] std::pair<GPURef<Graphics::Semaphore>, VK::SwapchainImage> VK::Swapchain::AcquireNextSwapchainImage()
+{
+    GPURef<Graphics::Semaphore> semaphore = GPURef<Graphics::Semaphore>::MakeRef();
+    AcquireNextSwapchainImage(semaphore);
+    return {semaphore, Images[CurrentImageIndex]};
 }

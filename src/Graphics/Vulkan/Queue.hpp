@@ -1,8 +1,7 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
-#include "Types/Flags.h"
 #include <pch.h>
-
+#include "Types/Flags.h"
+#include <Graphics/GPURef.hpp>
 namespace VK
 {
     class Device;
@@ -37,6 +36,9 @@ class Queue
     operator vk::Queue() {return Handle;}
     [[nodiscard]] auto GetHandle() const {return Handle;}
     [[nodiscard]] auto GetHandle() {return Handle;}
+
+    [[nodiscard]] auto GetFamily() const {return Family;}
+    [[nodiscard]] auto GetQueueIndex() const {return QueueIndex;}
 };
 
 } // namespace VK

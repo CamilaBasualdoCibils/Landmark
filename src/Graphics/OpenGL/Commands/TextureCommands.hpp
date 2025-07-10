@@ -1,6 +1,6 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
-#include "Graphics/OpenGL/CommandBuffer/CommandBuffer.hpp"
+
+#include "Graphics/OpenGL/Commands/CommandManager.hpp"
 #include "Graphics/Texture.hpp"
 #include <GL/gl.h>
 #include <optional>

@@ -1,8 +1,6 @@
 #pragma once
-#include "Graphics/Vulkan/Images/Texture.hpp"
 #include <pch.h>
-#include <vulkan/vulkan_handles.hpp>
-#include <vulkan/vulkan_structs.hpp>
+#include "Graphics/Vulkan/Images/Texture.hpp"
 
 // Render target is the equivalent of OpenGL framebuffers for the use of Dynamic Rendering. Core in vulkan as of 1.3
 namespace VK
@@ -43,6 +41,8 @@ class RenderTarget
     RenderTarget &AttachDepth(GPURef<VK::Texture> Attachment);
     RenderTarget &AttachStencil(GPURef<VK::Texture> Attachment);
     RenderTarget &AttachDepthStencil(GPURef<VK::Texture> Attachment);
+
+    [[nodiscard]] std::shared_ptr<std::pair<vk::RenderingInfo,std::vector<vk::RenderingAttachmentInfo>>> AsRenderingInfo() const;
     
 };
 } // namespace VK

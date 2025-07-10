@@ -2,8 +2,8 @@
 #include "Graphics/Interop/Interop.hpp"
 #include "Graphics/OpenGL/Textures/ITexture.hpp"
 #include "Graphics/OpenGL/Textures/TextureInterop.hpp"
+#include "Graphics/Vulkan/Enums.hpp"
 #include "Graphics/Vulkan/Images/Image.hpp"
-#include "Graphics/Vulkan/Images/ImageEnums.hpp"
 #include "Graphics/Vulkan/Images/Texture.hpp"
 #include <pch.h>
 
@@ -30,6 +30,7 @@ enum class TextureUsage
 enum class TextureFormatValues
 {
     eRGBA8_UNorm,
+    eRGBA8_SRGB,
     eBGRA8_UNorm,
     eRGBA16_UNorm,
     eR8_UNorm,
@@ -51,32 +52,33 @@ struct TextureFormat
                 return std::get<2>(entry);
         return std::nullopt;
     }
-    constexpr std::optional<VK::ImageFormats> toVKFormat() const
+    constexpr std::optional<VK::Format> toVKFormat() const
     {
         for (auto &entry : textureFormatTable)
             if (std::get<0>(entry) == value)
                 return std::get<1>(entry);
         return std::nullopt;
     }
-    static inline constexpr std::tuple<TextureFormatValues, VK::ImageFormats,
-                                       std::pair<GL::TextureFormats, GL::PixelFormats>>
+    static inline constexpr std::tuple<TextureFormatValues, VK::Format, std::pair<GL::TextureFormats, GL::PixelFormats>>
         textureFormatTable[] = {
             {
                 TextureFormatValues::eRGBA8_UNorm,
-                VK::ImageFormats::eRGBA8_UNorm,
+                VK::Format::eRGBA8_UNorm,
                 {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eRGBA},
             },
             {TextureFormatValues::eBGRA8_UNorm,
-             VK::ImageFormats::eBGRA8_UNorm,
-             {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eBGRA}}
+             VK::Format::eBGRA8_UNorm,
+             {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eBGRA}},
+            {TextureFormatValues::eRGBA8_SRGB,
+            VK::Format::eRGBA8_SRGB,
+            {GL::TextureFormats::eSRGB8_Alpha8, GL::PixelFormats::eRGBA}},
 
-            // Add more...
     };
 };
 struct TextureProperties
 {
     uvec3 Dimensions;
-    uint32_t Levels;
+    uint32_t Levels = 1;
     TextureFormat Format = TextureFormatValues::eRGBA8_UNorm;
     Flags<TextureUsage> UsageFlags = {TextureUsage::eColorAttachment, TextureUsage::eSampled,
                                       TextureUsage::eTransferSrc, TextureUsage::eTransferDst};

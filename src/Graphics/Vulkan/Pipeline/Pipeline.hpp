@@ -1,15 +1,57 @@
 #pragma once
 #include <pch.h>
+#include <Graphics/GPURef.hpp>
+#include <Graphics/Vulkan/Pipeline/PipelineLayout.hpp>
+#include "Graphics/Vulkan/Enums.hpp"
+namespace VK
+{
 
+enum class ShaderStages : std::underlying_type_t<vk::ShaderStageFlagBits>
+{
+    eVertex = (size_t)vk::ShaderStageFlagBits::eVertex,
+    eGeometry = (size_t)vk::ShaderStageFlagBits::eGeometry,
+    eFragment = (size_t)vk::ShaderStageFlagBits::eFragment,
+    eCompute = (size_t)vk::ShaderStageFlagBits::eCompute,
+};
+struct VertexAttribute
+{
+    uint32_t Binding; //which vertex buffer binding to take from
+    Format format; 
+    uint32_t Stride;
+    uint32_t Offset;
+    VertexInputRate Rate = VertexInputRate::eVertex;
+};
+struct GraphicsPipelineProperties
+{
+    std::vector<std::byte> VertexBinary, FragmentBinary;
+    std::optional<std::vector<std::byte>> GeometryBinary;
+    std::vector<VertexAttribute> VertexAttributes;
+};
+struct ComputePipelineProperties
+{
+    std::vector<std::byte> ComputeBinary;
+};
+struct RayTracingPipelineProperties
+{
+};
+struct PipelineProperties
+{
+    GPURef<VK::PipelineLayout> Layout;
+    std::variant<GraphicsPipelineProperties, ComputePipelineProperties, RayTracingPipelineProperties> VariantProperties;
+};
+class Pipeline
+{
+    vk::Pipeline Handle;
 
-namespace VK {
-
-    struct PipelineProperties
+    void CreateGraphicsPipeline(const PipelineProperties &Properties);
+    void CreateComputePipeline(const PipelineProperties &Properties);
+    void CreateRaytracingPipeline(const PipelineProperties &Properties);
+  public:
+    Pipeline(const PipelineProperties &Properties);
+    ~Pipeline();
+    operator vk::Pipeline() const
     {
-
-    };
-    class Pipeline
-    {
-        Pipeline(const PipelineProperties& Properties);
-    };
-}
+        return Handle;
+    }
+};
+} // namespace VK

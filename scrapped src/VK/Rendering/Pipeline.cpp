@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Pipeline.h"
+#include "Pipeline.hpp"
 
 Pipeline::Pipeline(const PipelineProperties& _info, const PipelineLayout& _layout, const RenderPass& rp, uint32_t subpass):info(_info)
 {
@@ -142,3 +143,4 @@ void Pipeline::Destroy()
 	GetvkDevice().destroyPipeline(pipeline);
 	
 }
+

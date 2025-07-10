@@ -18,15 +18,18 @@ struct MemoryType {
 };
 class Memory : public InteropGiver
 {
-    vk::DeviceMemory handle;
+    vk::DeviceMemory Handle;
     FDHandle fdHandle;
     size_t Size;
+    void* MappedMemory = nullptr;
 
   public:
     Memory(const MemoryType& Type,size_t size);
 
     InteropTransaction ExportMemory() const {return {fdHandle,Size};}
 
-    operator vk::DeviceMemory() const {return handle;}
+    operator vk::DeviceMemory() const {return Handle;}
+    void* Map();
+    void Unmap();
 };
 } // namespace VK

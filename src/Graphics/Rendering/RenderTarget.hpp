@@ -44,6 +44,8 @@ class RenderTarget : public InteropObject<VK::RenderTarget, GL::RenderTarget, In
         VK().SetViewport(Offset,Size);
         return *this;
     }
+    uvec2 GetViewportOffset() const {return ViewportOffset;}
+    uvec2 GetViewportSize() const {return ViewportSize;}
     RenderTarget &AttachDepth(GPURef<Graphics::Texture> Attachment);
     RenderTarget &AttachStencil(GPURef<Graphics::Texture> Attachment);
     RenderTarget &AttachDepthStencil(GPURef<Graphics::Texture> Attachment);

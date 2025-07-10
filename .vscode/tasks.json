@@ -19,7 +19,7 @@
         {
             "label": "Build Debug",
             "type": "shell",
-            "command": "bear -- make -j 16",
+            "command": "make -j 16",
             "group": {
                 "kind": "build",
                 "isDefault": true

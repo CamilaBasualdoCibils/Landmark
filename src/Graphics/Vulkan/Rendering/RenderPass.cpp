@@ -15,7 +15,7 @@ VK::RenderPass::RenderPass(const VK::RenderPassProperties &Properties):Propertie
         vkAttachmentDesc.samples = vk::SampleCountFlagBits::e1;
         vkAttachmentDesc.stencilStoreOp = (vk::AttachmentStoreOp)Attachment.StencilStoreOp;
         vkAttachmentDesc.stencilLoadOp = (vk::AttachmentLoadOp)Attachment.StencilLoadOp;
-        vkAttachmentDesc.format = (vk::Format)Attachment.Format;
+        vkAttachmentDesc.format = (vk::Format)Attachment.format;
         vkAttachmentDesc.initialLayout = (vk::ImageLayout)Attachment.InitialLayout;
         vkAttachmentDesc.finalLayout = (vk::ImageLayout)Attachment.FinalLayout;
         AttachmentDescriptions.push_back(vkAttachmentDesc);

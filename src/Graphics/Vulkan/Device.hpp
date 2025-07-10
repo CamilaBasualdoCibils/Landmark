@@ -1,11 +1,7 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
-
 #include "PhysicalDevice.hpp"
 #include <pch.h>
 #include <type_traits>
-#include <vulkan/vulkan_core.h>
-#include <vulkan/vulkan_handles.hpp>
 
 #define VKGETPROCADDRESSMEMBER(proc)                                                                                   \
     PFN_vk##proc proc##_ptr = nullptr;                                                                                 \

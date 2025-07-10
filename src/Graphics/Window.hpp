@@ -1,10 +1,8 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
+#include "Graphics/Compositor/CompositeGroup.hpp"
 #include "Graphics/Synchronization.hpp"
 #include "Graphics/Vulkan/Swapchain.hpp"
-#include <GLFW/glfw3.h>
 #include <pch.h>
-#include <vulkan/vulkan_handles.hpp>
 namespace Graphics
 {
 class Window
@@ -13,9 +11,12 @@ class Window
     GLFWwindow *glfwWindowHandle;
     vk::SurfaceKHR vkSurface;
     mutable GPURef<VK::Swapchain> Swapchain;
+    std::shared_ptr<Graphics::CompositeGroup> WindowComposite;
+    const std::string Name;
+    GPURef<Graphics::Semaphore> BlitCompleteSemaphore = GPURef<Graphics::Semaphore>::MakeRef(),ImageReadySemaphore = GPURef<Graphics::Semaphore>::MakeRef();
 
   public:
-    Window();
+    Window(const std::string &Name);
     bool GetShouldClose() const
     {
         return glfwWindowShouldClose(glfwWindowHandle);
@@ -28,6 +29,19 @@ class Window
             Swapchain.Make(vkSurface);
         return Swapchain;
     }
-    GLFWwindow* GetGLFWHandle()const {return glfwWindowHandle;}
+    void Render();
+    void Present() const;
+    GLFWwindow *GetGLFWHandle() const
+    {
+        return glfwWindowHandle;
+    }
+    std::shared_ptr<Graphics::CompositeGroup> GetCompositeGroup()
+    {
+        return WindowComposite;
+    }
+    std::shared_ptr<const Graphics::CompositeGroup> GetCompositeGroup() const
+    {
+        return WindowComposite;
+    }
 };
 } // namespace Graphics

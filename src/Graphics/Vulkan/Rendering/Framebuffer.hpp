@@ -1,9 +1,6 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
 #include <pch.h>
-#include <vulkan/vulkan_enums.hpp>
-#include <vulkan/vulkan_handles.hpp>
-#include <vulkan/vulkan_structs.hpp>
+#include <Graphics/GPURef.hpp>
 #include "Graphics/Vulkan/Rendering/RenderPass.hpp"
 
 namespace VK

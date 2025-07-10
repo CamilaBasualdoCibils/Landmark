@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Graphics/Vulkan/Pipeline/PipelineEnums.hpp"
+#include "Graphics/Vulkan/Enums.hpp"
+
 #include <pch.h>
 #include <type_traits>
 

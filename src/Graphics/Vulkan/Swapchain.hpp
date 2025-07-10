@@ -1,5 +1,4 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
 #include "Graphics/Synchronization.hpp"
 #include "Graphics/Vulkan/Images/ImageView.hpp"
 #include "Graphics/Vulkan/Images/Sampler.hpp"
@@ -29,7 +28,8 @@ class Swapchain
     std::vector<SwapchainImage> Images;
 
     uint32_t CurrentImageIndex = 0;
-
+    VK::Format ImageFormat;
+    uvec2 CurrentExtent;
   public:
     Swapchain(vk::SurfaceKHR surface);
     vk::SwapchainKHR GetHandle() const
@@ -41,6 +41,7 @@ class Swapchain
         return vkSwapchainHandle;
     }
     void AcquireNextSwapchainImage(GPURef<Graphics::Semaphore> onCompleteSemaphore);
+    [[nodiscard]] std::pair<GPURef<Graphics::Semaphore>,SwapchainImage> AcquireNextSwapchainImage();
     void Present(GPURef<VK::Queue> queue, GPURef<Graphics::Semaphore> WaitSemaphore)
     {
         vk::Semaphore SemaphoreHandle = WaitSemaphore->VK().GetHandle();
@@ -58,6 +59,8 @@ class Swapchain
     }
     const auto& GetCurrentImage() const {return GetImage(CurrentImageIndex);}
     const SwapchainImage& GetImage(uint32_t index) const {return Images[index];}
+    [[nodiscard]] VK::Format GetImageFormat() const {return ImageFormat;}
+    [[nodiscard]] uvec2 GetExtent() const {return CurrentExtent;}
 
 };
 } // namespace VK

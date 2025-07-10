@@ -41,9 +41,15 @@ enum class ShaderSpvVersion : std::underlying_type_t<glslang::EShTargetLanguage>
 
 struct ShaderCompileResult
 {
-    std::vector<uint32_t> data;
+    std::vector<std::byte> data;
     bool compile_successful = false;
     std::string compile_log;
+};
+struct InteropShaderCompileResult
+{
+    ShaderCompileResult VKResult,GLResult;
+    bool CompileSuccessful;
+    std::string CompileLog;
 };
 struct ShaderCompileInfo
 {
@@ -51,7 +57,14 @@ struct ShaderCompileInfo
     ShaderSourceType source_type = ShaderSourceType::eGLSL;
     ShaderClientType client_type = ShaderClientType::eVulkan_1_4;
     ShaderSpvVersion spv_version = ShaderSpvVersion::eSpv_1_6;
-    std::vector<std::string> Sources;
+    std::string Source;
+};
+struct InteropShaderCompileInfo
+{
+     ShaderType shader_type = ShaderType::eInvalid;
+    ShaderSourceType source_type = ShaderSourceType::eGLSL;
+    ShaderSpvVersion spv_version = ShaderSpvVersion::eSpv_1_6;
+    std::string Source;
 };
 class ShaderCompiler : public Singleton<ShaderCompiler>
 {
@@ -68,6 +81,7 @@ class ShaderCompiler : public Singleton<ShaderCompiler>
         glslang::FinalizeProcess();
     }
     [[nodiscard]] ShaderCompileResult Compile(const ShaderCompileInfo &info);
+    [[nodiscard]] InteropShaderCompileResult CompileInterop(const InteropShaderCompileInfo &info);
 };
 
 } // namespace Graphics

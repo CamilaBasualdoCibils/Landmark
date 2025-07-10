@@ -16,7 +16,7 @@ Graphics::Texture::Texture(const Graphics::TextureProperties &Properties)
     VK::TextureProperties VKProps;
     VKProps.ImageProp.Dimensions = Properties.Dimensions;
     LASSERT(Properties.Format.toVKFormat().has_value(), "didnt define a conversion for the format");
-    VKProps.ImageProp.Format = *Properties.Format.toVKFormat();
+    VKProps.ImageProp.format = *Properties.Format.toVKFormat();
     //VKProps.ImageProp.Layers = 
     //VKProps.ImageProp.MipLevels = Properties.Levels;
 

@@ -11,9 +11,9 @@ VK::Image::Image(const VK::ImageProperties &Properties)
     vk::ExternalMemoryImageCreateInfo ExternalImageInfo;
     ExternalImageInfo.handleTypes = vk::ExternalMemoryHandleTypeFlagBits::eOpaqueFd;
     vk::ImageCreateInfo CreateInfo;
-    CreateInfo.format = (vk::Format)Properties.Format;
+    CreateInfo.format = (vk::Format)Properties.format;
     CreateInfo.arrayLayers = Properties.Layers;
-    CreateInfo.extent = GlmToVk(max(Properties.Dimensions, uvec3(1)));
+    CreateInfo.extent = GlmToVkExtent(max(Properties.Dimensions, uvec3(1)));
     CreateInfo.mipLevels = Properties.MipLevels;
     CreateInfo.tiling = vk::ImageTiling::eOptimal;
     CreateInfo.initialLayout = vk::ImageLayout::eUndefined;

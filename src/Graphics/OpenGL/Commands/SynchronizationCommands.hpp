@@ -1,6 +1,5 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
-#include "Graphics/OpenGL/CommandBuffer/CommandBuffer.hpp"
+#include "Graphics/OpenGL/Commands/CommandManager.hpp"
 #include "Graphics/Synchronization.hpp"
 #include <pch.h>
 namespace GL

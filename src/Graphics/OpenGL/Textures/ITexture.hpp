@@ -38,6 +38,8 @@ enum class TextureFormats : GLenum
     eRGB8_UNorm = GL_RGB8,
     eRGBA8_UNorm = GL_RGBA8,
 
+    eSRGB8_Alpha8 = GL_SRGB8_ALPHA8, //SRGB format
+
     // Signed normalized formats
     eR8_SNorm = GL_R8_SNORM,
     eRG8_SNorm = GL_RG8_SNORM,

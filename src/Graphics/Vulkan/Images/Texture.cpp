@@ -3,6 +3,6 @@
 #include "Graphics/Vulkan/Memory/Memory.hpp"
 
 VK::Texture::Texture(const VK::TextureProperties &Properties)
-    : image(Properties.ImageProp), imageView(Properties.ImageViewProp), sampler(Properties.SamplerProp)
+    : image(GPURef<VK::Image>::MakeRef(Properties.ImageProp)), imageView(GPURef<VK::ImageView>::MakeRef(image,Properties.ImageViewProp)), sampler(GPURef<VK::Sampler>::MakeRef(Properties.SamplerProp))
 {
 }

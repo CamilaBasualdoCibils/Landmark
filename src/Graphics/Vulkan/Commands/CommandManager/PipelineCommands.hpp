@@ -1,23 +1,39 @@
 #pragma once
-#include "Graphics/Texture.hpp"
-#include "Graphics/Vulkan/CommandBuffer/CommandBuffer.hpp"
-#include "Graphics/Vulkan/Images/ImageEnums.hpp"
-#include "Graphics/Vulkan/Pipeline/PipelineEnums.hpp"
-#include "Types/Flags.h"
 #include <pch.h>
-#include <vulkan/vulkan_enums.hpp>
-#include <vulkan/vulkan_handles.hpp>
-#include <vulkan/vulkan_structs.hpp>
+#include "Graphics/Texture.hpp"
+#include "Graphics/Vulkan/Commands/CommandManager/CommandManager.hpp"
+#include "Graphics/Vulkan/Enums.hpp"
+#include "Types/Flags.h"
+#include "Graphics/Vulkan/Pipeline/Pipeline.hpp"
+
 
 namespace VK
 {
-struct TransitionImageLayout : Command
+struct BindPipelineCommand : Command
+{
+    GPURef<VK::Pipeline> pipeline;
+    vk::PipelineBindPoint BindPoint;
+    BindPipelineCommand(GPURef<VK::Pipeline> pipeline, vk::PipelineBindPoint BindPoint)
+        : pipeline(pipeline), BindPoint(BindPoint)
+    {
+    }
+
+    std::string GetName() override
+    {
+        return "BindPipeline";
+    }
+    void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
+    {
+        cmdBuffer->GetHandle().bindPipeline(BindPoint,*pipeline);
+    }
+};
+struct TransitionImageLayoutCommand : Command
 {
     std::variant<GPURef<Graphics::Texture>, vk::Image> Image;
     vk::ImageMemoryBarrier barrier;
     ImageLayouts OldLayout, NewLayout;
     Flags<PipelineStageFlags> SrcStage, DstStage;
-    TransitionImageLayout(std::variant<GPURef<Graphics::Texture>, vk::Image> image, ImageLayouts oldLayout,
+    TransitionImageLayoutCommand(std::variant<GPURef<Graphics::Texture>, vk::Image> image, ImageLayouts oldLayout,
                           ImageLayouts newLayout, Flags<PipelineStageFlags> srcStage,
                           Flags<PipelineStageFlags> dstStage)
     {
@@ -34,7 +50,7 @@ struct TransitionImageLayout : Command
         barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         if (std::holds_alternative<GPURef<Graphics::Texture>>(Image))
-            barrier.image = std::get < GPURef<Graphics::Texture>>(Image)->VK().GetImage();
+            barrier.image = *std::get<GPURef<Graphics::Texture>>(Image)->VK().GetImage();
         else if (std::holds_alternative<vk::Image>(Image))
         {
             barrier.image = std::get<vk::Image>(image);
@@ -78,23 +94,25 @@ struct TransitionImageLayout : Command
         }
     }
 
-    std::string GetName() override {return "TransitionImageLayout";}
-    void Execute(void *context) override
+    std::string GetName() override
     {
-        vk::CommandBuffer *cmdBuffer = (vk::CommandBuffer *)context;
-        cmdBuffer->pipelineBarrier(SrcStage, DstStage, (vk::DependencyFlags)0, {}, {}, {barrier});
+        return "TransitionImageLayout";
+    }
+    void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
+    {
+
+        cmdBuffer->GetHandle().pipelineBarrier(SrcStage, DstStage, (vk::DependencyFlags)0, {}, {}, {barrier});
     }
 };
-struct PipelineBarrier : Command
+struct PipelineBarrierCommand : Command
 {
     Flags<VK::PipelineStageFlags> srcStageMask, dstStageMask;
     Flags<VK::DependencyFlags> dependency;
-    PipelineBarrier(Flags<VK::PipelineStageFlags> srcStageMask, Flags<VK::PipelineStageFlags> dstStageMask,
+    PipelineBarrierCommand(Flags<VK::PipelineStageFlags> srcStageMask, Flags<VK::PipelineStageFlags> dstStageMask,
                     Flags<VK::DependencyFlags> dependency);
-    void Execute(void *context) override
+    void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
     {
-        vk::CommandBuffer *cmdBuffer = (vk::CommandBuffer *)context;
-        cmdBuffer->pipelineBarrier(srcStageMask, dstStageMask, dependency, 0, 0, 0);
+        cmdBuffer->GetHandle().pipelineBarrier(srcStageMask, dstStageMask, dependency, 0, 0, 0);
     }
 
   protected:

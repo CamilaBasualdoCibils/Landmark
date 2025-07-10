@@ -1,9 +1,6 @@
 #pragma once
-#include "Graphics/Vulkan/Images/ImageEnums.hpp"
-#include "Graphics/Vulkan/Pipeline/PipelineEnums.hpp"
 #include <pch.h>
-#include <vulkan/vulkan_handles.hpp>
-
+#include "Graphics/Vulkan/Enums.hpp"
 namespace VK
 {
 enum class AttachmentLoadOp : std::underlying_type<vk::AttachmentLoadOp>::type
@@ -27,7 +24,7 @@ struct RenderPassAttachment
     AttachmentStoreOp StencilStoreOp = AttachmentStoreOp::eStore;
     ImageLayouts InitialLayout = ImageLayouts::eUndefined;
     ImageLayouts FinalLayout = ImageLayouts::ePresentSrc;
-    ImageFormats Format = ImageFormats::eRGBA8_UNorm;
+    Format format = Format::eRGBA8_UNorm;
 };
 struct RenderPassSubpassAttachment
 {

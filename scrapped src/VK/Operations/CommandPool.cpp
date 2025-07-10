@@ -2,6 +2,7 @@
 #include "CommandPool.h"
 #include "Queue.h"
 #include <VK/Devices/LogicalDevice.h>
+#include "CommandPool.hpp"
 CommandPool::CommandPool(Queue& q):queue(q)
 {
 	vk::CommandPoolCreateInfo create_info{};

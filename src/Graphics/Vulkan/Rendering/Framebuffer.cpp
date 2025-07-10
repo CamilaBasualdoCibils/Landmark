@@ -27,7 +27,7 @@ VK::Framebuffer::Framebuffer(const VK::FramebufferProperties &Properties)
         ImageInfo.layerCount = Properties.LayerCount;
         ImageInfo.pViewFormats = &format;
         ImageInfo.viewFormatCount = 1;
-        format = (vk::Format)Attachment.Format; 
+        format = (vk::Format)Attachment.format; 
         ImageInfo.usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled; 
         ImageInfos.push_back(ImageInfo);
     }

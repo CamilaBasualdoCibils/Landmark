@@ -1,19 +1,17 @@
 #pragma once
-#include "Graphics/Interop/Interop.hpp"
 #include <pch.h>
-#include <vulkan/vulkan_handles.hpp>
-
+#include "Image.hpp"
 namespace VK
 {
     struct ImageViewProperties
     {
-
+        
     };
 class ImageView
 {
     vk::ImageView Handle;
     public:
-    ImageView(const ImageViewProperties& Properties){}
+    ImageView(std::variant<GPURef<VK::Image>,vk::Image> Image,const ImageViewProperties& Properties);
     vk::ImageView GetHandle() const {return Handle;}
     operator vk::ImageView() const {return GetHandle();}
 

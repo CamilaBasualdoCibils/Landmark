@@ -1,5 +1,4 @@
 #pragma once
-#include "Graphics/ICommandBuffer.hpp"
 #include "Graphics/Vulkan/Device.hpp"
 #include "Graphics/Vulkan/Queue.hpp"
 

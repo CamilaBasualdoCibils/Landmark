@@ -6,14 +6,15 @@
 #include <vulkan/vulkan_handles.hpp>
 #include "Graphics/Vulkan/Memory/Memory.hpp"
 #include "Types/Flags.h"
-#include "ImageEnums.hpp"
+#include "Graphics/Vulkan/Enums.hpp"
+
 namespace VK
 {
 
 struct ImageProperties
 {
     uvec3 Dimensions;
-    ImageFormats Format;
+    Format format;
     uint32_t Layers = 1;
     uint32_t MipLevels = 1;
     uint32_t Samples = 1; // only relevant for images used as render attachments

@@ -1,20 +1,13 @@
 #include "ImGui.hpp"
+
 #include "Graphics/GraphicsEngine.hpp"
-#include "Graphics/Vulkan/Images/ImageEnums.hpp"
+#include "Graphics/Vulkan/Enums.hpp"
 #include "Graphics/Vulkan/Rendering/RenderPass.hpp"
-#include "pch.h"
 #include <Graphics/Vulkan/Instance.hpp>
-#include <algorithm>
-#include <vulkan/vulkan_enums.hpp>
+#include <misc/Conversions.hpp>
 
 DearImGui::DearImGui(const DearImGuiProperties &Properties)
 {
-
-    RenderPass.Make(
-        VK::RenderPassProperties{.Attachments = {VK::RenderPassAttachment{.Format = VK::ImageFormats::eBGRA8_UNorm}},
-                                 .Subpasses = {VK::RenderPassSubpass{
-                                     .SubpassAttachments = {VK::RenderPassSubpassAttachment{
-                                         .AttachmentID = 0, .IdealLayout = VK::ImageLayouts::eColorAttachment}}}}});
 
     const auto Window = GraphicsEngine::Get().GetMainWindow();
     const auto GPU = GraphicsEngine::Get().GetMainGPU()->VK();
@@ -45,7 +38,7 @@ DearImGui::DearImGui(const DearImGuiProperties &Properties)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+    //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
     io.FontAllowUserScaling = true;
     ImGuiStyle &style = ImGui::GetStyle();
@@ -67,8 +60,11 @@ DearImGui::DearImGui(const DearImGuiProperties &Properties)
     init_info.ImageCount = std::max(capabilties.maxImageCount, std::max(capabilties.minImageCount + 1, uint32_t(3)));
     init_info.ImageCount = std::clamp(uint32_t(3), capabilties.minImageCount, capabilties.maxImageCount);
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-    init_info.RenderPass = RenderPass->GetHandle();
-
+    init_info.UseDynamicRendering = true;
+    init_info.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
+    VkFormat format = (VkFormat)vk::Format::eR8G8B8A8Unorm;
+    init_info.PipelineRenderingCreateInfo.pColorAttachmentFormats = &format;
+    init_info.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
     ImGui_ImplVulkan_Init(&init_info);
     {
         // Graphics::SingleUseCommandBuffer sucm;
@@ -76,4 +72,55 @@ DearImGui::DearImGui(const DearImGuiProperties &Properties)
     }
 
     // PushEditorTools();
+}
+void DearImGui::BeginFrame()
+{
+    ImGui_ImplVulkan_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    ImGui::ShowDemoWindow();
+    ImPlot::ShowDemoWindow();
+
+}
+void DearImGui::EndFrame()
+{
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::EndFrame();
+    ImGui::Render();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+    }
+}
+[[nodiscard]] GPURef<VK::CommandManager> DearImGui::Render()
+{
+
+    GPURef<VK::Swapchain> swapchain = GraphicsEngine::Get().GetMainWindow()->GetSwapchain();
+    vk::RenderingAttachmentInfo colorAttachment;
+    colorAttachment.imageView = *swapchain->GetCurrentImage().imageView;
+    colorAttachment.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
+    colorAttachment.loadOp = vk::AttachmentLoadOp::eLoad;
+    colorAttachment.storeOp = vk::AttachmentStoreOp::eStore;
+    colorAttachment.clearValue = vk::ClearColorValue{0.1f, 0.1f, 0.1f, 1.0f};
+
+    vk::RenderingInfo renderingInfo;
+    renderingInfo.renderArea = vk::Rect2D{vk::Offset2D{0, 0}, GlmToVkExtent(swapchain->GetExtent())};
+    renderingInfo.layerCount = 1;
+    renderingInfo.colorAttachmentCount = 1;
+    renderingInfo.pColorAttachments = &colorAttachment;
+
+    cmdManager->Clear();
+    auto CmdBuffer = cmdManager->GetManualCommandBuffer();
+    CmdBuffer->Begin();
+    CmdBuffer->GetHandle().beginRendering(renderingInfo);
+    ImDrawData *DrawData = ImGui::GetDrawData();
+    ImGui_ImplVulkan_RenderDrawData(DrawData, (vk::CommandBuffer) * (CmdBuffer));
+    CmdBuffer->GetHandle().endRendering();
+    CmdBuffer->End();
+    // cmdBuffer->Push<VK::BeginRenderPass>(ARGS args...);
+    // ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmdBuffer->GetReadyHandle());
+    // cmdBuffer->Push<VK::EndRenderPass>(ARGS args...);
+    // return cmdBuffer;
+    return cmdManager;
 }

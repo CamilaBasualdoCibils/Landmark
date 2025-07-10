@@ -1,6 +1,7 @@
 #include "Framebuffer.hpp"
 #include "pch.h"
 #include <GL/glext.h>
+#include "RenderTarget.hpp"
 
 GL::Framebuffer &GL::Framebuffer::AttachColor(uint32_t Index, GPURef<GL::ITexture> Attachment)
 {
