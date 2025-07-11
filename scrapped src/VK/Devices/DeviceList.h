@@ -1,5 +1,5 @@
 #include <pch.h>
-#include <Types/Flags.h>
+#include <Types/Flags.hpp>
 #include "PhysicalDevice.h"
 #include <GenericEnums.h>
 class device_list

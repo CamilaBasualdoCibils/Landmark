@@ -36,7 +36,8 @@ enum class TextureFormatValues
     eR8_UNorm,
     eR16_UNorm,
     eRG8_UNorm,
-    eRG16_UNorm
+    eRG16_UNorm,
+    eDepth32_SFloat,
 };
 struct TextureFormat
 {
@@ -66,12 +67,18 @@ struct TextureFormat
                 VK::Format::eRGBA8_UNorm,
                 {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eRGBA},
             },
+
             {TextureFormatValues::eBGRA8_UNorm,
              VK::Format::eBGRA8_UNorm,
              {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eBGRA}},
+
             {TextureFormatValues::eRGBA8_SRGB,
-            VK::Format::eRGBA8_SRGB,
-            {GL::TextureFormats::eSRGB8_Alpha8, GL::PixelFormats::eRGBA}},
+             VK::Format::eRGBA8_SRGB,
+             {GL::TextureFormats::eSRGB8_Alpha8, GL::PixelFormats::eRGBA}},
+
+            {TextureFormatValues::eDepth32_SFloat,
+             VK::Format::eDepth32_SFloat,
+             {GL::TextureFormats::eDepth32F, GL::PixelFormats::eDepthComponent}},
 
     };
 };

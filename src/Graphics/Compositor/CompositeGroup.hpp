@@ -19,13 +19,14 @@ class CompositeGroup : public ICompositeLayer, public std::enable_shared_from_th
         return std::static_pointer_cast<T>(Layers.back());
     }
 
-    GPURef<Graphics::Texture> GetOutput() override
+    const std::unordered_map<std::string, GPURef<Graphics::Texture>>& GetAttachments() override
     {
-        return Layers.back()->GetOutput();
+        return Layers.back()->GetAttachments();
     }
-    const GPURef<Graphics::Texture> GetOutput() const override
+    const std::unordered_map<std::string, GPURef<Graphics::Texture>>& GetAttachments() const override
     {
-        return Layers.back()->GetOutput();
+        return Layers.back()->GetAttachments();
     }
+    const decltype(Layers)& GetLayers() const {return Layers;}
 };
 } // namespace Graphics

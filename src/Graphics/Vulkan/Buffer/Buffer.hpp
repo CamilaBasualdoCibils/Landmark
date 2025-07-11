@@ -2,7 +2,7 @@
 #include <Graphics/Interop/Interop.hpp>
 #include <Graphics/Vulkan/Memory/Memory.hpp>
 #include <Graphics/Vulkan/Enums.hpp>
-#include <Types/Flags.h>
+#include <Types/Flags.hpp>
 #include <pch.h>
 namespace VK
 {

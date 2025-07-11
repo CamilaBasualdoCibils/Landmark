@@ -1,6 +1,6 @@
 #pragma once
 #include <pch.h>
-#include <Types/Flags.h>
+#include <Types/Flags.hpp>
 enum class AssetAvailability :uint8_t {
     eNONE = 0,
     eCPU = 1 << 1,

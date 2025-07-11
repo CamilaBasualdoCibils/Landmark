@@ -1,12 +1,15 @@
 #include "ICompositeLayer.hpp"
 #include "CompositeGroup.hpp"
-Graphics::ICompositeLayer::ICompositeLayer(std::shared_ptr<CompositeGroup> Parent,const CompositeLayerProperties &Properties) : Properties(Properties)
+Graphics::ICompositeLayer::ICompositeLayer(std::shared_ptr<CompositeGroup> Parent,
+                                           const CompositeLayerProperties &Properties)
+    : Properties(Properties)
 {
     SetParent(Parent);
-    Texture = GPURef<Graphics::Texture>::MakeRef(Graphics::TextureProperties{
-        .Dimensions = uvec3(GetResolution(), 1),
-        .Format = Graphics::TextureFormatValues::eRGBA8_SRGB
-    });
+    for (const auto &desiredAttachment : Properties.Attachments)
+    {
+        Attachments[desiredAttachment.first] = GPURef<Graphics::Texture>::MakeRef(Graphics::TextureProperties{
+            .Dimensions = uvec3(GetResolution(), 1), .Format = desiredAttachment.second.format});
+    }
 }
 
 uvec2 Graphics::ICompositeLayer::GetResolution() const

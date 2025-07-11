@@ -3,6 +3,51 @@
 
 namespace VK
 {
+    enum class CompareOp : std::underlying_type_t<vk::CompareOp>
+{
+    eAlways = (size_t)vk::CompareOp::eAlways,
+    eEqual = (size_t)vk::CompareOp::eEqual,
+    eGreater = (size_t)vk::CompareOp::eGreater,
+    eGreaterOrEqual = (size_t)vk::CompareOp::eGreaterOrEqual,
+    eLess = (size_t)vk::CompareOp::eLess,
+    eLessOrEqual = (size_t)vk::CompareOp::eLessOrEqual,
+    eNever = (size_t)vk::CompareOp::eNever,
+    eNotEqual = (size_t)vk::CompareOp::eNotEqual,
+
+};
+enum class CullMode : std::underlying_type_t<vk::CullModeFlagBits>
+{
+    eFront = (size_t)vk::CullModeFlagBits::eFront,
+    eFrontAndBack = (size_t)vk::CullModeFlagBits::eFrontAndBack,
+    eBack = (size_t)vk::CullModeFlagBits::eBack,
+    eNone = (size_t)vk::CullModeFlagBits::eNone,
+};
+enum class ShaderStages : std::underlying_type_t<vk::ShaderStageFlagBits>
+{
+    eVertex = (size_t)vk::ShaderStageFlagBits::eVertex,
+    eGeometry = (size_t)vk::ShaderStageFlagBits::eGeometry,
+    eFragment = (size_t)vk::ShaderStageFlagBits::eFragment,
+    eCompute = (size_t)vk::ShaderStageFlagBits::eCompute,
+};
+enum class IndexType : std::underlying_type_t<vk::IndexType>
+{
+    eUint8 = (size_t)vk::IndexType::eUint8,
+    eUint16 = (size_t)vk::IndexType::eUint16,
+    eUint32 = (size_t)vk::IndexType::eUint32,
+};
+enum class SamplerMipMapMode : std::underlying_type_t<vk::SamplerMipmapMode>
+{
+    eNearest = (size_t)vk::SamplerMipmapMode::eNearest,
+    eLinear = (size_t)vk::SamplerMipmapMode::eLinear,
+};
+enum class SamplerAddressMode : std::underlying_type_t<vk::SamplerAddressMode>
+{
+    eClampToBorder = (size_t)vk::SamplerAddressMode::eClampToBorder,
+    eClampToEdge = (size_t)vk::SamplerAddressMode::eClampToEdge,
+    eMirrorClampToEdge = (size_t)vk::SamplerAddressMode::eMirrorClampToEdge,
+    eMirroredRepeat = (size_t)vk::SamplerAddressMode::eMirroredRepeat,
+    eRepeat = (size_t)vk::SamplerAddressMode::eRepeat,
+};
 enum class BufferUsage : std::underlying_type_t<vk::BufferUsageFlagBits>
 {
     eIndexBuffer = (size_t)vk::BufferUsageFlagBits::eIndexBuffer,
@@ -29,7 +74,10 @@ enum class Format : std::underlying_type<vk::Format>::type
     eBGRA8_UNorm = (size_t)vk::Format::eB8G8R8A8Unorm,
     eBGRA8_SRGB = (size_t)vk::Format::eB8G8R8A8Srgb,
     eRGBA8_SRGB = (size_t)vk::Format::eR8G8B8A8Srgb,
-    eRG32_SFloat = (size_t)vk::Format::eR32G32Sfloat
+    eRG32_SFloat = (size_t)vk::Format::eR32G32Sfloat,
+    eRGB32_SFloat = (size_t)vk::Format::eR32G32B32Sfloat,
+    eRGBA32_SFloat = (size_t)vk::Format::eR32G32B32A32Sfloat,
+    eDepth32_SFloat = (size_t)vk::Format::eD32Sfloat,
 };
 enum class ImageLayouts : std::underlying_type<vk::ImageLayout>::type
 {

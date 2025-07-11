@@ -1,5 +1,5 @@
 #include "Compositor.hpp"
-
+#include "Graphics/GraphicsEngine.hpp"
 Graphics::Compositor::Compositor()
 {
 }
@@ -28,16 +28,40 @@ std::shared_ptr<Graphics::CompositeGroup> Graphics::Compositor::MakeRootGroup(
 void Graphics::Compositor::DrawDebug()
 {
     ImGui::Begin("Compositor");
-
+    std::function<void(std::shared_ptr<Graphics::CompositeGroup>)> TreeRecursive =
+        [&](std::shared_ptr<Graphics::CompositeGroup> Group) {
+            if (ImGui::TreeNode(Group->GetProperties().Name.c_str()))
+            {
+                for (const auto &Child : Group->GetLayers())
+                    if (std::shared_ptr<Graphics::CompositeGroup> ChildGroup =
+                            std::dynamic_pointer_cast<CompositeGroup>(Child))
+                    {
+                        TreeRecursive(ChildGroup);
+                    }
+                    else
+                    {
+                        ImGui::TextUnformatted(Child->GetProperties().Name.c_str());
+                    }
+                ImGui::TreePop();
+            }
+        };
     for (const auto &Group : RootGroups)
     {
-        if (ImGui::TreeNode(Group.first.c_str()))
-        {
-            //ImGui::Image(Group.second->GetOutput()->)
-
-            ImGui::TreePop();
-        }
+        TreeRecursive(Group.second);
     }
 
+    // ImGui::Image((ImTextureID)Group.second->GetOutput()->VK().GetImguiDescriptorSet(),
+    // ImGui::GetContentRegionAvail());
+
     ImGui::End();
+}
+
+void Graphics::Compositor::RenderCompositions()
+{
+    for (const auto &Group : RootGroups)
+    {
+        Graphics::CompositeContext context{};
+        Graphics::CompositeLayerExecute RenderExecution = Group.second->OnRender(context);
+        GraphicsEngine::Get().Push(RenderExecution.CommandManagers);
+    }
 }

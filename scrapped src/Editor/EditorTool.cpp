@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "EditorTool.h"
+#include "EditorTool.hpp"
 
 EditorTool::EditorTool(const std::string& name) :EditorObject(name),EditorWindow(name)
 {

@@ -15,7 +15,7 @@
 	constexpr x enum_cast(const y &_a) { return static_cast<x>(_a); }                                                            \
 	enum class x : EnumType
 
-#include "Types/Flags.h"
+#include "Types/Flags.hpp"
 template <typename T>
 static constexpr int int_cast(T t) { return static_cast<int>(t); }
 

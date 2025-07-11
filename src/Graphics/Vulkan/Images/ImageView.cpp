@@ -5,16 +5,15 @@ VK::ImageView::ImageView(std::variant<GPURef<VK::Image>, vk::Image> Image, const
     vk::ImageViewCreateInfo CreateInfo;
     if (std::holds_alternative<GPURef<VK::Image>>(Image))
     {
-        CreateInfo.image = std::get<GPURef<VK::Image>>(Image)->GetHandle();
-            CreateInfo.format = vk::Format::eR8G8B8A8Unorm;
+        auto ImageRes = std::get<GPURef<VK::Image>>(Image);
+        CreateInfo.image = ImageRes->GetHandle();
+        CreateInfo.format = (vk::Format)ImageRes->GetProperties().format;
     }
     else
     {
         CreateInfo.image = std::get<vk::Image>(Image);
-            CreateInfo.format = vk::Format::eB8G8R8A8Unorm;
-
+        CreateInfo.format = vk::Format::eB8G8R8A8Unorm;
     }
-
 
     CreateInfo.viewType = vk::ImageViewType::e2D;
     CreateInfo.components.r = vk::ComponentSwizzle::eIdentity;

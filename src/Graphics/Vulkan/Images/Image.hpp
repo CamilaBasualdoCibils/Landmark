@@ -1,12 +1,12 @@
 #pragma once
 #include "Graphics/Interop/Interop.hpp"
+#include "Graphics/Vulkan/Enums.hpp"
+#include "Graphics/Vulkan/Memory/Memory.hpp"
+#include "Types/Flags.hpp"
 #include <pch.h>
 #include <type_traits>
 #include <vulkan/vulkan_enums.hpp>
 #include <vulkan/vulkan_handles.hpp>
-#include "Graphics/Vulkan/Memory/Memory.hpp"
-#include "Types/Flags.h"
-#include "Graphics/Vulkan/Enums.hpp"
 
 namespace VK
 {
@@ -24,13 +24,24 @@ class Image : public InteropGiver
 {
     vk::Image handle;
     std::optional<VK::Memory> memory;
+    const ImageProperties Properties;
 
   public:
-    Image(const ImageProperties& Properties);
+    Image(const ImageProperties &Properties);
 
-    InteropTransaction ExportMemory() const {return memory->ExportMemory();}
-    vk::Image GetHandle() const {return handle;}
-    operator vk::Image() const {return GetHandle();}
+    InteropTransaction ExportMemory() const
+    {
+        return memory->ExportMemory();
+    }
+    vk::Image GetHandle() const
+    {
+        return handle;
+    }
+    operator vk::Image() const
+    {
+        return GetHandle();
+    }
 
+    const ImageProperties& GetProperties() const {return Properties;}
 };
 } // namespace VK

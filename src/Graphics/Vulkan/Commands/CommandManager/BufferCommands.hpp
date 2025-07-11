@@ -19,11 +19,10 @@ struct BindVertexBuffersCommand : Command
     }
     std::string GetName() override
     {
-        return "BeginRenderPass";
+        return "BindVertexBuffers";
     }
     void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
     {
-        vk::RenderPassBeginInfo bi;
         std::vector<vk::Buffer> buffers(VertexBuffers.size());
         std::transform(VertexBuffers.begin(), VertexBuffers.end(), buffers.begin(),
                        [](GPURef<VK::Buffer> b) { return (vk::Buffer)*b; });
@@ -31,5 +30,23 @@ struct BindVertexBuffersCommand : Command
         // cmdBuffer->beginRenderPass();
     }
 };
+struct BindIndexBufferCommand : Command
+{
 
+    GPURef<VK::Buffer> IndexBuffer;
+    size_t Offset;
+    VK::IndexType indexType;
+    BindIndexBufferCommand(GPURef<VK::Buffer> IndexBuffer, size_t Offset, VK::IndexType indexType)
+        : IndexBuffer(IndexBuffer), Offset(Offset), indexType(indexType)
+    {
+    }
+    std::string GetName() override
+    {
+        return "BindIndexBuffer";
+    }
+    void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
+    {
+        cmdBuffer->GetHandle().bindIndexBuffer(*IndexBuffer, Offset, (vk::IndexType)indexType);
+    }
+};
 } // namespace VK

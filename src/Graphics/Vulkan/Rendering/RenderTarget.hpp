@@ -38,7 +38,12 @@ class RenderTarget
         ViewportSize = Size;
         return *this;
     }
-    RenderTarget &AttachDepth(GPURef<VK::Texture> Attachment);
+    RenderTarget &AttachDepth(GPURef<VK::Texture> Attachment)
+    {
+        LASSERT(Attachment,"No Attachment Provided?");
+        DepthAttachment = Attachment;
+        return *this;
+    }
     RenderTarget &AttachStencil(GPURef<VK::Texture> Attachment);
     RenderTarget &AttachDepthStencil(GPURef<VK::Texture> Attachment);
 

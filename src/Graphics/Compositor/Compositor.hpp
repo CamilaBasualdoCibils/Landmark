@@ -14,5 +14,7 @@ namespace Graphics
         [[nodiscard]] bool ExistsRootGroup(const std::string& Name);
         [[nodiscard]] std::shared_ptr<CompositeGroup> MakeRootGroup(const CompositeLayerProperties& GroupProperties);
         void DrawDebug();
+
+        void RenderCompositions();
     };
 } // namespace Graphics

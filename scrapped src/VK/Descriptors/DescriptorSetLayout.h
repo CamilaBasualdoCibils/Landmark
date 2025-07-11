@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 #include <VK/Devices/DeviceResource.h>
-#include <Types/Flags.h>
+#include <Types/Flags.hpp>
 #include <GenericEnums.h>
 struct DescriptorSetLayoutBinding
 {

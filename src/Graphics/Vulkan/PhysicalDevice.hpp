@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 #include "Graphics/Vulkan/Memory/Memory.hpp"
-#include "Types/Flags.h"
+#include "Types/Flags.hpp"
 namespace VK
 {
 class PhysicalDevice

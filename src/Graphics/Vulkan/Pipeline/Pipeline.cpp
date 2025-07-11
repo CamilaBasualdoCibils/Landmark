@@ -6,7 +6,7 @@ void VK::Pipeline::CreateGraphicsPipeline(const PipelineProperties &Properties)
     const GraphicsPipelineProperties &GraphicsProperties =
         std::get<GraphicsPipelineProperties>(Properties.VariantProperties);
     vk::PipelineDynamicStateCreateInfo DynamicStatesInfo;
-    vk::DynamicState DynamicStates[] = {vk::DynamicState::eViewport};
+    vk::DynamicState DynamicStates[] = {vk::DynamicState::eViewport,vk::DynamicState::eScissor};
     DynamicStatesInfo.setDynamicStates(DynamicStates);
 
     vk::PipelineVertexInputStateCreateInfo VertexInputInfo;
@@ -39,9 +39,9 @@ void VK::Pipeline::CreateGraphicsPipeline(const PipelineProperties &Properties)
     ViewportStateInfo.setScissors({scissor});
 
     vk::PipelineRasterizationStateCreateInfo RasterizationInfo;
-    RasterizationInfo.cullMode = vk::CullModeFlagBits::eNone;
+    RasterizationInfo.cullMode = (vk::CullModeFlagBits)GraphicsProperties.cullMode;
     RasterizationInfo.polygonMode = vk::PolygonMode::eFill;
-    RasterizationInfo.frontFace = vk::FrontFace::eClockwise;
+    RasterizationInfo.frontFace = vk::FrontFace::eCounterClockwise;
 
     vk::PipelineMultisampleStateCreateInfo MultiSampleInfo;
     MultiSampleInfo.rasterizationSamples = vk::SampleCountFlagBits::e1;
@@ -56,11 +56,18 @@ void VK::Pipeline::CreateGraphicsPipeline(const PipelineProperties &Properties)
     vk::PipelineColorBlendStateCreateInfo ColorBlendInfo;
     ColorBlendInfo.setAttachments({colorBlendAttachment});
 
+     vk::PipelineDepthStencilStateCreateInfo depthStencil{};
+    depthStencil.depthTestEnable = GraphicsProperties.DepthTest;
+    depthStencil.depthWriteEnable = GraphicsProperties.DepthWrite;
+    depthStencil.depthCompareOp = (vk::CompareOp)GraphicsProperties.DepthComparison;
+    depthStencil.depthBoundsTestEnable = VK_FALSE;
+    depthStencil.stencilTestEnable = GraphicsProperties.StencilTest;
+
     vk::Format format = vk::Format::eR8G8B8A8Unorm;
     vk::PipelineRenderingCreateInfo RenderingInfo;
     RenderingInfo.colorAttachmentCount = 1;
     RenderingInfo.pColorAttachmentFormats = &format;
-    RenderingInfo.depthAttachmentFormat = vk::Format::eUndefined;
+    RenderingInfo.depthAttachmentFormat = (vk::Format)GraphicsProperties.DepthAttachmentFormat;
     RenderingInfo.stencilAttachmentFormat = vk::Format::eUndefined;
 
     std::vector<vk::PipelineShaderStageCreateInfo> ShaderStageInfos;
@@ -104,6 +111,7 @@ void VK::Pipeline::CreateGraphicsPipeline(const PipelineProperties &Properties)
     CreateInfo.setPColorBlendState(&ColorBlendInfo);
     CreateInfo.setPDynamicState(&DynamicStatesInfo);
     CreateInfo.setLayout(*Properties.Layout);
+    CreateInfo.setPDepthStencilState(&depthStencil);
     CreateInfo.setRenderPass(VK_NULL_HANDLE);
     CreateInfo.setPNext(&RenderingInfo);
     CreateInfo.setStages(ShaderStageInfos);

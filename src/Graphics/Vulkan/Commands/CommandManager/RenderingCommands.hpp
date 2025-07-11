@@ -1,9 +1,9 @@
 #pragma once
-#include <pch.h>
 #include "CommandManager.hpp"
 #include "Graphics/Rendering/RenderTarget.hpp"
 #include "Graphics/Vulkan/Rendering/RenderPass.hpp"
-
+#include <misc/Conversions.hpp>
+#include <pch.h>
 namespace VK
 {
 
@@ -39,6 +39,26 @@ struct DrawCommand : Command
         cmdBuffer->GetHandle().draw(VertexCount, InstanceCount, FirstVertex, FirstInstance);
     }
 };
+struct DrawIndexedCommand : Command
+{
+    uint32_t IndexCount, instanceCount, firstIndex, vertexOffset, firstInstance;
+    DrawIndexedCommand(uint32_t IndexCount, uint32_t instanceCount = 1, uint32_t firstIndex = 0,
+                       uint32_t vertexOffset = 0, uint32_t firstInstance = 0)
+        : IndexCount(IndexCount), instanceCount(instanceCount), firstIndex(firstIndex), vertexOffset(vertexOffset),
+          firstInstance(firstInstance)
+    {
+    }
+
+    std::string GetName() override
+    {
+        return "DrawIndexed";
+    }
+    void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
+    {
+
+        cmdBuffer->GetHandle().drawIndexed(IndexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+    }
+};
 struct BeginRenderingCommand : Command
 {
     GPURef<Graphics::RenderTarget> Target;
@@ -53,8 +73,10 @@ struct BeginRenderingCommand : Command
     {
         auto ptr = Target->VK().AsRenderingInfo();
         cmdBuffer->GetHandle().beginRendering(ptr->first);
-        const uvec2 Offset =Target->GetViewportOffset(),Size = Target->GetViewportSize();
-        cmdBuffer->GetHandle().setViewport(0,{vk::Viewport{Offset.x,Offset.y,Size.x,Size.y,0,1}});
+        const uvec2 Offset = Target->GetViewportOffset(), Size = Target->GetViewportSize();
+        cmdBuffer->GetHandle().setViewport(
+            0, {vk::Viewport{(float)Offset.x, (float)Offset.y, (float)Size.x, (float)Size.y, 0.0f, 1.0f}});
+        cmdBuffer->GetHandle().setScissor(0, {GlmToVkRect(Offset, Size)});
     }
 };
 struct EndRenderingCommand : Command

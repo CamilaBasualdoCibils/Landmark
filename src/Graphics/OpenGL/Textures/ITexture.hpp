@@ -28,7 +28,8 @@ enum class PixelFormats : GLenum
     eRGB = GL_RGB,
     eRGBA = GL_RGBA,
     eBGR = GL_BGR,
-    eBGRA = GL_BGRA
+    eBGRA = GL_BGRA,
+    eDepthComponent = GL_DEPTH_COMPONENT,
 };
 enum class TextureFormats : GLenum
 {
@@ -89,6 +90,7 @@ enum class TextureFormats : GLenum
     eRGB32I = GL_RGB32I,
     eRGBA32I = GL_RGBA32I,
 
+    eDepth32F = GL_DEPTH_COMPONENT32F,
     // Packed formats
     eRGB10A2_UNorm = GL_RGB10_A2,
     eRGB10A2UI = GL_RGB10_A2UI,

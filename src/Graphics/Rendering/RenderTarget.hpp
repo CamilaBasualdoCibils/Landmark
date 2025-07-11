@@ -14,13 +14,14 @@ class RenderTarget : public InteropObject<VK::RenderTarget, GL::RenderTarget, In
 
     std::array<GPURef<Graphics::Texture>, 8> ColorAttachments;
     GPURef<Graphics::Texture> DepthAttachment, StencilAttachment;
-    uvec2 ViewportOffset,ViewportSize;
+    uvec2 ViewportOffset, ViewportSize;
+
   public:
     RenderTarget();
     RenderTarget &AttachColor(uint32_t Index, GPURef<Graphics::Texture> Attachment)
     {
-        LASSERT(Index < 8 && Index >=0, "Invalid Index");
-        LASSERT(Attachment,"What");
+        LASSERT(Index < 8 && Index >= 0, "Invalid Index");
+        LASSERT(Attachment, "What");
         ColorAttachments[Index] = Attachment;
         GL().AttachColor(Index, Attachment->GLPtr());
         VK().AttachColor(Index, Attachment->VKPtr());
@@ -28,25 +29,37 @@ class RenderTarget : public InteropObject<VK::RenderTarget, GL::RenderTarget, In
     }
     RenderTarget &DetachColor(uint32_t Index)
     {
-        LASSERT(Index < 8 && Index >=0, "Invalid Index");
-        LASSERT(ColorAttachments[Index],"What");
+        LASSERT(Index < 8 && Index >= 0, "Invalid Index");
+        LASSERT(ColorAttachments[Index], "What");
         ColorAttachments[Index] = nullptr;
         GL().DetachColor(Index);
         VK().DetachColor(Index);
         return *this;
-
     }
-    RenderTarget& SetViewport(uvec2 Offset,uvec2 Size)
+    RenderTarget &SetViewport(uvec2 Offset, uvec2 Size)
     {
         ViewportOffset = Offset;
         ViewportSize = Size;
-        GL().SetViewport(Offset,Size);
-        VK().SetViewport(Offset,Size);
+        GL().SetViewport(Offset, Size);
+        VK().SetViewport(Offset, Size);
         return *this;
     }
-    uvec2 GetViewportOffset() const {return ViewportOffset;}
-    uvec2 GetViewportSize() const {return ViewportSize;}
-    RenderTarget &AttachDepth(GPURef<Graphics::Texture> Attachment);
+    uvec2 GetViewportOffset() const
+    {
+        return ViewportOffset;
+    }
+    uvec2 GetViewportSize() const
+    {
+        return ViewportSize;
+    }
+    RenderTarget &AttachDepth(GPURef<Graphics::Texture> Attachment)
+    {
+        LASSERT(Attachment,"No attachment Provided?");
+        DepthAttachment = Attachment;
+        GL().AttachDepth(Attachment->GLPtr());
+        VK().AttachDepth(Attachment->VKPtr());
+        return *this;
+    }
     RenderTarget &AttachStencil(GPURef<Graphics::Texture> Attachment);
     RenderTarget &AttachDepthStencil(GPURef<Graphics::Texture> Attachment);
 };

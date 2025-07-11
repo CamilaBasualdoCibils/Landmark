@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "EditorObjectGroup.h"
+#include "EditorObjectGroup.hpp"
 
 EditorObjectGroup::EditorObjectGroup(const std::string& _name):EditorObject(_name)
 {

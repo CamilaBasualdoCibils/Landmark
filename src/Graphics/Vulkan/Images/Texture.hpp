@@ -17,10 +17,11 @@ class Texture : public InteropGiver
     GPURef<VK::Image> image;
     GPURef<VK::ImageView> imageView;
     GPURef<VK::Sampler> sampler;
+    mutable VkDescriptorSet ImGuiDSet;
 
   public:
     Texture(const TextureProperties &Properties);
-
+    ~Texture();
     InteropTransaction ExportMemory() const override
     {
         return image->ExportMemory();
@@ -31,17 +32,22 @@ class Texture : public InteropGiver
         return image;
     }
 
-
     auto GetImageView() const
     {
         return imageView;
     }
 
-
     auto GetSampler() const
     {
         return sampler;
     }
+    auto GetImguiDescriptorSet() const
+    {
 
+        if (!ImGuiDSet)
+            ImGuiDSet = ImGui_ImplVulkan_AddTexture((vk::Sampler)*sampler, (vk::ImageView)*imageView,
+                                        VkImageLayout::VK_IMAGE_LAYOUT_GENERAL);
+        return ImGuiDSet;
+    }
 };
 } // namespace VK

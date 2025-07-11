@@ -12,9 +12,9 @@ RenderViewport::RenderViewport(const RenderViewportCreateInfo &info)
     act = std::make_shared<Act>(actp);
 
     frame_properties frmp;
-    frmp.dimensions = uvec3(size,1);
+    frmp.dimensions = uvec3(size, 1);
     frmp.lens_subpass_id = 0;
-    frame = std::make_shared<Frame>(frmp,*act);
+    frame = std::make_shared<Frame>(frmp, *act);
 }
 
 void RenderViewport::SetSize(uvec2 new_size)

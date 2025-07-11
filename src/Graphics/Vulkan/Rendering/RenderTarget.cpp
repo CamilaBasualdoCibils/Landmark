@@ -22,11 +22,26 @@ std::shared_ptr<std::pair<vk::RenderingInfo, std::vector<vk::RenderingAttachment
         Attachment.storeOp = vk::AttachmentStoreOp::eStore;
         ColorAttachmentCount++;
     }
+    const uint32_t DepthAttachmentPos = Attachments.size();
+    if (DepthAttachment)
+    {
+        Attachments.emplace_back();
+
+        auto &Attachment = Attachments.back();
+         Attachment.imageLayout = vk::ImageLayout::eGeneral;
+        Attachment.imageView = *DepthAttachment->GetImageView();
+        Attachment.loadOp = vk::AttachmentLoadOp::eLoad;
+        Attachment.storeOp = vk::AttachmentStoreOp::eStore;
+    }
 
     renderingInfo.renderArea = GlmToVkRect(ViewportOffset, ViewportSize);
     renderingInfo.layerCount = 1;
     renderingInfo.colorAttachmentCount = ColorAttachmentCount;
     renderingInfo.pColorAttachments = Attachments.data();
+    if (DepthAttachment)
+    {
+        renderingInfo.pDepthAttachment = Attachments.data()+DepthAttachmentPos;
+    }
 
     return ptr;
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <pch.h>
-#include "EditorObjectGroup.h"
+#include "EditorObjectGroup.hpp"
 
 class EditorTopBar : public EditorObjectGroup  {
 

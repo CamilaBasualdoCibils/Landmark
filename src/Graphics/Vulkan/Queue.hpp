@@ -1,6 +1,6 @@
 #pragma once
 #include <pch.h>
-#include "Types/Flags.h"
+#include "Types/Flags.hpp"
 #include <Graphics/GPURef.hpp>
 namespace VK
 {

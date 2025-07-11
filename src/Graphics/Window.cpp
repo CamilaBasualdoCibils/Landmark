@@ -43,14 +43,14 @@ void Graphics::Window::Render()
 {
     Graphics::CompositeContext context;
     GetSwapchain()->AcquireNextSwapchainImage(ImageReadySemaphore);
-    Graphics::CompositeLayerExecute RenderExecution = WindowComposite->OnRender(context);
+
     std::shared_ptr<VK::CommandManager> CopyToSwapCmds = std::make_shared<VK::CommandManager>();
     CopyToSwapCmds->PushGroupLabel("Cpy to Swapchain");
     CopyToSwapCmds->WaitSemaphore(ImageReadySemaphore);
     CopyToSwapCmds->Push(VK::TransitionImageLayoutCommand(
         Swapchain->GetCurrentImage().imageRaw, VK::ImageLayouts::ePresentSrc, VK::ImageLayouts::eTransferDst,
         VK::PipelineStageFlags::eBottomOfPipe, VK::PipelineStageFlags::eTransfer));
-    CopyToSwapCmds->Push(VK::BlitImageCommand(WindowComposite->GetOutput(), Swapchain->GetCurrentImage().imageRaw,
+    CopyToSwapCmds->Push(VK::BlitImageCommand(WindowComposite->GetAttachments().at("Main"), Swapchain->GetCurrentImage().imageRaw,
                                               VK::ImageLayouts::eGeneral, VK::ImageLayouts::eGeneral,
                                               VK::Filter::eNearest, ivec3(0), ivec3(0),
                                               ivec3(WindowComposite->GetResolution(), 1)));
@@ -60,6 +60,5 @@ void Graphics::Window::Render()
 
     CopyToSwapCmds->PopGroupLabel();
     CopyToSwapCmds->SignalSemaphore(BlitCompleteSemaphore);
-    GraphicsEngine::Get().Push(RenderExecution.CommandManagers);
     GraphicsEngine::Get().Push({CopyToSwapCmds});
 }

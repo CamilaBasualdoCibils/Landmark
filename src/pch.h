@@ -52,8 +52,9 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
-
 using namespace glm;
+
+#include <entt-3.15.0/src/entt/entt.hpp>
 
 // JSON
 //#include <JSON/json.hpp>

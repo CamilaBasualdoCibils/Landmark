@@ -6,13 +6,7 @@
 namespace VK
 {
 
-enum class ShaderStages : std::underlying_type_t<vk::ShaderStageFlagBits>
-{
-    eVertex = (size_t)vk::ShaderStageFlagBits::eVertex,
-    eGeometry = (size_t)vk::ShaderStageFlagBits::eGeometry,
-    eFragment = (size_t)vk::ShaderStageFlagBits::eFragment,
-    eCompute = (size_t)vk::ShaderStageFlagBits::eCompute,
-};
+
 struct VertexAttribute
 {
     uint32_t Binding; //which vertex buffer binding to take from
@@ -23,9 +17,16 @@ struct VertexAttribute
 };
 struct GraphicsPipelineProperties
 {
+    VK::CullMode cullMode = VK::CullMode::eBack;
+
     std::vector<std::byte> VertexBinary, FragmentBinary;
     std::optional<std::vector<std::byte>> GeometryBinary;
     std::vector<VertexAttribute> VertexAttributes;
+
+    //Depth Testing
+        bool DepthTest = false,DepthWrite = false,StencilTest = false;
+    VK::CompareOp DepthComparison = VK::CompareOp::eLess;
+    VK::Format DepthAttachmentFormat = VK::Format::eDepth32_SFloat;
 };
 struct ComputePipelineProperties
 {

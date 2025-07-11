@@ -1,12 +1,11 @@
 #include "GraphicsEngine.hpp"
 #include "Graphics/OpenGL/Commands/CommandManager.hpp"
 #include "Graphics/Vulkan/Commands/CommandManager/CommandManager.hpp"
-
-#include "ImGui.hpp"
-
+#include "DearImGui.hpp"
 #include <Graphics/Devices/GPUSelector.hpp>
-#include <Graphics/ImGui.hpp>
 #include <Graphics/Vulkan/Instance.hpp>
+#include <Editor/Editor.hpp>
+#include <Graphics/Compositor/Compositor.hpp>
 GraphicsEngine::GraphicsEngine(const GraphicsEngineProperties &properties)
 {
     VK::InstanceProperties VulkanProperties;
@@ -49,6 +48,7 @@ void GraphicsEngine::BeginFrame()
 {
     glfwPollEvents();
     DearImGui::Get().BeginFrame();
+        Editor::Editor::Get().Draw();
 }
 void GraphicsEngine::EndFrame()
 {
@@ -57,11 +57,12 @@ void GraphicsEngine::EndFrame()
 
 void GraphicsEngine::Render()
 {
-    for (const auto& Window : ActiveWindows)
+    Graphics::Compositor::Get().RenderCompositions();
+    for (const auto &Window : ActiveWindows)
     {
         Window.second->Render();
     }
-    //ExecuteCommandBuffers.push(DearImGui::Get().Render());
+    // ExecuteCommandBuffers.push(DearImGui::Get().Render());
     while (!ExecuteCommandBuffers.empty())
     {
         auto CommandBuffer = ExecuteCommandBuffers.front();
@@ -69,9 +70,9 @@ void GraphicsEngine::Render()
         Dispatch(CommandBuffer);
     }
 
-    for (const auto& Window : ActiveWindows)
+    for (const auto &Window : ActiveWindows)
     {
         Window.second->Present();
     }
-    //std::cerr << "Presented\n";
-}   
+    // std::cerr << "Presented\n";
+}

@@ -1,6 +1,7 @@
 #include "DescriptorSet.h"
 #include "DescriptorPool.h"
 #include "DescriptorSetLayout.h"
+#include "DescriptorSet.hpp"
 DescriptorSet::DescriptorSet(const DescriptorPool &pool, const DescriptorSetLayout &layout):properties_of_owner(pool.GetProperties())
 {
     poolOwner = pool;
@@ -39,3 +40,4 @@ void DescriptorSet::UpdateUniformBuffers(int32_t binding, const UniformBuffer &u
     descriptorWrite.pBufferInfo = &buffer_info;
     GetvkDevice().updateDescriptorSets({descriptorWrite},{});
 }
+

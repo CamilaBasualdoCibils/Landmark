@@ -6,7 +6,7 @@
 #include <glm/fwd.hpp>
 #include <glm/vector_relational.hpp>
 #include <vulkan/vulkan_enums.hpp>
-VK::Image::Image(const VK::ImageProperties &Properties)
+VK::Image::Image(const VK::ImageProperties &Properties):Properties(Properties)
 {
     vk::ExternalMemoryImageCreateInfo ExternalImageInfo;
     ExternalImageInfo.handleTypes = vk::ExternalMemoryHandleTypeFlagBits::eOpaqueFd;

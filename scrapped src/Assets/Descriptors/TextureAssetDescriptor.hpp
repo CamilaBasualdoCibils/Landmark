@@ -3,7 +3,7 @@
 #include <IO/File.h>
 #include <Assets/AssetJsonUtils.hpp>
 #include <Assets/AssetEnums.hpp>
-#include <Types/Flags.h>
+#include <Types/Flags.hpp>
 struct TextureAssetInfo
 {
 

@@ -3,7 +3,7 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/Vulkan/Commands/CommandManager/CommandManager.hpp"
 #include "Graphics/Vulkan/Enums.hpp"
-#include "Types/Flags.h"
+#include "Types/Flags.hpp"
 #include "Graphics/Vulkan/Pipeline/Pipeline.hpp"
 
 
