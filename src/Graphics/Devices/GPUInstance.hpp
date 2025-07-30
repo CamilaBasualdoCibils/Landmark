@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics/Vulkan/DeviceWrapper.hpp"
+#include "Graphics/Vulkan/VKDeviceWrapper.hpp"
 #include <pch.h>
 #include <Graphics/Devices/GPUPhysicalDevice.hpp>
 #include <Graphics/OpenGL/EGL.hpp>

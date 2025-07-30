@@ -18,6 +18,10 @@ class GraphicsEngine : public Singleton<GraphicsEngine, GraphicsEngineProperties
   public:
     GraphicsEngine(const GraphicsEngineProperties &);
 
+    ~GraphicsEngine()
+    {
+        std::cerr << "GraphicsEngine exit\n";
+    }
     //[[nodiscard]] std::shared_ptr<GL::CommandBuffer> MakeGLCommandBuffer();
 
     void Push(const std::vector<std::shared_ptr<Graphics::ICommandManager>> &CmdBuffers);

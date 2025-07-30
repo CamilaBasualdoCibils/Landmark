@@ -1,16 +1,17 @@
 #pragma once
 #include <Editor/EditorToolItem.hpp>
 #include <Editor/EditorWindow.hpp>
-class WorldOutliner : public Editor::ToolItem, EditorWindow<>
+#include "Components/Entity.hpp"
+class WorldOutliner : public Editor::ToolItem, Editor::Window<>
 {
     bool Open = true;
-    std::optional<entt::entity> SelectedEntity;
+    std::optional<Entity> SelectedEntity;
     void DrawWindowContents() override;
 
     void DrawTool() override
     {
         if (Open)
-            EditorWindow<>::Draw();
+            Editor::Window<>::Draw();
     }
     void DrawHandle() override
     {
@@ -18,5 +19,5 @@ class WorldOutliner : public Editor::ToolItem, EditorWindow<>
     }
     public:
     decltype(SelectedEntity) GetSelectedEntity() const {return SelectedEntity;}
-    WorldOutliner() :Editor::ToolItem("World Outliner"),EditorWindow<>("World Outliner") {}
+    WorldOutliner() :Editor::ToolItem("World Outliner"),Editor::Window<>("World Outliner") {}
 };

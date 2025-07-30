@@ -6,13 +6,16 @@ namespace Graphics
 {
     class Compositor : public Singleton<Compositor>
     {
-        std::unordered_map<std::string, std::shared_ptr<CompositeGroup>> RootGroups;
+        std::vector<std::pair<uint32_t,std::shared_ptr<CompositeGroup>>> RootGroups;
 
         public:
         Compositor();
-        [[nodiscard]] std::shared_ptr<CompositeGroup> GetRootGroup(const std::string& Name);
-        [[nodiscard]] bool ExistsRootGroup(const std::string& Name);
-        [[nodiscard]] std::shared_ptr<CompositeGroup> MakeRootGroup(const CompositeLayerProperties& GroupProperties);
+        ~Compositor()
+        {
+        std::cerr << "Compositor exit\n";
+
+        }
+        std::shared_ptr<CompositeGroup> MakeRootGroup(const CompositeGroupProperties& GroupProperties,int32_t Priority = 0);
         void DrawDebug();
 
         void RenderCompositions();

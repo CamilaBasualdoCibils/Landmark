@@ -1,7 +1,6 @@
 #include "EGL.hpp"
 #include "pch.h"
-#include <GL/gl.h>
-#include <GL/glext.h>
+
 #define CHECK_EGL(call)                                                                                                \
     if (!(call))                                                                                                       \
     {                                                                                                                  \

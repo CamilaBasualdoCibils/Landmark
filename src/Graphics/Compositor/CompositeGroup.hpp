@@ -4,13 +4,12 @@
 #include <pch.h>
 namespace Graphics
 {
-
+using CompositeGroupProperties = CompositeLayerProperties;
 class CompositeGroup : public ICompositeLayer, public std::enable_shared_from_this<CompositeGroup>
 {
     std::vector<std::shared_ptr<ICompositeLayer>> Layers;
-
   public:
-    CompositeGroup(const CompositeLayerProperties &Properties);
+    CompositeGroup(const CompositeGroupProperties &Properties);
     CompositeLayerExecute OnRender(const Graphics::CompositeContext &OldContext) override;
     template <typename T, typename... ARGS> //, std::enable_if_t<std::is_base_of_v<T,ICompositeLayer>>>
     std::shared_ptr<T> AddLayer(ARGS... args)

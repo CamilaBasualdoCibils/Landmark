@@ -1,6 +1,6 @@
 #include "GPUInstance.hpp"
-#include "Graphics/Vulkan/DeviceWrapper.hpp"
-#include <Graphics/Vulkan/Instance.hpp>
+#include "Graphics/Vulkan/VKDeviceWrapper.hpp"
+#include <Graphics/Vulkan/VKInstance.hpp>
 #include <Graphics/OpenGL/EGL.hpp>
 GPUInstance::GPUInstance(/* args */)
 {

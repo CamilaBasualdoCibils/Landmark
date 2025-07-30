@@ -1,6 +1,6 @@
 #include "GPUSelector.hpp"
-#include <Graphics/Vulkan/Instance.hpp>
-#include <Graphics/Vulkan/PhysicalDevice.hpp>
+#include <Graphics/Vulkan/VKInstance.hpp>
+#include <Graphics/Vulkan/VKPhysicalDevice.hpp>
 #include <Graphics/OpenGL/EGL.hpp>
 GPUSelector::GPUSelector()
 {

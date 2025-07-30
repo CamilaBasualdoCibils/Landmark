@@ -18,3 +18,5 @@ bool Editor::MenuItem(const std::string &Item, bool *selected, bool Enabled)
 {
     return ImGui::MenuItem(Item.c_str(), nullptr, selected, Enabled);
 }
+
+

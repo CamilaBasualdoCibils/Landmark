@@ -32,6 +32,7 @@ class ICommandManager
     virtual void InsertLabel(const std::string& Label, vec4 Color = {1,1,1,1}) = 0;
     virtual void PushGroupLabel(const std::string& Group, vec4 Color = {1,1,1,1}) = 0;
     virtual void PopGroupLabel() = 0;
+    virtual size_t Count() const = 0;
 
 };
 } // namespace Graphics

@@ -6,10 +6,10 @@ void WorldOutliner::DrawWindowContents()
     for (entt::entity entity : EntityInfoView)
     {
         const auto& entInfo = EntityInfoView.get<const EntityInfo>(entity);
-         bool selected = SelectedEntity.has_value() && entity  == *SelectedEntity;
+         bool selected = SelectedEntity.has_value() && entity  == SelectedEntity->GetID();
         ImGui::PushID((uint32_t)entity);
           if (ImGui::Selectable(entInfo.Name.c_str(), &selected))
-          if (selected) SelectedEntity = entity;
+          if (selected) SelectedEntity = Entity(entity);
 
         ImGui::PopID();
     }

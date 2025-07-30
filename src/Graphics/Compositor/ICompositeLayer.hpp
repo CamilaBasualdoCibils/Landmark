@@ -10,14 +10,14 @@ class CompositeGroup;
 struct CompositeContext;
 struct CompositeLayerAttachmentProperties
 {
-    TextureFormatValues format = TextureFormatValues::eRGBA8_SRGB;
+    TextureFormatValues format = TextureFormatValues::eRGBA8_UNorm;
 };
+using CompositeLayerAttachments = std::unordered_map<std::string, CompositeLayerAttachmentProperties>;
 struct CompositeLayerProperties
 {
     std::string Name;
     std::optional<uvec2> ResolutionOverride;
-    std::unordered_map<std::string, CompositeLayerAttachmentProperties> Attachments = {
-        {"Main", CompositeLayerAttachmentProperties{}}};
+    CompositeLayerAttachments Attachments = {{"Main", CompositeLayerAttachmentProperties{}}};
 };
 struct CompositeLayerExecute
 {
@@ -29,10 +29,14 @@ class ICompositeLayer
     std::unordered_map<std::string, GPURef<Graphics::Texture>> Attachments;
     std::shared_ptr<CompositeGroup> Parent = nullptr;
     CompositeLayerProperties Properties;
+    uvec2 RealUnderlyingResolution = {0, 0};
     virtual CompositeLayerExecute OnRender(const CompositeContext &Context) = 0;
 
   public:
     ICompositeLayer(std::shared_ptr<CompositeGroup> Parent, const CompositeLayerProperties &Properties);
+    virtual ~ICompositeLayer()
+    {
+    }
     CompositeLayerExecute Render(const CompositeContext &Context)
     {
         return OnRender(Context);
@@ -51,14 +55,30 @@ class ICompositeLayer
     }
     uvec2 GetResolution() const;
 
+    void UpdateAttachments();
+
   public:
-    virtual const std::unordered_map<std::string, GPURef<Graphics::Texture>>& GetAttachments()
+    void SetResolutionOverride(uvec2 NewResolution);
+    void RemoveResolutionOverride()
+    {
+        Properties.ResolutionOverride = std::nullopt;
+        UpdateAttachments();
+    }
+    virtual const std::unordered_map<std::string, GPURef<Graphics::Texture>> &GetAttachments()
     {
         return Attachments;
     }
-    virtual const std::unordered_map<std::string, GPURef<Graphics::Texture>>& GetAttachments() const
+    virtual const std::unordered_map<std::string, GPURef<Graphics::Texture>> &GetAttachments() const
     {
         return Attachments;
+    }
+    GPURef<Graphics::Texture> GetAttachment(const std::string &Name)
+    {
+        return GetAttachments().at(Name);
+    }
+    GPURef<Graphics::Texture> GetAttachment(const std::string &Name) const
+    {
+        return GetAttachments().at(Name);
     }
 };
 } // namespace Graphics

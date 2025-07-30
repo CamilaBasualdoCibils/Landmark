@@ -1,18 +1,22 @@
 #pragma once
 
+#include "EditorToolBar.hpp"
 #include <pch.h>
-enum class EditorWindowType
+namespace Editor
+{
+enum class WindowType
 {
     eWindow,
     ePopup,
     EPopupModal
 };
 
-template <typename ReturnType = void> class EditorWindow
+template <typename ReturnType = void> class Window
 {
     std::string titlebar;
     bool open = true;
-    EditorWindowType type = EditorWindowType::eWindow;
+    ToolBar menuBar;
+    WindowType type = WindowType::eWindow;
     using ReturnTypeValue =
         std::conditional_t<std::is_void<ReturnType>::value, std::monostate, std::optional<ReturnType>>;
     ReturnTypeValue return_value;
@@ -27,11 +31,10 @@ template <typename ReturnType = void> class EditorWindow
     virtual void DrawWindowContents() = 0;
 
   public:
-    EditorWindow(const std::string &_name, EditorWindowType _type = EditorWindowType::eWindow)
-        : titlebar(_name), type(_type)
+    Window(const std::string &_name, WindowType _type = WindowType::eWindow) : titlebar(_name), type(_type),menuBar("Menu Bar",true)
     {
     }
-    EditorWindow() : titlebar("Default Titlebar"), type(EditorWindowType::eWindow)
+    Window() : titlebar("Default Titlebar"), type(WindowType::eWindow)
     {
     }
     virtual void Draw();
@@ -66,10 +69,11 @@ template <typename ReturnType = void> class EditorWindow
     {
         return titlebar;
     }
-    constexpr void SetWindowType(EditorWindowType _type)
+    constexpr void SetWindowType(WindowType _type)
     {
         type = _type;
     }
+    constexpr ToolBar& GetMenuBar() {return menuBar;}
     virtual void OnWindowTryClose()
     {
         SetOpen(false);
@@ -84,34 +88,41 @@ template <typename ReturnType = void> class EditorWindow
     }
 };
 
-template <typename ReturnType> inline void EditorWindow<ReturnType>::Draw()
+template <typename ReturnType> inline void Window<ReturnType>::Draw()
 {
     if (!open)
         return;
     ImGuiWindowFlags window_flags = 0;
-    //window_flags |= ImGuiWindowFlags_HorizontalScrollbar & HorizontalScrollBar;
+    // window_flags |= ImGuiWindowFlags_HorizontalScrollbar & HorizontalScrollBar;
     window_flags |= ImGuiWindowFlags_NoScrollbar & !VerticalScrollBar;
-    if (type == EditorWindowType::eWindow)
+    window_flags |= ImGuiWindowFlags_MenuBar;
+    if (type == WindowType::eWindow)
     {
         bool open_state = open;
         if (ImGui::Begin(titlebar.c_str(), &open_state, window_flags))
         {
+            menuBar.DrawHandle();
             DrawWindowContents();
         }
         ImGui::End();
         if (open_state != open)
             OnWindowTryClose();
+
+        menuBar.DrawTool();
     }
     else
     {
 
         ImGui::OpenPopup(titlebar.c_str(), window_flags);
         // imguipopupflags
-        if (type == EditorWindowType::ePopup ? ImGui::BeginPopup(titlebar.c_str())
-                                             : ImGui::BeginPopupModal(titlebar.c_str()))
+        if (type == WindowType::ePopup ? ImGui::BeginPopup(titlebar.c_str()) : ImGui::BeginPopupModal(titlebar.c_str()))
         {
+            menuBar.DrawHandle();
             DrawWindowContents();
             ImGui::EndPopup();
         }
+        menuBar.DrawTool();
     }
 }
+
+} // namespace Editor

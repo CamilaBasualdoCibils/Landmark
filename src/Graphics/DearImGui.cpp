@@ -1,16 +1,17 @@
 #include "DearImGui.hpp"
 
 #include "Graphics/GraphicsEngine.hpp"
-#include "Graphics/Vulkan/Enums.hpp"
-#include "Graphics/Vulkan/Rendering/RenderPass.hpp"
+#include "Graphics/Vulkan/Rendering/VKRenderPass.hpp"
+#include "Graphics/Vulkan/VKEnums.hpp"
 #include <Editor/Editor.hpp>
+#include <Editor/EditorLambdaItem.hpp>
 #include <Editor/EditorTemplates.hpp>
 #include <Editor/EditorToolItem.hpp>
 #include <Graphics/Compositor/CompositeContext.hpp>
 #include <Graphics/Compositor/Compositor.hpp>
-#include <Graphics/Vulkan/Commands/CommandManager/ImageCommands.hpp>
-#include <Graphics/Vulkan/Commands/CommandManager/PipelineCommands.hpp>
-#include <Graphics/Vulkan/Instance.hpp>
+#include <Graphics/Vulkan/Commands/CommandManager/VKImageCommands.hpp>
+#include <Graphics/Vulkan/Commands/CommandManager/VKPipelineCommands.hpp>
+#include <Graphics/Vulkan/VKInstance.hpp>
 #include <misc/Conversions.hpp>
 class ImGuiDemoTool : Editor::ToolItem
 {
@@ -85,7 +86,7 @@ DearImGui::DearImGui(const DearImGuiProperties &Properties)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
     io.FontAllowUserScaling = true;
     ImGuiStyle &style = ImGui::GetStyle();
@@ -108,17 +109,50 @@ DearImGui::DearImGui(const DearImGuiProperties &Properties)
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.UseDynamicRendering = true;
     init_info.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
-    VkFormat format = (VkFormat)vk::Format::eR8G8B8A8Srgb;
+    VkFormat format = VK_FORMAT_B8G8R8A8_UNORM;
     init_info.PipelineRenderingCreateInfo.pColorAttachmentFormats = &format;
     init_info.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
+    init_info.ApiVersion = vk::makeApiVersion(0, 1, 4, 0);
     ImGui_ImplVulkan_Init(&init_info);
     {
         // Graphics::SingleUseCommandBuffer sucm;
         ImGui_ImplVulkan_CreateFontsTexture();
     }
     GetCompositeLayer();
-    Editor::Editor::Get().GetMainToolGroup().GetOrPushToolBar("View")->PushObject<ImGuiDemoTool>();
-    Editor::Editor::Get().GetMainToolGroup().GetOrPushToolBar("View")->PushObject<ImplotDemoTool>();
+
+    static bool ImGuiStackTool = false;
+    Editor::Editor::Get()
+        .GetMainToolGroup()
+        .GetOrPushToolBar("View")
+        ->GetOrPushToolBar("ImGui")
+        ->PushObject<Editor::LambdaItem>(
+            0, "ImGui Stack Tool", [&]() { ImGui::Selectable("Stack Tool", &ImGuiStackTool); },
+            [&]() {
+                if (ImGuiStackTool)
+                    ImGui::ShowIDStackToolWindow(&ImGuiStackTool);
+            });
+    static bool ImGuiMetrics = false;
+    Editor::Editor::Get()
+        .GetMainToolGroup()
+        .GetOrPushToolBar("View")
+        ->GetOrPushToolBar("ImGui")
+        ->PushObject<Editor::LambdaItem>(
+            0, "ImGui Metrics", [&]() { ImGui::Selectable("ImGui Metrics", &ImGuiMetrics); },
+            [&]() {
+                if (ImGuiMetrics)
+                    ImGui::ShowMetricsWindow(&ImGuiMetrics);
+            });
+    Editor::Editor::Get()
+        .GetMainToolGroup()
+        .GetOrPushToolBar("View")
+        ->GetOrPushToolBar("ImGui")
+        ->PushObject<ImGuiDemoTool>(1);
+
+    Editor::Editor::Get()
+        .GetMainToolGroup()
+        .GetOrPushToolBar("View")
+        ->GetOrPushToolBar("ImGui")
+        ->PushObject<ImplotDemoTool>(2);
     // PushEditorTools();
 }
 void DearImGui::BeginFrame()
@@ -129,10 +163,13 @@ void DearImGui::BeginFrame()
 }
 void DearImGui::EndFrame()
 {
-    ImGuiIO &io = ImGui::GetIO();
     ImGui::EndFrame();
     ImGui::Render();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+}
+
+void DearImGui::UpdatePlatforms()
+{
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
@@ -180,8 +217,8 @@ ImGuiCompositor::ImGuiCompositor(std::shared_ptr<Graphics::CompositeGroup> Paren
 {
     GenericBeforeCmdMngr->PushGroupLabel("ImGuiComposite");
 
-    GenericAfterCmdMngr->Push(
-        VK::TransitionImageLayoutCommand(GetAttachments().at("Main"), VK::ImageLayouts::eGeneral, VK::ImageLayouts::eGeneral,
-                                         VK::PipelineStageFlags::eAllCommands, VK::PipelineStageFlags::eAllCommands));
+    GenericAfterCmdMngr->Push(VK::TransitionImageLayoutCommand(
+        GetAttachments().at("Main"), VK::ImageLayouts::eGeneral, VK::ImageLayouts::eGeneral,
+        VK::PipelineStageFlags::eAllCommands, VK::PipelineStageFlags::eAllCommands));
     GenericAfterCmdMngr->PopGroupLabel();
 }

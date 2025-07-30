@@ -1,7 +1,7 @@
 #pragma once
 #include "misc/Singleton.hpp"
 #include <pch.h>
-#include <Graphics/Vulkan/Extension.hpp>
+#include <Graphics/Vulkan/VKExtension.hpp>
 class GLFW :public Singleton<GLFW> {
 
     static void ErrorCallback(int code, const char* desc);

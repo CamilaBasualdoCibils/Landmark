@@ -1,15 +1,18 @@
 #include "EntityInspector.hpp"
+#include "Components/TransformComponent.hpp"
 #include "World.hpp"
 void EntityInspector::DrawWindowContents()
 {
-    std::optional<entt::entity> entity = World::Get().GetWorldOutliner()->GetSelectedEntity();
+    std::optional<Entity> entity = World::Get().GetWorldOutliner()->GetSelectedEntity();
 
     if (!entity.has_value())
         return;
 
-    // std::shared_ptr<Entity> entity = World::Get().GetEntity(*entityID);
-    EntityInfo &entInfo = World::Get().GetComponent<EntityInfo>(*entity);
-    // if (!entity) return;
+
+    EntityInfo &entInfo = entity->GetInfo();
+    const bool Locked = entInfo.Locked;
+    if (Locked)
+        ImGui::BeginDisabled();
 
     ImGui::Checkbox("##Enabled", &entInfo.Enabled);
 
@@ -17,7 +20,11 @@ void EntityInspector::DrawWindowContents()
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::InputText("##name", &entInfo.Name);
 
-    Transform &transform = World::Get().GetComponent<Transform>(*entity);
+    ImGui::Separator();
+    TransformComponent &transform = entity->GetTransform();
 
     transform.DrawInspector();
+
+    if (Locked)
+        ImGui::EndDisabled();
 }

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Graphics/Interop/Interop.hpp"
-#include "Graphics/OpenGL/Rendering/RenderTarget.hpp"
+#include "Graphics/OpenGL/Rendering/GLRenderTarget.hpp"
 #include "Graphics/Texture.hpp"
-#include "Graphics/Vulkan/Rendering/RenderTarget.hpp"
+#include "Graphics/Vulkan/Rendering/VKRenderTarget.hpp"
 #include <pch.h>
 
 namespace Graphics
@@ -15,7 +15,6 @@ class RenderTarget : public InteropObject<VK::RenderTarget, GL::RenderTarget, In
     std::array<GPURef<Graphics::Texture>, 8> ColorAttachments;
     GPURef<Graphics::Texture> DepthAttachment, StencilAttachment;
     uvec2 ViewportOffset, ViewportSize;
-
   public:
     RenderTarget();
     RenderTarget &AttachColor(uint32_t Index, GPURef<Graphics::Texture> Attachment)

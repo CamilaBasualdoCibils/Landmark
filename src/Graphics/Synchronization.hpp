@@ -1,7 +1,7 @@
 #pragma once
 #include "Graphics/Interop/Interop.hpp"
-#include "Graphics/OpenGL/Synchronization/Semaphore.hpp"
-#include "Graphics/Vulkan/Synchronization/Semaphore.hpp"
+#include "Graphics/OpenGL/Synchronization/GLSemaphore.hpp"
+#include "Graphics/Vulkan/Synchronization/VKSemaphore.hpp"
 #include <pch.h>
 namespace Graphics
 {

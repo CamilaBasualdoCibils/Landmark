@@ -1,11 +1,11 @@
 #include "GraphicsEngine.hpp"
-#include "Graphics/OpenGL/Commands/CommandManager.hpp"
-#include "Graphics/Vulkan/Commands/CommandManager/CommandManager.hpp"
 #include "DearImGui.hpp"
-#include <Graphics/Devices/GPUSelector.hpp>
-#include <Graphics/Vulkan/Instance.hpp>
+#include "Graphics/OpenGL/Commands/GLCommandManager.hpp"
+#include "Graphics/Vulkan/Commands/CommandManager/VKCommandManager.hpp"
 #include <Editor/Editor.hpp>
 #include <Graphics/Compositor/Compositor.hpp>
+#include <Graphics/Devices/GPUSelector.hpp>
+#include <Graphics/Vulkan/VKInstance.hpp>
 GraphicsEngine::GraphicsEngine(const GraphicsEngineProperties &properties)
 {
     VK::InstanceProperties VulkanProperties;
@@ -48,7 +48,7 @@ void GraphicsEngine::BeginFrame()
 {
     glfwPollEvents();
     DearImGui::Get().BeginFrame();
-        Editor::Editor::Get().Draw();
+    Editor::Editor::Get().Draw();
 }
 void GraphicsEngine::EndFrame()
 {
@@ -74,5 +74,6 @@ void GraphicsEngine::Render()
     {
         Window.second->Present();
     }
+    DearImGui::Get().UpdatePlatforms();
     // std::cerr << "Presented\n";
 }

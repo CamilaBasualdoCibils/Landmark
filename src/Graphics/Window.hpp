@@ -1,7 +1,7 @@
 #pragma once
 #include "Graphics/Compositor/CompositeGroup.hpp"
 #include "Graphics/Synchronization.hpp"
-#include "Graphics/Vulkan/Swapchain.hpp"
+#include "Graphics/Vulkan/VKSwapchain.hpp"
 #include <pch.h>
 namespace Graphics
 {

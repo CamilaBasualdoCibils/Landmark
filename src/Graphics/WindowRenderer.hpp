@@ -1,6 +1,6 @@
 #pragma once
 #include "Graphics/ICommandBuffer.hpp"
-#include "Graphics/Vulkan/Swapchain.hpp"
+#include "Graphics/Vulkan/VKSwapchain.hpp"
 #include "IO/Window/Window.hpp"
 #include <pch.h>
 

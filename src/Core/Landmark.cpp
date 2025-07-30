@@ -4,7 +4,10 @@
 #include "pch.h"
 #include <Graphics/GraphicsEngine.hpp>
 #include <Render/World.hpp>
-#include <Render/WorldRenderer.hpp>
+
+#include "Render/Components/CameraComponent.hpp"
+#include "Render/Components/MeshDescriptor.hpp"
+#include "Render/Components/TransformComponent.hpp"
 Landmark::Landmark(const LandmarkStartProperties &Properties)
 {
 
@@ -34,19 +37,26 @@ Landmark::Landmark(const LandmarkStartProperties &Properties)
         }
     }
 
-    entt::entity e1 = World::Get().CreateEntity();
-    World::Get().AddComponent<MeshDescriptor>(e1).mesh = meshes[0];
-    entt::entity e2 = World::Get().CreateEntity();
-    World::Get().AddComponent<MeshDescriptor>(e2).mesh = meshes[1];
-    entt::entity camera = World::Get().CreateEntity();
-    World::Get().AddComponent<Camera>(camera);
-    World::Get().GetComponent<EntityInfo>(camera).Name = "Camera";
-    World::Get().GetComponent<Transform>(camera).Position.z = 10;
-    WorldRenderer::Check();
+    Entity e1 = World::Get().CreateEntity();
+    e1.AddComponent<MeshDescriptor>().mesh = meshes[0];
+    Entity e2 = World::Get().CreateEntity();
+    e2.AddComponent<MeshDescriptor>().mesh = meshes[1];
+    Entity camera1 = World::Get().CreateEntity();
+    const CameraComponent &cam1 = camera1.AddComponent<CameraComponent>();
+    camera1.GetInfo().Name = "Camera 1";
+    camera1.GetComponent<TransformComponent>().Position.z = 10;
+
+    Entity camera2 = World::Get().CreateEntity();
+    const CameraComponent &cam2 = camera2.AddComponent<CameraComponent>();
+    camera2.GetInfo().Name = "Some other camera";
+
+    auto &camera2Transform = camera2.GetComponent<TransformComponent>();
+    camera2Transform.Position = {2, 1, 5};
+    camera2Transform.Rotation =
+        glm::quatLookAt(e1.GetComponent<TransformComponent>().Position - camera2Transform.Position, vec3(0, 1, 0));
     while (!GraphicsEngine::Get().GetMainWindow()->GetShouldClose())
     {
         GraphicsEngine::Get().BeginFrame();
-
         Graphics::Compositor::Get().DrawDebug();
         World::Get().Update();
         GraphicsEngine::Get().EndFrame();

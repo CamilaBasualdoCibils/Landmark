@@ -2,10 +2,10 @@
 #include "Graphics/Compositor/Compositor.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Graphics/Synchronization.hpp"
-#include "Graphics/Vulkan/Instance.hpp"
+#include "Graphics/Vulkan/VKInstance.hpp"
 #include "IO/GLFW/GLFW.hpp"
-#include <Graphics/Vulkan/Commands/CommandManager/ImageCommands.hpp>
-#include <Graphics/Vulkan/Commands/CommandManager/PipelineCommands.hpp>
+#include <Graphics/Vulkan/Commands/CommandManager/VKImageCommands.hpp>
+#include <Graphics/Vulkan/Commands/CommandManager/VKPipelineCommands.hpp>
 Graphics::Window::Window(const std::string &Name) : Name(Name)
 {
     GLFW::Check();
@@ -25,7 +25,7 @@ Graphics::Window::Window(const std::string &Name) : Name(Name)
     vkSurface = (vk::SurfaceKHR)s;
 
     WindowComposite = Graphics::Compositor::Get().MakeRootGroup(
-        Graphics::CompositeLayerProperties{.Name = Name + "_WindowComposite", .ResolutionOverride = uvec2(1920, 1080)});
+        Graphics::CompositeGroupProperties{.Name = Name + "_WindowComposite", .ResolutionOverride = uvec2(1920, 1080)});
 }
 
 vk::SurfaceKHR Graphics::Window::GetVulkanSurface() const

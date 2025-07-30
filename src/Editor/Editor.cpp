@@ -1,6 +1,6 @@
 #include "Editor.hpp"
 #include "pch.h"
-
+#include "EditorTemplates.hpp"
 // #include "Logo.h"
 // #include "EditorIcons.hpp"
 // #include "Console/Console.hpp"
@@ -17,6 +17,8 @@ Editor::Editor::Editor() : topbar()
     // topbar.GetPanelsGroup()->PushObject<Console>(0);
     // Asset asset("assets/editor/icons/EditorUI.png");
     // EditorIcons::LoadIconSheet(asset);
+
+    GetMainToolGroup().GetOrPushToolBar("Debug")->PushObject<TemplatesDemo>();
 }
 
 void Editor::Editor::Draw()
@@ -28,16 +30,16 @@ void Editor::Editor::Draw()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGuiWindowFlags window_flags =  ImGuiWindowFlags_NoDocking;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
     window_flags |=
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     window_flags |=
         ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
-
+    window_flags |= ImGuiWindowFlags_MenuBar;
     ImGui::Begin("Editor", nullptr, window_flags);
     ImGui::PopStyleVar(3);
     {
-        const auto size = ImGui::GetWindowContentRegionMax();
+        const auto size = ImGui::GetContentRegionAvail();
         const auto pos = ImGui::GetWindowPos();
         const auto textsize = ImVec2(100, 100); // ImGui::CalcTextSize(LandmarkLogo.c_str());
         const float brightness = 0.35;
@@ -62,5 +64,5 @@ void Editor::Editor::Draw()
     topbar.DrawHandle();
 
     topbar.DrawTool();
-	ImGui::End();
+    ImGui::End();
 }

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <Graphics/Vulkan/Buffer/Buffer.hpp>
+#include <Graphics/Vulkan/Buffer/VKBuffer.hpp>
 class Mesh
 {
   public:

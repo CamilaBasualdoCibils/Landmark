@@ -1,12 +1,11 @@
 #pragma once
 #include <pch.h>
-template <typename Type, typename ConstructorArguments = void>
-class Singleton
+template <typename Type, typename ConstructorArguments = void> class Singleton
 {
-private:
+  private:
     static inline std::unique_ptr<Type> Instance;
 
-public:
+  public:
     // if constructor arguments
     template <typename T = ConstructorArguments, std::enable_if_t<!std::is_void_v<T>, int> = 0>
     [[nodiscard]] static Type &Get()
@@ -14,29 +13,33 @@ public:
         LASSERT(Instance, "Singleton Not Set");
         return *Instance;
     }
-    
+
     template <typename T = ConstructorArguments, std::enable_if_t<!std::is_void_v<T>, int> = 0>
-    static Type &Make(const T & args)
+    static Type &Make(const T &args)
     {
         LASSERT(!Instance, "Singleton already exist");
-        Type* rawPtr = static_cast<Type*>(::operator new(sizeof(Type)));
+        Type *rawPtr = static_cast<Type *>(::operator new(sizeof(Type)));
         Instance.reset(rawPtr);
         new (rawPtr) Type(args);
         return *Instance;
     }
 
     // if no constructor arguments
-        template <typename T = ConstructorArguments, std::enable_if_t<std::is_void_v<T>, int> = 0>
+    template <typename T = ConstructorArguments, std::enable_if_t<std::is_void_v<T>, int> = 0>
     [[nodiscard]] static Type &Get()
     {
         if (!Instance)
-            Instance = std::make_unique<Type>();
+        {
+            Type *rawPtr = static_cast<Type *>(::operator new(sizeof(Type)));
+            Instance.reset(rawPtr);
+            new (rawPtr) Type();
+        }
         return *Instance;
     }
 
     static void Check()
     {
-        Type& v = Get();
+        Type &v = Get();
         LASSERT(Instance, "Failed check");
     }
 };

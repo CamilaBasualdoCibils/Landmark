@@ -2,7 +2,7 @@
 #include <pch.h>
 #include "Editor/EditorToolItem.hpp"
 #include "Editor/EditorWindow.hpp"
-class EntityInspector : public Editor::ToolItem, EditorWindow<>
+class EntityInspector : public Editor::ToolItem, Editor::Window<>
 {
     bool Open = true;
     void DrawWindowContents() override;
@@ -10,7 +10,7 @@ class EntityInspector : public Editor::ToolItem, EditorWindow<>
     void DrawTool() override
     {
         if (Open)
-            EditorWindow<>::Draw();
+            Editor::Window<>::Draw();
     }
     void DrawHandle() override
     {
@@ -18,7 +18,7 @@ class EntityInspector : public Editor::ToolItem, EditorWindow<>
     }
 
   public:
-    EntityInspector() : Editor::ToolItem("Entity Inspector"), EditorWindow<>("Entity Inspector")
+    EntityInspector() : Editor::ToolItem("Entity Inspector"), Editor::Window<>("Entity Inspector")
     {
     }
 };

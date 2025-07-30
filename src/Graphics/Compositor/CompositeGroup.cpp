@@ -1,6 +1,6 @@
 #include "CompositeGroup.hpp"
 
-Graphics::CompositeGroup::CompositeGroup(const CompositeLayerProperties &Properties):ICompositeLayer(nullptr,Properties)
+Graphics::CompositeGroup::CompositeGroup(const CompositeGroupProperties &Properties):ICompositeLayer(nullptr,(const CompositeLayerProperties&)Properties)
 {
     
 }

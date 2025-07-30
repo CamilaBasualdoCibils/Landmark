@@ -6,33 +6,43 @@ namespace Editor
 class ToolBar : public ToolItem
 {
     std::map<int64_t, std::shared_ptr<ToolItem>> tools;
+    bool IsMenuBar;
 
   public:
-    ToolBar(const std::string &_name) : ToolItem(_name)
+    ToolBar(const std::string &_name, bool IsMenuBar = false) : ToolItem(_name), IsMenuBar(IsMenuBar)
     {
     }
 
-    template <typename T, typename... Args> std::shared_ptr<T> PushObject(int64_t order = 0, Args &&...args)
+    template <typename T, typename... Args>
+std::shared_ptr<T> PushObject(int64_t order = 0, Args&&... args)
+{
+    // Shift existing keys starting from the highest down to the order, to make space
+    if (tools.find(order) != tools.end())
     {
-        if (tools.find(order) != tools.end())
+        // Collect keys >= order
+        std::vector<int64_t> keysToShift;
+        for (auto it = tools.rbegin(); it != tools.rend(); ++it)
         {
-            for (auto rit = tools.rbegin(); rit != tools.rend(); ++rit)
-            {
-                auto nodeHandler = tools.extract((*rit).first);
-
-                int64_t originalValue = nodeHandler.key();
-                nodeHandler.key()++;
-                tools.insert(std::move(nodeHandler));
-
-                if (originalValue == order)
-                    break; // Stop iterating after reaching the key
-            }
+            if (it->first >= order)
+                keysToShift.push_back(it->first);
+            else
+                break;
         }
-        auto new_t = std::make_shared<T>(std::forward<Args>(args)...);
-        tools.emplace(order, std::reinterpret_pointer_cast<ToolItem>(new_t));
 
-        return new_t;
+        // Shift in reverse to avoid collision
+        for (int64_t key : keysToShift)
+        {
+            auto nodeHandler = tools.extract(key);
+            nodeHandler.key()++;
+            tools.insert(std::move(nodeHandler));
+        }
     }
+
+    auto new_t = std::make_shared<T>(std::forward<Args>(args)...);
+    tools.emplace(order, std::reinterpret_pointer_cast<ToolItem>(new_t));
+
+    return new_t;
+}
     template <typename T> std::shared_ptr<T> GetObject(const std::string &name)
     {
 
@@ -56,7 +66,10 @@ class ToolBar : public ToolItem
 
         return result.second;
     }
-    const decltype(tools)& GetTools() const {return tools;}
+    const decltype(tools) &GetTools() const
+    {
+        return tools;
+    }
     void DrawTool() override
     {
         for (const auto &tool : tools)
@@ -66,13 +79,14 @@ class ToolBar : public ToolItem
     }
     void DrawHandle() override
     {
-        if (ImGui::BeginMenu(GetLabel().c_str()))
+
+        if ((IsMenuBar && ImGui::BeginMenuBar()) || (!IsMenuBar && ImGui::BeginMenu(GetLabel().c_str())))
         {
             for (const auto &tool : tools)
             {
                 tool.second->DrawHandle();
             }
-            ImGui::EndMenu();
+            IsMenuBar ? ImGui::EndMenuBar() : ImGui::EndMenu();
         }
     }
 };

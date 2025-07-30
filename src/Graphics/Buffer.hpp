@@ -1,7 +1,7 @@
 #include <pch.h>
-#include <Graphics/OpenGL/Buffer.hpp>
-#include <Graphics/Vulkan/Buffer.hpp>
-#include <Graphics/Vulkan/DeviceMemory.hpp>
+#include <Graphics/OpenGL/GLBuffer.hpp>
+#include <Graphics/Vulkan/VKBuffer.hpp>
+#include <Graphics/Vulkan/VKDeviceMemory.hpp>
 class Buffer
 {
 private:

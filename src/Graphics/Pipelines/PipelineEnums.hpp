@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Graphics/Vulkan/Enums.hpp"
+#include "Graphics/Vulkan/VKEnums.hpp"
 
 #include <pch.h>
-#include <type_traits>
 
 namespace Graphics
 {

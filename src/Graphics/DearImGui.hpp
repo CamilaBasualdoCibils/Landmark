@@ -1,7 +1,7 @@
 #pragma once
 #include <Graphics/Compositor/ICompositeLayer.hpp>
-#include <Graphics/Vulkan/Commands/CommandManager/CommandManager.hpp>
-#include <Graphics/Vulkan/Rendering/RenderTarget.hpp>
+#include <Graphics/Vulkan/Commands/CommandManager/VKCommandManager.hpp>
+#include <Graphics/Vulkan/Rendering/VKRenderTarget.hpp>
 #include <misc/Singleton.hpp>
 #include <pch.h>
 class ImGuiCompositor : public Graphics::ICompositeLayer
@@ -31,6 +31,8 @@ class DearImGui : public Singleton<DearImGui, DearImGuiProperties>
     DearImGui(const DearImGuiProperties &Properties);
     void BeginFrame();
     void EndFrame();
+
+    void UpdatePlatforms();
     std::shared_ptr<ImGuiCompositor> GetCompositeLayer();
 
     //[[nodiscard]] GPURef<VK::CommandManager> Render();

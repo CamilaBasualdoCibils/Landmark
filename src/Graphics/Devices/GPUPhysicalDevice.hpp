@@ -1,6 +1,6 @@
 #pragma once
 #include <pch.h>
-#include <Graphics/Vulkan/PhysicalDevice.hpp>
+#include <Graphics/Vulkan/VKPhysicalDevice.hpp>
 #include <Graphics/OpenGL/EGL.hpp>
 class GPUPhysicalDevice
 {

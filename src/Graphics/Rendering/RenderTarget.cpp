@@ -1,5 +1,5 @@
 #include "RenderTarget.hpp"
-#include "Graphics/Vulkan/Rendering/RenderTarget.hpp"
+#include "Graphics/Vulkan/Rendering/VKRenderTarget.hpp"
 
 Graphics::RenderTarget::RenderTarget() 
 {

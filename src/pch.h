@@ -27,6 +27,7 @@
 // GLEW
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <GL/glext.h>
 // GLFW
 #define GLFW_INCLUDE_VULKAN
 #define VK_USE_PLATFORM_WIN32_KHR
@@ -37,6 +38,7 @@
 // #define IMGUI_USE_WCHAR32
 #define IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING
+#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_vulkan.h>

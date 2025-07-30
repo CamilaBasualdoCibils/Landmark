@@ -1,7 +1,7 @@
 #include "Texture.hpp"
-#include "Graphics/OpenGL/Textures/TextureInterop.hpp"
+#include "Graphics/OpenGL/Textures/GLTextureInterop.hpp"
 #include "Graphics/Texture.hpp"
-#include "Graphics/Vulkan/Images/Texture.hpp"
+#include "Graphics/Vulkan/Images/VKTexture.hpp"
 #include "pch.h"
 
 Graphics::Texture::Texture(const Graphics::TextureProperties &Properties)

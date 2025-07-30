@@ -1,10 +1,10 @@
 #pragma once
 #include "Graphics/Interop/Interop.hpp"
-#include "Graphics/OpenGL/Textures/ITexture.hpp"
-#include "Graphics/OpenGL/Textures/TextureInterop.hpp"
-#include "Graphics/Vulkan/Enums.hpp"
-#include "Graphics/Vulkan/Images/Image.hpp"
-#include "Graphics/Vulkan/Images/Texture.hpp"
+#include "Graphics/OpenGL/Textures/GLITexture.hpp"
+#include "Graphics/OpenGL/Textures/GLTextureInterop.hpp"
+#include "Graphics/Vulkan/Images/VKImage.hpp"
+#include "Graphics/Vulkan/Images/VKTexture.hpp"
+#include "Graphics/Vulkan/VKEnums.hpp"
 #include <pch.h>
 
 namespace Graphics
@@ -29,15 +29,18 @@ enum class TextureUsage
 
 enum class TextureFormatValues
 {
-    eRGBA8_UNorm,
-    eRGBA8_SRGB,
-    eBGRA8_UNorm,
-    eRGBA16_UNorm,
-    eR8_UNorm,
-    eR16_UNorm,
+    eRGBA8_UNorm,  // uint8 RGBA
+    eRGB8_UNorm,   // uint8 RGB
+    eRGBA8_SRGB,   // uint8 RGBA (sRGB)
+    eBGRA8_UNorm,  // uint8 BGRA
+    eRGBA16_UNorm, // uint16 RGBA
+    eR8_UNorm,     // uint8 R
+    eR16_UNorm,    // uint16 R
     eRG8_UNorm,
     eRG16_UNorm,
     eDepth32_SFloat,
+    eRGB32_SFloat,
+    eRGB16_SFloat
 };
 struct TextureFormat
 {
@@ -79,6 +82,18 @@ struct TextureFormat
             {TextureFormatValues::eDepth32_SFloat,
              VK::Format::eDepth32_SFloat,
              {GL::TextureFormats::eDepth32F, GL::PixelFormats::eDepthComponent}},
+
+            {TextureFormatValues::eRGB32_SFloat,
+             VK::Format::eRGB32_SFloat,
+             {GL::TextureFormats::eRGB32F, GL::PixelFormats::eRGB}},
+             
+            {TextureFormatValues::eRGB16_SFloat,
+             VK::Format::eRGB16_SFloat,
+             {GL::TextureFormats::eRGB16F, GL::PixelFormats::eRGB}},
+
+            {TextureFormatValues::eRGB8_UNorm,
+             VK::Format::eRGB8_UNorm,
+             {GL::TextureFormats::eRGB8_UNorm, GL::PixelFormats::eRGB}},
 
     };
 };

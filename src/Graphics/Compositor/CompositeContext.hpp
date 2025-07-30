@@ -1,8 +1,9 @@
 #pragma once
 #include <pch.h>
+
+#include <Graphics/Vulkan/Commands/CommandManager/VKCommandManager.hpp>
+#include <Graphics/OpenGL/Commands/GLCommandManager.hpp>
 #include "ICompositeLayer.hpp"
-#include <Graphics/Vulkan/Commands/CommandManager/CommandManager.hpp>
-#include <Graphics/OpenGL/Commands/CommandManager.hpp>
 namespace Graphics
 {
     struct CompositeContext
