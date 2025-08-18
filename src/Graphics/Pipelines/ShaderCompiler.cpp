@@ -27,7 +27,12 @@ Graphics::ShaderCompileResult Graphics::ShaderCompiler::Compile(const Graphics::
     default:
         break;
     }
-
+    glslang::SpvOptions options;
+    options.stripDebugInfo = false;
+    options.generateDebugInfo = true;
+    #if _DEBUG
+    options.disableOptimizer = true;
+    #endif
     glslang::TShader tshader((EShLanguage)Info.shader_type);
     tshader.setDebugInfo(true);
     tshader.setStrings(strings.data(), strings.size());
@@ -38,7 +43,7 @@ Graphics::ShaderCompileResult Graphics::ShaderCompiler::Compile(const Graphics::
     tshader.setPreamble(Preamble.c_str());
     // tshader.setSourceEntryPoint("main");
     const TBuiltInResource resource = GetDefaultResource();
-    bool shader_compile = tshader.parse(&resource, 450, false, EShMsgDefault);
+    bool shader_compile = tshader.parse(&resource, 450, true, EShMsgDefault);
 
     result.compile_log = tshader.getInfoLog();
     if (!shader_compile)
@@ -56,7 +61,7 @@ Graphics::ShaderCompileResult Graphics::ShaderCompiler::Compile(const Graphics::
         return result;
     }
     std::vector<uint32_t> TrueData;
-    glslang::GlslangToSpv(*program.getIntermediate((EShLanguage)Info.shader_type), TrueData);
+    glslang::GlslangToSpv(*program.getIntermediate((EShLanguage)Info.shader_type), TrueData,&options);
     result.data.resize(TrueData.size() * sizeof(TrueData[0]));
     std::memcpy(result.data.data(), TrueData.data(), result.data.size());
 
@@ -81,7 +86,7 @@ Graphics::InteropShaderCompileResult Graphics::ShaderCompiler::CompileInterop(co
     result.GLResult = Compile(GLCompile);
     result.VKResult = Compile(VKCompile);
     result.CompileSuccessful = result.GLResult.compile_successful && result.VKResult.compile_successful;
-    result.CompileLog = "VK:\n" + result.VKResult.compile_log +"\nGL:\n"+result.GLResult.compile_log + '\n';
+    result.CompileLog = "VK:\n" + result.VKResult.compile_log + "\nGL:\n" + result.GLResult.compile_log + '\n';
     return result;
 }
 

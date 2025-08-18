@@ -12,7 +12,7 @@ struct InteropTransaction
 class InteropGiver
 {
   public:
-    virtual InteropTransaction ExportMemory() const = 0;
+    virtual InteropTransaction ExportMemory() = 0;
 };
 
 class InteropReceiver

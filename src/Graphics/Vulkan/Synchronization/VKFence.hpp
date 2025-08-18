@@ -9,6 +9,7 @@ class Fence
 
   public:
     Fence();
+    ~Fence();
     operator vk::Fence() const {return Handle;}
     operator vk::Fence() {return Handle;}
     

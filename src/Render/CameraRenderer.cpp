@@ -2,6 +2,7 @@
 #include "Components/CameraComponent.hpp"
 #include "Components/MeshDescriptor.hpp"
 #include "Components/TransformComponent.hpp"
+#include "RenderingDefinitions.hpp"
 #include "World.hpp"
 #include <Graphics/Pipelines/ShaderCompiler.hpp>
 #include <Graphics/Vulkan/Commands/CommandManager/VKBufferCommands.hpp>
@@ -10,21 +11,11 @@
 #include <Graphics/Vulkan/Commands/CommandManager/VKRenderingCommands.hpp>
 #include <Render/Components/Entity.hpp>
 CameraRenderer::CameraRenderer(std::shared_ptr<Graphics::CompositeGroup> Parent, Entity Owner)
-    : ICompositeLayer(
-          Parent,
-          Graphics::CompositeLayerProperties{.Name = "CameraRenderer",
-                                             .Attachments =
-                                                 {
-                                                     {"Color",
-                                                      Graphics::CompositeLayerAttachmentProperties{
-                                                          .format = Graphics::TextureFormatValues::eRGBA8_UNorm}},
-                                                     {"Depth",
-                                                      Graphics::CompositeLayerAttachmentProperties{
-                                                          .format = Graphics::TextureFormatValues::eDepth32_SFloat}},
-                                                 }}),
+    : ICompositeLayer(Parent, Graphics::CompositeLayerProperties{.Name = "CameraRenderer",
+                                                                 .Attachments = Render::PresentStageAttachments}),
       Owner(Owner)
 {
-    
+
     renderTarget.Make();
     renderTarget->AttachColor(0, GetAttachments().at("Color"));
     renderTarget->AttachDepth(GetAttachments().at("Depth"));
@@ -55,48 +46,50 @@ CameraRenderer::CameraRenderer(std::shared_ptr<Graphics::CompositeGroup> Parent,
     BinaryVKGL[0].second = std::move(VertResult.GLResult.data);
     BinaryVKGL[1].second = std::move(FragResult.GLResult.data);
     GPURef<VK::PipelineLayout> layout = GPURef<VK::PipelineLayout>::MakeRef(VK::PipelineLayoutProperties{});
-    pipeline = GPURef<VK::Pipeline>::MakeRef(
-        VK::PipelineProperties{.Layout = layout,
-                               .VariantProperties = VK::GraphicsPipelineProperties{
-                                   .VertexBinary = BinaryVKGL[0].first,
-                                   .FragmentBinary = BinaryVKGL[1].first,
-                                   .VertexAttributes = {VK::VertexAttribute{.Binding = 0,
-                                                                            .format = VK::Format::eRGB32_SFloat,
-                                                                            .Stride = sizeof(Mesh::Vertex),
-                                                                            .Offset = 0,
-                                                                            .Rate = VK::VertexInputRate::eVertex},
-                                                        VK::VertexAttribute{.Binding = 1,
-                                                                            .format = VK::Format::eRGBA32_SFloat,
-                                                                            .Stride = sizeof(mat4),
-                                                                            .Offset = 0,
-                                                                            .Rate = VK::VertexInputRate::eInstance},
-                                                        VK::VertexAttribute{.Binding = 1,
-                                                                            .format = VK::Format::eRGBA32_SFloat,
-                                                                            .Stride = sizeof(mat4),
-                                                                            .Offset = sizeof(vec4),
-                                                                            .Rate = VK::VertexInputRate::eInstance},
-                                                        VK::VertexAttribute{.Binding = 1,
-                                                                            .format = VK::Format::eRGBA32_SFloat,
-                                                                            .Stride = sizeof(mat4),
-                                                                            .Offset = sizeof(vec4) * 2,
-                                                                            .Rate = VK::VertexInputRate::eInstance},
-                                                        VK::VertexAttribute{.Binding = 1,
-                                                                            .format = VK::Format::eRGBA32_SFloat,
-                                                                            .Stride = sizeof(mat4),
-                                                                            .Offset = sizeof(vec4) * 3,
-                                                                            .Rate = VK::VertexInputRate::eInstance}},
-                                   .cullMode = VK::CullMode::eNone,
-                                   .DepthTest = true,
-                                   .DepthWrite = true,
-                                   .DepthAttachmentFormat = VK::Format::eDepth32_SFloat,
-                               }});
+    pipeline = GPURef<VK::Pipeline>::MakeRef(VK::PipelineProperties{
+        .Layout = layout,
+        .VariantProperties = VK::GraphicsPipelineProperties{
+            .VertexBinary = BinaryVKGL[0].first,
+            .FragmentBinary = BinaryVKGL[1].first,
+            .VertexAttributes = {VK::VertexAttribute{.Binding = 0,
+                                                     .format = VK::Format::eRGB32_SFloat,
+                                                     .Stride = sizeof(Mesh::Vertex),
+                                                     .Offset = 0,
+                                                     .Rate = VK::VertexInputRate::eVertex},
+                                 VK::VertexAttribute{.Binding = 1,
+                                                     .format = VK::Format::eRGBA32_SFloat,
+                                                     .Stride = sizeof(mat4),
+                                                     .Offset = 0,
+                                                     .Rate = VK::VertexInputRate::eInstance},
+                                 VK::VertexAttribute{.Binding = 1,
+                                                     .format = VK::Format::eRGBA32_SFloat,
+                                                     .Stride = sizeof(mat4),
+                                                     .Offset = sizeof(vec4),
+                                                     .Rate = VK::VertexInputRate::eInstance},
+                                 VK::VertexAttribute{.Binding = 1,
+                                                     .format = VK::Format::eRGBA32_SFloat,
+                                                     .Stride = sizeof(mat4),
+                                                     .Offset = sizeof(vec4) * 2,
+                                                     .Rate = VK::VertexInputRate::eInstance},
+                                 VK::VertexAttribute{.Binding = 1,
+                                                     .format = VK::Format::eRGBA32_SFloat,
+                                                     .Stride = sizeof(mat4),
+                                                     .Offset = sizeof(vec4) * 3,
+                                                     .Rate = VK::VertexInputRate::eInstance}},
+            .ColorAttachments = {VK::GraphicsPipelineAttachment{
+                .format = Render::PresentStageAttachments.at(Render::ColorAttachmentName).format.toVKFormat().value()}},
+            .DepthAttachment = {.format = Render::PresentStageAttachments.at(Render::DepthAttachmentName).format.toVKFormat().value()},
+            .cullMode = VK::CullMode::eNone,
+            .DepthTest = true,
+            .DepthWrite = true,
+        }});
 }
 Graphics::CompositeLayerExecute CameraRenderer::OnRender(const Graphics::CompositeContext &Context)
 {
-  
+
     IssueCommands();
     const uvec2 Resolution = GetResolution();
-      renderTarget->SetViewport({0, 0}, Resolution);
+    renderTarget->SetViewport({0, 0}, Resolution);
     Owner.GetComponent<CameraComponent>().AspectRatio = (float)Resolution.x / Resolution.y;
     mat4 *mapped = (mat4 *)InstanceVertexBuffer->Map();
 
@@ -123,7 +116,7 @@ void CameraRenderer::IssueCommands()
 
     if (TransformMeshView.size_hint() == 0)
         return;
-        vkCmdMngr->PushGroupLabel("World Rendering");
+    vkCmdMngr->PushGroupLabel("World Rendering");
     vkCmdMngr->Push<VK::ClearColorImageCommand>(GetAttachments().at("Color"), VK::ImageLayouts::eGeneral,
                                                 vec4{0, 0, 0, 1});
     vkCmdMngr->Push<VK::ClearDepthStencilImageCommand>(GetAttachments().at("Depth"), VK::ImageLayouts::eGeneral, 1.0f);

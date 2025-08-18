@@ -36,15 +36,6 @@ GL::EGL::EGL()
             std::cerr << "Failed to get EGL display\n";
             continue;
         }
-        /*
-                    const char *ClientApis = eglQueryDeviceStringEXT(device->Handle, EGL_CLIENT_APIS),
-                               *Vendor = eglQueryDeviceStringEXT(device->Handle, EGL_VENDOR),
-                               *Version = eglQueryDeviceStringEXT(device->Handle, EGL_VERSION),
-                               *EGLExtensions = eglQueryDeviceStringEXT(device->Handle, EGL_EXTENSIONS),
-                               *DeviceFile = eglQueryDeviceStringEXT(device->Handle, EGL_DRM_DEVICE_FILE_EXT),
-                               *Name = eglQueryDeviceStringEXT(device->Handle, EGL_EXT_device_query_name),
-                               *PersistentID = eglQueryString(display, EGL_EXT_device_persistent_id);
-        */
         eglQueryDeviceBinaryEXT(device->Handle, EGL_DRIVER_UUID_EXT, device->DriverUUID.size(),
                                 device->DriverUUID.data(), nullptr);
         eglQueryDeviceBinaryEXT(device->Handle, EGL_DEVICE_UUID_EXT, device->DriverUUID.size(),

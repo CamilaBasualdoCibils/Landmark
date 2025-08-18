@@ -2,6 +2,7 @@
 #include <pch.h>
 #include "Graphics/Vulkan/Memory/VKMemory.hpp"
 #include "Types/Flags.hpp"
+#include "Graphics/Vulkan/VKEnums.hpp"
 namespace VK
 {
 class PhysicalDevice

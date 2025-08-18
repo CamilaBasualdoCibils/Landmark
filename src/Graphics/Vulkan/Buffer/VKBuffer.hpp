@@ -4,6 +4,7 @@
 #include <Graphics/Vulkan/VKEnums.hpp>
 #include <Types/Flags.hpp>
 #include <pch.h>
+#include "Graphics/Vulkan/Memory/VKAllocation.hpp"
 namespace VK
 {
 struct BufferProperties
@@ -16,14 +17,14 @@ struct BufferProperties
 class Buffer : InteropGiver
 {
     vk::Buffer Handle;
-    GPURef<VK::Memory> Memory;
+    VK::Allocation Allocation;
 
   public:
     Buffer(const BufferProperties &Properties);
     ~Buffer();
-    InteropTransaction ExportMemory() const override;
+    InteropTransaction ExportMemory() override;
     operator vk::Buffer() const {return Handle;}
-    void* Map() {return Memory->Map();}
-    void Unmap() { Memory->Unmap();}
+    void* Map() {return Allocation.Map();}
+    void Unmap() { Allocation.UnMap();}
 };
 } // namespace VK

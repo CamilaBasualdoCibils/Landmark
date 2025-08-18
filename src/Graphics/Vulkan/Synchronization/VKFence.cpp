@@ -6,6 +6,11 @@ VK::Fence::Fence()
     Handle = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().createFence({}).value;
 }
 
+VK::Fence::~Fence()
+{
+    GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().destroy(Handle);
+}
+
 void VK::Fence::Wait()
 {
 

@@ -32,7 +32,9 @@ class Instance : public Singleton<Instance, InstanceProperties>
     {
         return dldi;
     }
-
+    vk::Instance GetHandle() {
+        return Handle;
+    }
   private:
     vk::Instance Handle;
     vk::DebugUtilsMessengerEXT DebugMessenger;

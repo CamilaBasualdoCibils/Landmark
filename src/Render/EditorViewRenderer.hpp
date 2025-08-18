@@ -8,7 +8,7 @@
 class EditorViewRenderer : public Graphics::ICompositeLayer
 {
     Graphics::CompositeLayerExecute OnRender(const Graphics::CompositeContext &Context) override;
-    GPURef<Graphics::RenderTarget> RenderTarget;
+    GPURef<VK::RenderTarget> RenderTarget;
     GPURef<VK::PipelineLayout> GridPipelineLayout;
     GPURef<VK::Pipeline> GridPipeline;
     Entity CameraEntity;

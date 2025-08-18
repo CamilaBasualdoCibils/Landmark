@@ -18,11 +18,11 @@ class CompositeGroup : public ICompositeLayer, public std::enable_shared_from_th
         return std::static_pointer_cast<T>(Layers.back());
     }
 
-    const std::unordered_map<std::string, GPURef<Graphics::Texture>>& GetAttachments() override
+    const std::unordered_map<std::string, GPURef<VK::Texture>>& GetAttachments() override
     {
         return Layers.back()->GetAttachments();
     }
-    const std::unordered_map<std::string, GPURef<Graphics::Texture>>& GetAttachments() const override
+    const std::unordered_map<std::string, GPURef<VK::Texture>>& GetAttachments() const override
     {
         return Layers.back()->GetAttachments();
     }

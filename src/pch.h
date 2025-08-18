@@ -20,6 +20,10 @@
 // #include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan_to_string.hpp>
 
+
+#define VMA_DEBUG_DETECT_LEAKS 1
+#define VMA_VULKAN_VERSION 1004000 // Vulkan 1.4
+#include <VulkanMemoryAllocator/include/vk_mem_alloc.h>
 // EGL
 
 #include <EGL/egl.h>

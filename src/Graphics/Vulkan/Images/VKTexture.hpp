@@ -21,7 +21,7 @@ class Texture : public InteropGiver
   public:
     Texture(const TextureProperties &Properties);
     ~Texture();
-    InteropTransaction ExportMemory() const override
+    InteropTransaction ExportMemory() override
     {
         return image->ExportMemory();
     }

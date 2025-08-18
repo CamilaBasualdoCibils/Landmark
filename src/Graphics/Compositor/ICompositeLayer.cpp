@@ -33,8 +33,11 @@ void Graphics::ICompositeLayer::UpdateAttachments()
         RealUnderlyingResolution = NewResolution;
         for (const auto &desiredAttachment : Properties.Attachments)
         {
-            Attachments[desiredAttachment.first] = GPURef<Graphics::Texture>::MakeRef(Graphics::TextureProperties{
-                .Dimensions = uvec3(NewResolution, 1), .Format = desiredAttachment.second.format});
+            Attachments[desiredAttachment.first] = GPURef<VK::Texture>::MakeRef(VK::TextureProperties{
+                .ImageProp = VK::ImageProperties{.Dimensions = uvec3(NewResolution, 1),
+                                                 .format = *desiredAttachment.second.format.toVKFormat(),
+                                                 .Usage = desiredAttachment.second.Usage},
+                .ImageViewProp = VK::ImageViewProperties{.AspectMask = desiredAttachment.second.AspectMask}});
         }
     }
 }

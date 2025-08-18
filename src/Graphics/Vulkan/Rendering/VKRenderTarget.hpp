@@ -35,6 +35,14 @@ class RenderTarget
         ViewportSize = Size;
         return *this;
     }
+        uvec2 GetViewportOffset() const
+    {
+        return ViewportOffset;
+    }
+    uvec2 GetViewportSize() const
+    {
+        return ViewportSize;
+    }
     RenderTarget &AttachDepth(GPURef<VK::Texture> Attachment)
     {
         LASSERT(Attachment,"No Attachment Provided?");

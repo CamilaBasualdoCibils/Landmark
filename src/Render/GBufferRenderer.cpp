@@ -102,9 +102,11 @@ GBufferRenderer::GBufferRenderer(std::shared_ptr<Graphics::CompositeGroup> Paren
                                                      .Stride = sizeof(mat4),
                                                      .Offset = sizeof(vec4) * 3,
                                                      .Rate = VK::VertexInputRate::eInstance}},
+            .ColorAttachments = {VK::GraphicsPipelineAttachment{
+                .format = Render::PresentStageAttachments.at(Render::ColorAttachmentName).format.toVKFormat().value()}},
+            .DepthAttachment = {.format = Render::PresentStageAttachments.at(Render::DepthAttachmentName).format.toVKFormat().value()},
             .DepthTest = true,
             .DepthWrite = true,
-            .DepthAttachmentFormat = VK::Format::eDepth32_SFloat,
         }});
 
     auto TransformMeshView = World::Get().GetComponentView<const TransformComponent, const MeshDescriptor>();

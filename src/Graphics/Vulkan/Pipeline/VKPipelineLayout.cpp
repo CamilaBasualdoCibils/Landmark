@@ -11,6 +11,7 @@ VK::PipelineLayout::PipelineLayout(const PipelineLayoutProperties &Properties)
         VkRange.offset = Range.Offset;
         VkRange.size = Range.Size;
         VkRange.stageFlags = Range.Stages;
+        PushConstantRanges.push_back(VkRange);
     }
     CreateInfo.setPushConstantRanges(PushConstantRanges);
     const auto CreateResult = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().createPipelineLayout(CreateInfo);

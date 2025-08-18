@@ -33,13 +33,12 @@ VK::Device::Device(GPURef<PhysicalDevice> phyDev, const VK::DeviceProperties &pr
     ImageLessFramebuffersFeatures.imagelessFramebuffer = true;
     timelineFeatures.setPNext(ImageLessFramebuffersFeatures);
     vk::PhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures{};
-dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
-ImageLessFramebuffersFeatures.setPNext(&dynamicRenderingFeatures);
+    dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
+    ImageLessFramebuffersFeatures.setPNext(&dynamicRenderingFeatures);
     DeviceCreateInfo.setPEnabledExtensionNames(extensions);
     DeviceCreateInfo.setPEnabledLayerNames(validationLayers);
     DeviceCreateInfo.setPEnabledFeatures(&DeviceFeatures);
 
-    
     vk::DeviceQueueCreateInfo queueGraphics, queueCompute, queuePresent;
     queueGraphics.queueCount = 1;
     queueGraphics.queueFamilyIndex = 0;
@@ -51,4 +50,6 @@ ImageLessFramebuffersFeatures.setPNext(&dynamicRenderingFeatures);
     const auto CreateDeviceResult = GetVkPhysicalDeviceHandle().createDevice(DeviceCreateInfo);
     LASSERT(CreateDeviceResult.result == vk::Result::eSuccess, "Unable to create Vulkan device");
     DeviceHandle = CreateDeviceResult.value;
+
+
 }

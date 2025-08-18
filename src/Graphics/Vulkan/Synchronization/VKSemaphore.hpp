@@ -13,7 +13,7 @@ class Semaphore :InteropGiver
     Semaphore();
     ~Semaphore();
 
-    InteropTransaction ExportMemory() const override {return {fdHandle,0};}
+    InteropTransaction ExportMemory() override {return {fdHandle,0};}
     vk::Semaphore GetHandle() const {return Handle;}
 };
 } // namespace VK

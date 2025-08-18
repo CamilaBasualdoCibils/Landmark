@@ -16,10 +16,10 @@ void RenderViewport::DrawWindowContents()
     std::shared_ptr<Graphics::CompositeGroup> cameraCompositeGroup =
         RenderCamera.GetComponent<CameraComponent>().compositeGroup;
     cameraCompositeGroup->SetResolutionOverride(AvailableSpace);
-    GPURef<Graphics::Texture> ColorImage = cameraCompositeGroup->GetAttachments().at("Color");
-    uvec2 ImageResolution = (uvec2)ColorImage->VK().GetImage()->GetProperties().Dimensions;
+    GPURef<VK::Texture> ColorImage = cameraCompositeGroup->GetAttachments().at("Color");
+    uvec2 ImageResolution = (uvec2)ColorImage->GetImage()->GetProperties().Dimensions;
     const vec2 MaxUvThatFits = (vec2)AvailableSpace / (vec2) ImageResolution;
-    ImGui::Image((ImTextureID)ColorImage->VK().GetImguiDescriptorSet(),
+    ImGui::Image((ImTextureID)ColorImage->GetImguiDescriptorSet(),
                  GlmToImGui(AvailableSpace),ImVec2(0,0),GlmToImGui(MaxUvThatFits));
 
     if (ImGui::IsItemHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right))

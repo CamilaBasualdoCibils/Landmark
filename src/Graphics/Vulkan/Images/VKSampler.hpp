@@ -24,6 +24,7 @@ class Sampler
 
   public:
     Sampler(const SamplerProperties &Properties);
+    ~Sampler();
     vk::Sampler GetHandle() const
     {
         return Handle;

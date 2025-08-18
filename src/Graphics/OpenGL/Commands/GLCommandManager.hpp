@@ -34,11 +34,11 @@ class CommandManager : public Graphics::ICommandManager
     void WaitSemaphore(GPURef<Graphics::Semaphore> semaphore) override;
     [[nodiscard]] GPURef<Graphics::Semaphore> WaitSemaphore() override;
     void Submit();
-    void BeginRendering(GPURef<Graphics::RenderTarget> rt) override
+    void BeginRendering(GPURef<GL::RenderTarget> rt)
     {
-        Push<LambdaCommand>([rt]() { rt->GL().BindDraw(); });
+        Push<LambdaCommand>([rt]() { rt->BindDraw(); });
     }
-    void EndRendering() override
+    void EndRendering()
     {
         Push<LambdaCommand>([]() { RenderTarget::UnBind(); });
     }

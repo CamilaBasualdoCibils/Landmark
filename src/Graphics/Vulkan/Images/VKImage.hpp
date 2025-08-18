@@ -1,10 +1,10 @@
 #pragma once
 #include "Graphics/Interop/Interop.hpp"
-#include "Graphics/Vulkan/VKEnums.hpp"
 #include "Graphics/Vulkan/Memory/VKMemory.hpp"
+#include "Graphics/Vulkan/VKEnums.hpp"
 #include "Types/Flags.hpp"
 #include <pch.h>
-
+#include "Graphics/Vulkan/Memory/VKAllocation.hpp"
 namespace VK
 {
 
@@ -16,19 +16,20 @@ struct ImageProperties
     uint32_t MipLevels = 1;
     uint32_t Samples = 1; // only relevant for images used as render attachments
     Flags<MemoryProperties> memoryProperties = MemoryProperties::eDeviceLocal;
+    Flags<ImageUsage> Usage = {ImageUsage::eTransferDst, ImageUsage::eSampled, ImageUsage::eTransferSrc};
 };
 class Image : public InteropGiver
 {
     vk::Image handle;
-    std::optional<VK::Memory> memory;
+    VK::Allocation allocation;
     const ImageProperties Properties;
 
   public:
     Image(const ImageProperties &Properties);
-
-    InteropTransaction ExportMemory() const
+    ~Image();
+    InteropTransaction ExportMemory() override
     {
-        return memory->ExportMemory();
+        return allocation.ExportMemory();
     }
     vk::Image GetHandle() const
     {
@@ -39,6 +40,9 @@ class Image : public InteropGiver
         return GetHandle();
     }
 
-    const ImageProperties& GetProperties() const {return Properties;}
+    const ImageProperties &GetProperties() const
+    {
+        return Properties;
+    }
 };
 } // namespace VK

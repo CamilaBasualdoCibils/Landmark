@@ -10,6 +10,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(vk::DebugUtilsMessageSeverityFlagBi
                                              void * /*pUserData*/)
 {
     std::cerr << "Validation Layer: " << pCallbackData->pMessage << std::endl;
+    //LASSERT(messageSeverity != vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,"Error");
     return VK_FALSE;
 }
 
@@ -32,7 +33,7 @@ Instance::Instance(const InstanceProperties &properties)
     // EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_profiles");
     //// EnabledValidationLayers.push_back("VK_LAYER_LUNARG_monitor");
     EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_synchronization2");
-    //EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_validation");
+    EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_validation");
     //EnabledValidationLayers.push_back("VK_LAYER_LUNARG_crash_diagnostic");
     //EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_shader_object");
 
@@ -98,6 +99,7 @@ Instance::Instance(const InstanceProperties &properties)
 
 Instance::~Instance()
 {
+    
     Handle.destroy();
 }
 

@@ -1,15 +1,14 @@
 #include "GLSemaphore.hpp"
 #include "Graphics/Interop/Interop.hpp"
 
-
 GL::Semaphore::Semaphore()
 {
- 
-glGenSemaphoresEXT(1, &Handle);
 
+    glGenSemaphoresEXT(1, &Handle);
 }
-GL::Semaphore::~Semaphore(){
-
+GL::Semaphore::~Semaphore()
+{
+    glDeleteSemaphoresEXT(1, &Handle);
 }
 
 void GL::Semaphore::ImportMemory(InteropTransaction transaction)

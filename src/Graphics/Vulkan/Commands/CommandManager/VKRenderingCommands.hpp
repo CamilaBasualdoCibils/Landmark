@@ -61,8 +61,8 @@ struct DrawIndexedCommand : Command
 };
 struct BeginRenderingCommand : Command
 {
-    GPURef<Graphics::RenderTarget> Target;
-    BeginRenderingCommand(GPURef<Graphics::RenderTarget> Target) : Target(Target)
+    GPURef<VK::RenderTarget> Target;
+    BeginRenderingCommand(GPURef<VK::RenderTarget> Target) : Target(Target)
     {
     }
     std::string GetName() override
@@ -71,7 +71,7 @@ struct BeginRenderingCommand : Command
     }
     void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
     {
-        auto ptr = Target->VK().AsRenderingInfo();
+        auto ptr = Target->AsRenderingInfo();
         cmdBuffer->GetHandle().beginRendering(ptr->first);
         const uvec2 Offset = Target->GetViewportOffset(), Size = Target->GetViewportSize();
         cmdBuffer->GetHandle().setViewport(

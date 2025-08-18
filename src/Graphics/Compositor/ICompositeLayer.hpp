@@ -10,7 +10,9 @@ class CompositeGroup;
 struct CompositeContext;
 struct CompositeLayerAttachmentProperties
 {
-    TextureFormatValues format = TextureFormatValues::eRGBA8_UNorm;
+    TextureFormat format = TextureFormatValues::eRGBA8_UNorm;
+    Flags<VK::ImageAspect> AspectMask = VK::ImageAspect::eColor;
+    Flags<VK::ImageUsage> Usage = {VK::ImageUsage::eTransferSrc,VK::ImageUsage::eTransferDst,VK::ImageUsage::eColorAttachment};
 };
 using CompositeLayerAttachments = std::unordered_map<std::string, CompositeLayerAttachmentProperties>;
 struct CompositeLayerProperties
@@ -26,7 +28,7 @@ struct CompositeLayerExecute
 };
 class ICompositeLayer
 {
-    std::unordered_map<std::string, GPURef<Graphics::Texture>> Attachments;
+    std::unordered_map<std::string, GPURef<VK::Texture>> Attachments;
     std::shared_ptr<CompositeGroup> Parent = nullptr;
     CompositeLayerProperties Properties;
     uvec2 RealUnderlyingResolution = {0, 0};
@@ -64,19 +66,19 @@ class ICompositeLayer
         Properties.ResolutionOverride = std::nullopt;
         UpdateAttachments();
     }
-    virtual const std::unordered_map<std::string, GPURef<Graphics::Texture>> &GetAttachments()
+    virtual const std::unordered_map<std::string, GPURef<VK::Texture>> &GetAttachments()
     {
         return Attachments;
     }
-    virtual const std::unordered_map<std::string, GPURef<Graphics::Texture>> &GetAttachments() const
+    virtual const std::unordered_map<std::string, GPURef<VK::Texture>> &GetAttachments() const
     {
         return Attachments;
     }
-    GPURef<Graphics::Texture> GetAttachment(const std::string &Name)
+    GPURef<VK::Texture> GetAttachment(const std::string &Name)
     {
         return GetAttachments().at(Name);
     }
-    GPURef<Graphics::Texture> GetAttachment(const std::string &Name) const
+    GPURef<VK::Texture> GetAttachment(const std::string &Name) const
     {
         return GetAttachments().at(Name);
     }

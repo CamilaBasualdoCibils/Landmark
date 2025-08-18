@@ -9,12 +9,10 @@ std::shared_ptr<Graphics::CompositeGroup> Graphics::Compositor::MakeRootGroup(
     const CompositeGroupProperties &GroupProperties, int32_t Priority)
 {
     using EntryType = std::pair<size_t, std::shared_ptr<Graphics::CompositeGroup>>;
-    EntryType NewEntry = {
-        Priority, std::make_shared<Graphics::CompositeGroup>(GroupProperties)};
+    EntryType NewEntry = {Priority, std::make_shared<Graphics::CompositeGroup>(GroupProperties)};
 
-    auto it = std::lower_bound(RootGroups.begin(), RootGroups.end(), NewEntry,[](const EntryType& A, const EntryType& B){
-        return A.first < B.first;
-    });
+    auto it = std::lower_bound(RootGroups.begin(), RootGroups.end(), NewEntry,
+                               [](const EntryType &A, const EntryType &B) { return A.first < B.first; });
     RootGroups.insert(it, NewEntry);
     return NewEntry.second;
 }
@@ -100,7 +98,7 @@ void Graphics::Compositor::DrawDebug()
                             ImageSize.x = AvailableRegion.x;
                             ImageSize.y = ImageSize.x / LayerRatio;
                         }
-                        ImGui::Image((ImTextureID)Attachment.second->VK().GetImguiDescriptorSet(),
+                        ImGui::Image((ImTextureID)Attachment.second->GetImguiDescriptorSet(),
                                      GlmToImGui(ImageSize));
                         ImGui::EndTabItem();
                     }

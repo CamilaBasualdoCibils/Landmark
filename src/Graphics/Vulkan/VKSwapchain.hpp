@@ -28,6 +28,7 @@ class Swapchain
     uvec2 CurrentExtent;
   public:
     Swapchain(vk::SurfaceKHR surface);
+    ~Swapchain();
     vk::SwapchainKHR GetHandle() const
     {
         return vkSwapchainHandle;

@@ -6,26 +6,36 @@ void VK::Pipeline::CreateGraphicsPipeline(const PipelineProperties &Properties)
     const GraphicsPipelineProperties &GraphicsProperties =
         std::get<GraphicsPipelineProperties>(Properties.VariantProperties);
     vk::PipelineDynamicStateCreateInfo DynamicStatesInfo;
-    vk::DynamicState DynamicStates[] = {vk::DynamicState::eViewport,vk::DynamicState::eScissor};
+    vk::DynamicState DynamicStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
     DynamicStatesInfo.setDynamicStates(DynamicStates);
 
     vk::PipelineVertexInputStateCreateInfo VertexInputInfo;
     std::vector<vk::VertexInputAttributeDescription> vk_VertexAttributes;
     std::vector<vk::VertexInputBindingDescription> vk_VertexBindings;
-    for (int i = 0; i < GraphicsProperties.VertexAttributes.size();i++)
+    std::unordered_map<uint32_t, vk::VertexInputBindingDescription> bindingMap;
+    for (int i = 0; i < GraphicsProperties.VertexAttributes.size(); i++)
     {
-        const auto& Attrib = GraphicsProperties.VertexAttributes[i];
+        const auto &Attrib = GraphicsProperties.VertexAttributes[i];
         vk::VertexInputAttributeDescription vkAttrib;
-        vk::VertexInputBindingDescription vkBinding;
+
         vkAttrib.binding = Attrib.Binding;
         vkAttrib.format = (vk::Format)Attrib.format;
         vkAttrib.location = i;
         vkAttrib.offset = Attrib.Offset;
-        vkBinding.binding = Attrib.Binding;
-        vkBinding.inputRate = (vk::VertexInputRate)Attrib.Rate;
-        vkBinding.stride = Attrib.Stride;
+
         vk_VertexAttributes.push_back(vkAttrib);
-        vk_VertexBindings.push_back(vkBinding);
+        if (!bindingMap.contains(Attrib.Binding))
+        {
+            vk::VertexInputBindingDescription vkBinding;
+            vkBinding.binding = Attrib.Binding;
+            vkBinding.inputRate = (vk::VertexInputRate)Attrib.Rate;
+            vkBinding.stride = Attrib.Stride;
+            bindingMap[Attrib.Binding] = vkBinding;
+        }
+    }
+    for (const auto &kv : bindingMap)
+    {
+        vk_VertexBindings.push_back(kv.second);
     }
     VertexInputInfo.setVertexAttributeDescriptions(vk_VertexAttributes);
     VertexInputInfo.setVertexBindingDescriptions(vk_VertexBindings);
@@ -35,7 +45,7 @@ void VK::Pipeline::CreateGraphicsPipeline(const PipelineProperties &Properties)
     vk::PipelineViewportStateCreateInfo ViewportStateInfo;
     vk::Viewport vp = vk::Viewport{0, 0, 512, 512};
     ViewportStateInfo.setViewports({vp});
-    vk::Rect2D scissor{{0,0},{512,512}};
+    vk::Rect2D scissor{{0, 0}, {512, 512}};
     ViewportStateInfo.setScissors({scissor});
 
     vk::PipelineRasterizationStateCreateInfo RasterizationInfo;
@@ -43,33 +53,50 @@ void VK::Pipeline::CreateGraphicsPipeline(const PipelineProperties &Properties)
     RasterizationInfo.polygonMode = vk::PolygonMode::eFill;
     RasterizationInfo.frontFace = vk::FrontFace::eCounterClockwise;
     RasterizationInfo.rasterizerDiscardEnable = GraphicsProperties.RasterizerDiscard;
+    RasterizationInfo.lineWidth = 1.0f;
 
     vk::PipelineMultisampleStateCreateInfo MultiSampleInfo;
     MultiSampleInfo.rasterizationSamples = vk::SampleCountFlagBits::e1;
 
-    vk::PipelineColorBlendAttachmentState colorBlendAttachment;
+    std::vector<vk::PipelineColorBlendAttachmentState> ColorBlendingAttachments;
+    ColorBlendingAttachments.resize(GraphicsProperties.ColorAttachments.size());
+    for (int i = 0; i < GraphicsProperties.ColorAttachments.size(); i++)
     {
-        colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-                                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-        colorBlendAttachment.blendEnable = false;
-        // TODO: THE REST
-    }
-    vk::PipelineColorBlendStateCreateInfo ColorBlendInfo;
-    ColorBlendInfo.setAttachments({colorBlendAttachment});
+        const auto &blendProp = GraphicsProperties.ColorAttachments[i].Blending;
 
-     vk::PipelineDepthStencilStateCreateInfo depthStencil{};
+        vk::PipelineColorBlendAttachmentState &colorBlendAttachment = ColorBlendingAttachments[i];
+        colorBlendAttachment.colorWriteMask = blendProp.ColorComponents;
+        colorBlendAttachment.blendEnable = blendProp.BlendEnable;
+        colorBlendAttachment.srcColorBlendFactor = (vk::BlendFactor)blendProp.SrcColorFactor;
+        colorBlendAttachment.dstColorBlendFactor = (vk::BlendFactor)blendProp.DstColorFactor;
+        colorBlendAttachment.colorBlendOp = (vk::BlendOp)blendProp.ColorBlendOp;
+
+        colorBlendAttachment.srcAlphaBlendFactor = (vk::BlendFactor)blendProp.SrcAlphaFactor;
+        colorBlendAttachment.dstAlphaBlendFactor = (vk::BlendFactor)blendProp.DstAlphaFactor;
+        colorBlendAttachment.alphaBlendOp = (vk::BlendOp)blendProp.AlphaBlendOp;
+    }
+
+    vk::PipelineColorBlendStateCreateInfo ColorBlendInfo;
+    ColorBlendInfo.setAttachments(ColorBlendingAttachments);
+
+    vk::PipelineDepthStencilStateCreateInfo depthStencil{};
     depthStencil.depthTestEnable = GraphicsProperties.DepthTest;
     depthStencil.depthWriteEnable = GraphicsProperties.DepthWrite;
     depthStencil.depthCompareOp = (vk::CompareOp)GraphicsProperties.DepthComparison;
     depthStencil.depthBoundsTestEnable = VK_FALSE;
     depthStencil.stencilTestEnable = GraphicsProperties.StencilTest;
 
-    vk::Format format = vk::Format::eR8G8B8A8Unorm;
+    std::vector<vk::Format> ColorFormats;
+    for (const auto &colorAttachment : GraphicsProperties.ColorAttachments)
+    {
+        ColorFormats.push_back((vk::Format)colorAttachment.format);
+    }
+    vk::Format DepthFormat = (vk::Format)GraphicsProperties.DepthAttachment.format,
+               StencilFormat = vk::Format::eUndefined;
     vk::PipelineRenderingCreateInfo RenderingInfo;
-    RenderingInfo.colorAttachmentCount = 1;
-    RenderingInfo.pColorAttachmentFormats = &format;
-    RenderingInfo.depthAttachmentFormat = (vk::Format)GraphicsProperties.DepthAttachmentFormat;
-    RenderingInfo.stencilAttachmentFormat = vk::Format::eUndefined;
+    RenderingInfo.setColorAttachmentFormats(ColorFormats);
+    RenderingInfo.depthAttachmentFormat = DepthFormat;
+    RenderingInfo.stencilAttachmentFormat = StencilFormat;
 
     std::vector<vk::PipelineShaderStageCreateInfo> ShaderStageInfos;
     GPURef<VK::ShaderModule> VertexModule = GPURef<VK::ShaderModule>::MakeRef(GraphicsProperties.VertexBinary),

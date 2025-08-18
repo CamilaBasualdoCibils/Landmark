@@ -188,7 +188,7 @@ Graphics::CompositeLayerExecute ImGuiCompositor::OnRender(const Graphics::Compos
 {
     vk::RenderingAttachmentInfo colorAttachment;
 
-    colorAttachment.imageView = *GetAttachments().at("Main")->VK().GetImageView();
+    colorAttachment.imageView = *GetAttachments().at("Main")->GetImageView();
     colorAttachment.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
     colorAttachment.loadOp = vk::AttachmentLoadOp::eClear;
     colorAttachment.storeOp = vk::AttachmentStoreOp::eStore;

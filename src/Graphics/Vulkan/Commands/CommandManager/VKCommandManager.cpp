@@ -23,7 +23,7 @@ VK::CommandManager::Partition::Partition()
 VK::CommandManager::Partition::~Partition()
 {
 }
-void VK::CommandManager::BeginRendering(GPURef<Graphics::RenderTarget> rt)
+void VK::CommandManager::BeginRendering(GPURef<VK::RenderTarget> rt)
 {
     Push<VK::BeginRenderingCommand>(rt);
 }

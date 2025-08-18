@@ -16,10 +16,8 @@ class ToolBar : public ToolItem
     template <typename T, typename... Args>
 std::shared_ptr<T> PushObject(int64_t order = 0, Args&&... args)
 {
-    // Shift existing keys starting from the highest down to the order, to make space
     if (tools.find(order) != tools.end())
     {
-        // Collect keys >= order
         std::vector<int64_t> keysToShift;
         for (auto it = tools.rbegin(); it != tools.rend(); ++it)
         {
@@ -29,7 +27,6 @@ std::shared_ptr<T> PushObject(int64_t order = 0, Args&&... args)
                 break;
         }
 
-        // Shift in reverse to avoid collision
         for (int64_t key : keysToShift)
         {
             auto nodeHandler = tools.extract(key);

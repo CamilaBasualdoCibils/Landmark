@@ -25,9 +25,6 @@ class ICommandManager
     [[nodiscard]] virtual GPURef<Graphics::Semaphore> SignalSemaphore() = 0;
     virtual void WaitSemaphore(GPURef<Graphics::Semaphore> semaphore) = 0;
     [[nodiscard]] virtual GPURef<Graphics::Semaphore> WaitSemaphore() = 0;
-    virtual void BeginRendering(GPURef<Graphics::RenderTarget> rt) = 0;
-    virtual void EndRendering() = 0;
-
     virtual void Clear() = 0;
     virtual void InsertLabel(const std::string& Label, vec4 Color = {1,1,1,1}) = 0;
     virtual void PushGroupLabel(const std::string& Group, vec4 Color = {1,1,1,1}) = 0;

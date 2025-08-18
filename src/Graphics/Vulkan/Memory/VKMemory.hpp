@@ -4,12 +4,7 @@
 
 namespace VK
 {
-    enum MemoryProperties : std::underlying_type<vk::MemoryPropertyFlagBits>::type
-    {
-        eDeviceLocal = (int)vk::MemoryPropertyFlagBits::eDeviceLocal,
-        eHostCoherent = (int)vk::MemoryPropertyFlagBits::eHostCoherent,
-        eHostVisible = (int)vk::MemoryPropertyFlagBits::eHostVisible,
-    };
+    
 struct MemoryType {
     uint32_t Index;
     vk::MemoryPropertyFlags flags;
@@ -24,7 +19,7 @@ class Memory : public InteropGiver
   public:
     Memory(const MemoryType& Type,size_t size);
     ~Memory();
-    InteropTransaction ExportMemory() const {return {fdHandle,Size};}
+    InteropTransaction ExportMemory() {return {fdHandle,Size};}
 
     operator vk::DeviceMemory() const {return Handle;}
     void* Map();

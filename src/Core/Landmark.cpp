@@ -12,7 +12,6 @@ Landmark::Landmark(const LandmarkStartProperties &Properties)
 {
 
     GraphicsEngine::Make(GraphicsEngineProperties{});
-
     std::shared_ptr<Mesh> meshes[2];
     for (int i = 0; i < 2; i++)
     {

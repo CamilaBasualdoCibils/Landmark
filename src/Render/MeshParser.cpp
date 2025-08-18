@@ -15,7 +15,8 @@ bool MeshParser::ParseOBJ(std::string filename, MeshParser::OBJ_File_content &ou
 {
     output = MeshParser::OBJ_File_content{};
     // const std::string file_string = file.ReadText();
-    // std::optional<size_t> pos_start,pos_end,element_start,element_end,normal_start,normal_end,texcoord_start,texcoord_end;
+    // std::optional<size_t>
+    // pos_start,pos_end,element_start,element_end,normal_start,normal_end,texcoord_start,texcoord_end;
     std::vector<std::string> v_lines, f_lines, vn_lines, vt_lines;
 
     // std::vector<std::string> file_lines;
@@ -42,8 +43,7 @@ bool MeshParser::ParseOBJ(std::string filename, MeshParser::OBJ_File_content &ou
                 }
 
                 break;
-            case CharMask({'f', ' '}):
-            {
+            case CharMask({'f', ' '}): {
                 f_lines.push_back(line);
             }
             break;
@@ -60,18 +60,15 @@ bool MeshParser::ParseOBJ(std::string filename, MeshParser::OBJ_File_content &ou
     {
         positions.resize(v_lines.size());
         std::cerr << "Parsing positions\n";
-        const auto indicies = std::views::iota((size_t)0,v_lines.size());
-        std::for_each(std::execution::par_unseq, indicies.begin(), indicies.end(), [&](const size_t index)
-                      {
-                
-                    const std::string& line = v_lines[index];
-                std::stringstream ss(line);
-        
-                vec3& pos = positions[index];
-                ss >> pos.x >> pos.y >> pos.z;
-                pos;
-            
-            });
+        const auto indicies = std::views::iota((size_t)0, v_lines.size());
+        std::for_each(std::execution::par_unseq, indicies.begin(), indicies.end(), [&](const size_t index) {
+            const std::string &line = v_lines[index];
+            std::stringstream ss(line);
+
+            vec3 &pos = positions[index];
+            ss >> pos.x >> pos.y >> pos.z;
+            pos;
+        });
     }
 
     // check if normals and texcoords exist
@@ -83,28 +80,29 @@ bool MeshParser::ParseOBJ(std::string filename, MeshParser::OBJ_File_content &ou
     std::vector<std::array<VertexBlueprint, 3>> vertex_blueprints;
     {
         vertex_blueprints.resize(f_lines.size());
-        const auto indicies = std::views::iota((size_t)0,f_lines.size());
-    
-        std::for_each(std::execution::par_unseq, indicies.begin(), indicies.end(), [&](const size_t index)
-                      {
-     
+        const auto indicies = std::views::iota((size_t)0, f_lines.size());
+
+        std::for_each(std::execution::par_unseq, indicies.begin(), indicies.end(), [&](const size_t index) {
             std::stringstream ss(f_lines[index].substr(1));
             std::string vertex_blueprint;
-            
+
             int f = 0;
-            while (ss >> vertex_blueprint) {
-                LASSERT(f <3, "FUCK");
+            while (ss >> vertex_blueprint)
+            {
+                LASSERT(f < 3, "FUCK");
                 std::stringstream ss(vertex_blueprint);
                 std::string vert_blue_str;
-                for (int i = 0; i < 3;i++) {
-                    if (skip_steps[i]) continue;
+                for (int i = 0; i < 3; i++)
+                {
+                    if (skip_steps[i])
+                        continue;
                     std::getline(ss, vert_blue_str, '/');
                     vertex_blueprints[index][f][i] = std::stoi(vert_blue_str);
                 }
                 f++;
-            } });
+            }
+        });
     }
-   
 
     struct ArrayHash
     {

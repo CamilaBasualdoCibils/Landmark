@@ -4,29 +4,22 @@
 
 VK::Buffer::Buffer(const VK::BufferProperties &Properties)
 {
+    vk::ExternalMemoryBufferCreateInfo externalBufferCreateInfo = {};
+    externalBufferCreateInfo.handleTypes = vk::ExternalMemoryHandleTypeFlagBits::eOpaqueFd;
     vk::BufferCreateInfo CreateInfo;
     CreateInfo.usage = Properties.UsageFlags;
     CreateInfo.size = Properties.Size;
-    const auto CreateResult =
-        GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().createBuffer(CreateInfo);
-    LASSERT(CreateResult.result == vk::Result::eSuccess, "man");
-    Handle = CreateResult.value;
-    vk::MemoryRequirements MemRequirements =
-        GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().getBufferMemoryRequirements(Handle);
-
-    const auto MemoryType = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->FindMemoryFor(
-        MemRequirements, Properties.memoryProperties);
-
-    Memory = GPURef<VK::Memory>::MakeRef(*MemoryType, MemRequirements.size);
-    const auto BindResult =
-        GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().bindBufferMemory(Handle, *Memory, 0);
-    LASSERT(BindResult == vk::Result::eSuccess, "shiet");
+    CreateInfo.pNext = &externalBufferCreateInfo;
+    const auto CreateResult = GraphicsEngine::Get().GetMainGPU()->VK()->GetAllocator()->CreateBuffer(
+        CreateInfo, Handle, Allocation);
+    LASSERT(CreateResult == vk::Result::eSuccess, "shit");
 }
 VK::Buffer::~Buffer()
 {
-    GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().destroyBuffer(Handle);
+    GraphicsEngine::Get().GetMainGPU()->VK()->GetAllocator()->DestroyBuffer(Handle, Allocation);
 }
-InteropTransaction VK::Buffer::ExportMemory() const
+InteropTransaction VK::Buffer::ExportMemory()
 {
-    return InteropTransaction(Memory->ExportMemory());
+    LASSERT(false,"Not implemented");
+    return InteropTransaction();
 }

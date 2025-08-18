@@ -69,8 +69,8 @@ class CommandManager : public Graphics::ICommandManager
         SignalFence(Fence);
         return Fence;
     }
-    void BeginRendering(GPURef<Graphics::RenderTarget> rt) override;
-    void EndRendering() override;
+    void BeginRendering(GPURef<VK::RenderTarget> rt);
+    void EndRendering();
     void Submit(GPURef<VK::Queue> queue);
     void Clear() override;
     void InsertLabel(const std::string &Label, vec4 Color = {1, 1, 1, 1}) override;

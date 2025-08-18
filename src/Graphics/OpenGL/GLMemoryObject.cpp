@@ -14,4 +14,5 @@ void GL::MemoryObject::ImportMemory(InteropTransaction transaction)
 {
     Size = transaction.AllocationSize;
     glImportMemoryFdEXT(Handle, Size, GL_HANDLE_TYPE_OPAQUE_FD_EXT, transaction.fdHandle);
+    close(transaction.fdHandle);
 }

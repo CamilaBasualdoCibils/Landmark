@@ -12,14 +12,22 @@ namespace VK
 // Copy Bitwise Image to image
 struct CopyImageCommand : Command
 {
-    const std::variant<GPURef<Graphics::Texture>, vk::Image> SrcImage, DstImage;
+    struct SubresourceRange
+    {
+Flags<ImageAspect> AspectMask;
+uint32_t mipLevel = 0;
+uint32_t baseArrayLayer =0;
+uint32_t LayerCount = 1;
+    };
+    const std::variant<GPURef<VK::Texture>, vk::Image> SrcImage, DstImage;
     const ImageLayouts SrcImageLayout, DstImageLayout;
     const ivec3 SrcOffset, DstOffset, Extent;
-    CopyImageCommand(std::variant<GPURef<Graphics::Texture>, vk::Image> srcImage,
-                     std::variant<GPURef<Graphics::Texture>, vk::Image> dstImage, ImageLayouts srcImageLayout,
-                     ImageLayouts dstImageLayout, ivec3 srcOffset, ivec3 dstOffset, ivec3 extent)
+    const SubresourceRange srcSubresource,dstSubresource;
+    CopyImageCommand(std::variant<GPURef<VK::Texture>, vk::Image> srcImage,
+                     std::variant<GPURef<VK::Texture>, vk::Image> dstImage, ImageLayouts srcImageLayout,
+                     ImageLayouts dstImageLayout, ivec3 srcOffset, ivec3 dstOffset, ivec3 extent,SubresourceRange srcSubresource,SubresourceRange dstSubresource)
         : SrcImage(srcImage), DstImage(dstImage), SrcImageLayout(srcImageLayout), DstImageLayout(dstImageLayout),
-          SrcOffset(srcOffset), DstOffset(dstOffset), Extent(glm::max(ivec3(1), extent))
+          SrcOffset(srcOffset), DstOffset(dstOffset), Extent(glm::max(ivec3(1), extent)),srcSubresource(srcSubresource),dstSubresource(dstSubresource)
     {
     }
 
@@ -29,24 +37,24 @@ struct CopyImageCommand : Command
         CopyRegion.srcOffset = GlmToVkOffset(SrcOffset);
         CopyRegion.dstOffset = GlmToVkOffset(DstOffset);
         CopyRegion.extent = GlmToVkExtent((uvec3)Extent);
-        CopyRegion.srcSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+        CopyRegion.srcSubresource.aspectMask = srcSubresource.AspectMask;
 
-        CopyRegion.srcSubresource.mipLevel = 0;
-        CopyRegion.srcSubresource.baseArrayLayer = 0;
-        CopyRegion.srcSubresource.layerCount = 1;
+        CopyRegion.srcSubresource.mipLevel = srcSubresource.mipLevel;
+        CopyRegion.srcSubresource.baseArrayLayer = srcSubresource.baseArrayLayer;
+        CopyRegion.srcSubresource.layerCount = srcSubresource.LayerCount;
 
-        CopyRegion.dstSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-        CopyRegion.dstSubresource.mipLevel = 0;
-        CopyRegion.dstSubresource.baseArrayLayer = 0;
-        CopyRegion.dstSubresource.layerCount = 1;
+        CopyRegion.dstSubresource.aspectMask = dstSubresource.AspectMask;
+        CopyRegion.dstSubresource.mipLevel = dstSubresource.mipLevel;
+        CopyRegion.dstSubresource.baseArrayLayer = dstSubresource.baseArrayLayer;
+        CopyRegion.dstSubresource.layerCount = dstSubresource.LayerCount;
 
         cmdBuffer->GetHandle().copyImage(
-            std::holds_alternative<GPURef<Graphics::Texture>>(SrcImage)
-                ? std::get<GPURef<Graphics::Texture>>(SrcImage)->VK().GetImage()->GetHandle()
+            std::holds_alternative<GPURef<VK::Texture>>(SrcImage)
+                ? std::get<GPURef<VK::Texture>>(SrcImage)->GetImage()->GetHandle()
                 : std::get<vk::Image>(SrcImage),
             (vk::ImageLayout)SrcImageLayout,
-            std::holds_alternative<GPURef<Graphics::Texture>>(DstImage)
-                ? std::get<GPURef<Graphics::Texture>>(DstImage)->VK().GetImage()->GetHandle()
+            std::holds_alternative<GPURef<VK::Texture>>(DstImage)
+                ? std::get<GPURef<VK::Texture>>(DstImage)->GetImage()->GetHandle()
                 : std::get<vk::Image>(DstImage),
             (vk::ImageLayout)DstImageLayout, {CopyRegion});
     }
@@ -58,13 +66,13 @@ struct CopyImageCommand : Command
 // Copy ComponentWise Image to image. Preserves channels
 struct BlitImageCommand : Command
 {
-    const std::variant<GPURef<Graphics::Texture>, vk::Image> SrcImage, DstImage;
+    const std::variant<GPURef<VK::Texture>, vk::Image> SrcImage, DstImage;
     const ImageLayouts SrcImageLayout, DstImageLayout;
     const ivec3 SrcOffset, DstOffset, SrcExtent, DstExtent;
     const Filter Imagefilter;
 
-    BlitImageCommand(std::variant<GPURef<Graphics::Texture>, vk::Image> srcImage,
-                     std::variant<GPURef<Graphics::Texture>, vk::Image> dstImage, ImageLayouts srcImageLayout,
+    BlitImageCommand(std::variant<GPURef<VK::Texture>, vk::Image> srcImage,
+                     std::variant<GPURef<VK::Texture>, vk::Image> dstImage, ImageLayouts srcImageLayout,
                      ImageLayouts dstImageLayout, VK::Filter imageFilter, ivec3 srcOffset, ivec3 dstOffset,
                      ivec3 srcExtent, std::optional<ivec3> dstExtent = std::nullopt)
         : SrcImage(srcImage), DstImage(dstImage), SrcImageLayout(srcImageLayout), DstImageLayout(dstImageLayout),
@@ -90,11 +98,11 @@ struct BlitImageCommand : Command
         blitRegion.dstOffsets[0] = GlmToVkOffset(DstOffset);
         blitRegion.dstOffsets[1] = GlmToVkOffset(DstOffset + DstExtent);
 
-        vk::Image srcImage = std::holds_alternative<GPURef<Graphics::Texture>>(SrcImage)
-                                 ? std::get<GPURef<Graphics::Texture>>(SrcImage)->VK().GetImage()->GetHandle()
+        vk::Image srcImage = std::holds_alternative<GPURef<VK::Texture>>(SrcImage)
+                                 ? std::get<GPURef<VK::Texture>>(SrcImage)->GetImage()->GetHandle()
                                  : std::get<vk::Image>(SrcImage);
-        vk::Image dstImage = std::holds_alternative<GPURef<Graphics::Texture>>(DstImage)
-                                 ? std::get<GPURef<Graphics::Texture>>(DstImage)->VK().GetImage()->GetHandle()
+        vk::Image dstImage = std::holds_alternative<GPURef<VK::Texture>>(DstImage)
+                                 ? std::get<GPURef<VK::Texture>>(DstImage)->GetImage()->GetHandle()
                                  : std::get<vk::Image>(DstImage);
 
         cmdBuffer->GetHandle().blitImage(srcImage, static_cast<vk::ImageLayout>(SrcImageLayout), dstImage,
@@ -110,10 +118,10 @@ struct BlitImageCommand : Command
 
 struct ClearColorImageCommand : Command
 {
-    const std::variant<GPURef<Graphics::Texture>, vk::Image> TargetImage;
+    const std::variant<GPURef<VK::Texture>, vk::Image> TargetImage;
     const ImageLayouts TargetImageLayout;
     const vec4 ClearColor;
-    ClearColorImageCommand(std::variant<GPURef<Graphics::Texture>, vk::Image> TargetImage,
+    ClearColorImageCommand(std::variant<GPURef<VK::Texture>, vk::Image> TargetImage,
                            ImageLayouts TargetImageLayout, vec4 ClearColor)
         : TargetImage(TargetImage), TargetImageLayout(TargetImageLayout), ClearColor(ClearColor)
     {
@@ -122,8 +130,8 @@ struct ClearColorImageCommand : Command
     void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
     {
         vk::ImageSubresourceRange subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
-        vk::Image image = std::holds_alternative<GPURef<Graphics::Texture>>(TargetImage)
-                              ? std::get<GPURef<Graphics::Texture>>(TargetImage)->VK().GetImage()->GetHandle()
+        vk::Image image = std::holds_alternative<GPURef<VK::Texture>>(TargetImage)
+                              ? std::get<GPURef<VK::Texture>>(TargetImage)->GetImage()->GetHandle()
                               : std::get<vk::Image>(TargetImage);
         vk::ClearColorValue clrV;
         clrV.setFloat32({ClearColor.r, ClearColor.g, ClearColor.b, ClearColor.a});
@@ -136,12 +144,12 @@ struct ClearColorImageCommand : Command
 };
 struct ClearDepthStencilImageCommand : Command
 {
-    const std::variant<GPURef<Graphics::Texture>, vk::Image> TargetImage;
+    const std::variant<GPURef<VK::Texture>, vk::Image> TargetImage;
     const ImageLayouts TargetImageLayout;
     const std::optional<float> DepthClearValue;
     const std::optional<uint32_t> StencilClearValue = 0;
     ClearDepthStencilImageCommand(
-        std::variant<GPURef<Graphics::Texture>, vk::Image> TargetImage, ImageLayouts TargetImageLayout,
+        std::variant<GPURef<VK::Texture>, vk::Image> TargetImage, ImageLayouts TargetImageLayout,
         std::optional<float> DepthClearValue = std::nullopt, std::optional<uint32_t> StencilClearValue = std::nullopt)
         : TargetImage(TargetImage), TargetImageLayout(TargetImageLayout), DepthClearValue(DepthClearValue),
           StencilClearValue(StencilClearValue)
@@ -150,8 +158,8 @@ struct ClearDepthStencilImageCommand : Command
 
     void Execute(GPURef<VK::CommandBuffer> cmdBuffer) override
     {
-        vk::Image image = std::holds_alternative<GPURef<Graphics::Texture>>(TargetImage)
-                              ? std::get<GPURef<Graphics::Texture>>(TargetImage)->VK().GetImage()->GetHandle()
+        vk::Image image = std::holds_alternative<GPURef<VK::Texture>>(TargetImage)
+                              ? std::get<GPURef<VK::Texture>>(TargetImage)->GetImage()->GetHandle()
                               : std::get<vk::Image>(TargetImage);
 
         vk::ClearDepthStencilValue value;

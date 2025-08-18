@@ -21,9 +21,9 @@ VK::Swapchain::Swapchain(vk::SurfaceKHR surface)
     vk::SwapchainCreateInfoKHR CreateInfo;
     CreateInfo.clipped = true;
     CreateInfo.imageArrayLayers = 1;
-    CreateInfo.imageColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
     ImageFormat = VK::Format::eBGRA8_UNorm;
     CreateInfo.imageFormat = (vk::Format)ImageFormat;
+    CreateInfo.imageColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
     CreateInfo.presentMode = vk::PresentModeKHR::eImmediate;
     CreateInfo.imageExtent = GlmToVkExtent(CurrentExtent);
     CreateInfo.minImageCount = ImageCount;
@@ -54,6 +54,10 @@ VK::Swapchain::Swapchain(vk::SurfaceKHR surface)
         Image.imageRaw = vkimage;
         Image.imageView.emplace(vkimage,ImageViewProperties{});
     }
+}
+VK::Swapchain::~Swapchain()
+{
+    GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().destroy(vkSwapchainHandle);
 }
 void VK::Swapchain::AcquireNextSwapchainImage(GPURef<Graphics::Semaphore> OnCompleteSemaphore)
 {

@@ -11,7 +11,7 @@ class CameraRenderer : public Graphics::ICompositeLayer
     Entity Owner;
     std::shared_ptr<VK::CommandManager> vkCmdMngr = std::make_shared<VK::CommandManager>();
     GPURef<VK::Pipeline> pipeline;
-    GPURef<Graphics::RenderTarget> renderTarget;
+    GPURef<VK::RenderTarget> renderTarget;
     GPURef<VK::Buffer> InstanceVertexBuffer;
     Graphics::CompositeLayerExecute OnRender(const Graphics::CompositeContext& Context) override;
     Graphics::CompositeLayerExecute ExecuteOutput;

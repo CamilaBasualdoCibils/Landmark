@@ -22,3 +22,8 @@ VK::Sampler::Sampler(const VK::SamplerProperties &Properties)
     Handle = CreateResult.value;
     LASSERT(CreateResult.result == vk::Result::eSuccess, "Failure");
 }
+
+VK::Sampler::~Sampler()
+{
+    GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetHandle().destroy(Handle);
+}

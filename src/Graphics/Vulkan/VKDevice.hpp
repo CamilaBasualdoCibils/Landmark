@@ -1,7 +1,7 @@
 #pragma once
+#include "Graphics/Vulkan/Memory/VKAllocator.hpp"
 #include "VKPhysicalDevice.hpp"
 #include <pch.h>
-
 #define VKGETPROCADDRESSMEMBER(proc)                                                                                   \
     PFN_vk##proc proc##_ptr = nullptr;                                                                                 \
     template <typename... Args> auto proc(Args &&...args) -> decltype(auto)                                            \
@@ -27,6 +27,7 @@ class Device : public PhysicalDevice
 {
     friend PhysicalDevice;
     vk::Device DeviceHandle;
+
 
   public:
     Device(GPURef<PhysicalDevice> phyDev, const DeviceProperties &properties);

@@ -3,7 +3,7 @@
 
 namespace VK
 {
-    enum class CompareOp : std::underlying_type_t<vk::CompareOp>
+enum class CompareOp : std::underlying_type_t<vk::CompareOp>
 {
     eAlways = (size_t)vk::CompareOp::eAlways,
     eEqual = (size_t)vk::CompareOp::eEqual,
@@ -13,7 +13,6 @@ namespace VK
     eLessOrEqual = (size_t)vk::CompareOp::eLessOrEqual,
     eNever = (size_t)vk::CompareOp::eNever,
     eNotEqual = (size_t)vk::CompareOp::eNotEqual,
-
 };
 enum class CullMode : std::underlying_type_t<vk::CullModeFlagBits>
 {
@@ -57,10 +56,50 @@ enum class BufferUsage : std::underlying_type_t<vk::BufferUsageFlagBits>
     eUniformBuffer = (size_t)vk::BufferUsageFlagBits::eUniformBuffer,
     eVertexBuffer = (size_t)vk::BufferUsageFlagBits::eVertexBuffer,
 };
+enum class ImageUsage : std::underlying_type_t<vk::ImageUsageFlagBits>
+{
+    eSampled = (size_t)vk::ImageUsageFlagBits::eSampled,
+    eColorAttachment = (size_t)vk::ImageUsageFlagBits::eColorAttachment,
+    eDepthStencilAttachment = (size_t)vk::ImageUsageFlagBits::eDepthStencilAttachment,
+    eTransferDst = (size_t)vk::ImageUsageFlagBits::eTransferDst,
+    eTransferSrc = (size_t)vk::ImageUsageFlagBits::eTransferSrc,
+};
+
+enum MemoryProperties : std::underlying_type<vk::MemoryPropertyFlagBits>::type
+{
+    eDeviceLocal = (int)vk::MemoryPropertyFlagBits::eDeviceLocal,
+    eHostCoherent = (int)vk::MemoryPropertyFlagBits::eHostCoherent,
+    eHostVisible = (int)vk::MemoryPropertyFlagBits::eHostVisible,
+};
 enum class VertexInputRate : std::underlying_type_t<vk::VertexInputRate>
 {
     eVertex = (size_t)vk::VertexInputRate::eVertex,
     eInstance = (size_t)vk::VertexInputRate::eInstance,
+};
+enum class ColorComponent : std::underlying_type_t<vk::ColorComponentFlagBits>
+{
+    eR = (size_t)vk::ColorComponentFlagBits::eR,
+    eG = (size_t)vk::ColorComponentFlagBits::eG,
+    eB = (size_t)vk::ColorComponentFlagBits::eB,
+    eA = (size_t)vk::ColorComponentFlagBits::eA,
+};
+enum class BlendFactor : std::underlying_type_t<vk::BlendFactor>
+{
+    eSrcAlpha = (size_t)vk::BlendFactor::eSrcAlpha,
+    eOneMinusSrcAlpha = (size_t)vk::BlendFactor::eOneMinusSrcAlpha,
+    eOne = (size_t)vk::BlendFactor::eOne,
+    eZero = (size_t)vk::BlendFactor::eZero,
+};
+enum class BlendOp : std::underlying_type_t<vk::BlendOp>
+{
+    eAdd = (size_t)vk::BlendOp::eAdd,
+    eMax = (size_t)vk::BlendOp::eMax,
+    eMin = (size_t)vk::BlendOp::eMin,
+};
+enum class ImageAspect : std::underlying_type_t<vk::ImageAspectFlagBits>
+{
+    eColor = (size_t)vk::ImageAspectFlagBits::eColor,
+    eDepth = (size_t)vk::ImageAspectFlagBits::eDepth,
 };
 enum class Filter : std::underlying_type_t<vk::Filter>
 {
@@ -76,8 +115,8 @@ enum class Format : std::underlying_type<vk::Format>::type
     eBGRA8_SRGB = (size_t)vk::Format::eB8G8R8A8Srgb,
     eRGBA8_SRGB = (size_t)vk::Format::eR8G8B8A8Srgb,
     eRG32_SFloat = (size_t)vk::Format::eR32G32Sfloat,
-    eRGB32_SFloat = (size_t)vk::Format::eR32G32B32Sfloat, //RGB 32bit signed float
-    eRGB16_SFloat = (size_t)vk::Format::eR16G16B16Sfloat, //RGB 16bit signed float
+    eRGB32_SFloat = (size_t)vk::Format::eR32G32B32Sfloat, // RGB 32bit signed float
+    eRGB16_SFloat = (size_t)vk::Format::eR16G16B16Sfloat, // RGB 16bit signed float
 
     eRGBA32_SFloat = (size_t)vk::Format::eR32G32B32A32Sfloat,
     eDepth32_SFloat = (size_t)vk::Format::eD32Sfloat,

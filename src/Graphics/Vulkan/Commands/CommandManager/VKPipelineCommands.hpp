@@ -28,11 +28,11 @@ struct BindPipelineCommand : Command
 };
 struct TransitionImageLayoutCommand : Command
 {
-    std::variant<GPURef<Graphics::Texture>, vk::Image> Image;
+    std::variant<GPURef<VK::Texture>, vk::Image> Image;
     vk::ImageMemoryBarrier barrier;
     ImageLayouts OldLayout, NewLayout;
     Flags<PipelineStageFlags> SrcStage, DstStage;
-    TransitionImageLayoutCommand(std::variant<GPURef<Graphics::Texture>, vk::Image> image, ImageLayouts oldLayout,
+    TransitionImageLayoutCommand(std::variant<GPURef<VK::Texture>, vk::Image> image, ImageLayouts oldLayout,
                                  ImageLayouts newLayout, Flags<PipelineStageFlags> srcStage,
                                  Flags<PipelineStageFlags> dstStage)
     {
@@ -48,8 +48,8 @@ struct TransitionImageLayoutCommand : Command
         barrier.newLayout = (vk::ImageLayout)NewLayout;
         barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        if (std::holds_alternative<GPURef<Graphics::Texture>>(Image))
-            barrier.image = *std::get<GPURef<Graphics::Texture>>(Image)->VK().GetImage();
+        if (std::holds_alternative<GPURef<VK::Texture>>(Image))
+            barrier.image = *std::get<GPURef<VK::Texture>>(Image)->GetImage();
         else if (std::holds_alternative<vk::Image>(Image))
         {
             barrier.image = std::get<vk::Image>(image);

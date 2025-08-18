@@ -11,6 +11,7 @@ class DeviceWrapper
 {
     GPURef<Device> DeviceHandle;
     GPURef<Queue> m_GraphicsQueue, m_PresentQueue, m_ComputeQueue;
+    GPURef<Allocator> allocator;
 
   public:
     DeviceWrapper(GPURef<PhysicalDevice> phyDev,const DeviceWrapperProperties &Properties);
@@ -18,6 +19,7 @@ class DeviceWrapper
     [[nodiscard]] auto GraphicsQueue() const {return m_GraphicsQueue;}
     [[nodiscard]] auto PresentQueue() const {return m_PresentQueue;}
     [[nodiscard]] auto ComputeQueue() const {return m_ComputeQueue;}
+    [[nodiscard]] auto GetAllocator() const {return allocator;}
     
 };
 } // namespace VK
