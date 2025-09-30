@@ -32,7 +32,7 @@ Graphics::CompositeLayerExecute GBufferRenderer::OnRender(const Graphics::Compos
 }
 
 GBufferRenderer::GBufferRenderer(std::shared_ptr<Graphics::CompositeGroup> Parent, Entity Owner)
-    : ICompositeLayer(Parent, Graphics::CompositeLayerProperties{.Name = "CameraRenderer",
+    : ICompositeLayer(Parent, Graphics::CompositeLayerProperties{.Name = "GBufferRenderer",
                                                                  .Attachments = Render::GBufferStageAttachments}),
       Owner(Owner)
 {
@@ -46,7 +46,7 @@ GBufferRenderer::GBufferRenderer(std::shared_ptr<Graphics::CompositeGroup> Paren
     renderTarget->SetViewport({0, 0}, GetResolution());
 
     std::pair<std::vector<std::byte>, std::vector<std::byte>> BinaryVKGL[2];
-    std::ifstream testVertShaderFile("assets/shaders/VKGLtest.vert");
+    std::ifstream testVertShaderFile("assets/shaders/DeferredTest.vert");
     std::ostringstream ssVert;
     ssVert << testVertShaderFile.rdbuf(); // copy file buffer into stringstream
 
@@ -54,7 +54,7 @@ GBufferRenderer::GBufferRenderer(std::shared_ptr<Graphics::CompositeGroup> Paren
         Graphics::InteropShaderCompileInfo{.shader_type = Graphics::ShaderType::eVertex,
                                            .source_type = Graphics::ShaderSourceType::eGLSL,
                                            .Source = ssVert.str()});
-    std::ifstream testFragShaderFile("assets/shaders/VKGLtest.frag");
+    std::ifstream testFragShaderFile("assets/shaders/DeferredTest.frag");
     std::ostringstream ssFrag;
 
     ssFrag << testFragShaderFile.rdbuf(); // copy file buffer into stringstream
@@ -82,22 +82,26 @@ GBufferRenderer::GBufferRenderer(std::shared_ptr<Graphics::CompositeGroup> Paren
                                                      .format = VK::Format::eRGB32_SFloat,
                                                      .Stride = sizeof(Mesh::Vertex),
                                                      .Offset = 0},
-                                 VK::VertexAttribute{.Binding = 1,
+                                                     VK::VertexAttribute{.Binding = 1,
+                                                     .format = VK::Format::eRGB32_SFloat,
+                                                     .Stride = sizeof(Mesh::Vertex),
+                                                     .Offset = offsetof(Mesh::Vertex,Mesh::Vertex::Normal)},
+                                 VK::VertexAttribute{.Binding = 2,
                                                      .format = VK::Format::eRGBA32_SFloat,
                                                      .Stride = sizeof(mat4),
                                                      .Offset = 0,
                                                      .Rate = VK::VertexInputRate::eInstance},
-                                 VK::VertexAttribute{.Binding = 2,
+                                 VK::VertexAttribute{.Binding = 3,
                                                      .format = VK::Format::eRGBA32_SFloat,
                                                      .Stride = sizeof(mat4),
                                                      .Offset = sizeof(vec4),
                                                      .Rate = VK::VertexInputRate::eInstance},
-                                 VK::VertexAttribute{.Binding = 3,
+                                 VK::VertexAttribute{.Binding = 4,
                                                      .format = VK::Format::eRGBA32_SFloat,
                                                      .Stride = sizeof(mat4),
                                                      .Offset = sizeof(vec4) * 2,
                                                      .Rate = VK::VertexInputRate::eInstance},
-                                 VK::VertexAttribute{.Binding = 4,
+                                 VK::VertexAttribute{.Binding = 5,
                                                      .format = VK::Format::eRGBA32_SFloat,
                                                      .Stride = sizeof(mat4),
                                                      .Offset = sizeof(vec4) * 3,
@@ -115,7 +119,7 @@ GBufferRenderer::GBufferRenderer(std::shared_ptr<Graphics::CompositeGroup> Paren
     vkCmdMngr->Push<VK::BindPipelineCommand>(pipeline, VK::PipelineBindPoint::eGraphics);
     const size_t MeshCount = TransformMeshView.size_hint();
     InstanceVertexBuffer.Make(
-        VK::BufferProperties{.Size = sizeof(mat4) * MeshCount,
+        VK::BufferProperties{.Size = sizeof(mat4) * glm::max(1ul,MeshCount),
                              .UsageFlags = {VK::BufferUsage::eTransferDst, VK::BufferUsage::eVertexBuffer}});
 
     int i = 0;

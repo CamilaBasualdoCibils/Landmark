@@ -17,7 +17,7 @@ void RenderViewport::DrawWindowContents()
         RenderCamera.GetComponent<CameraComponent>().compositeGroup;
     cameraCompositeGroup->SetResolutionOverride(AvailableSpace);
     GPURef<VK::Texture> ColorImage = cameraCompositeGroup->GetAttachments().at("Color");
-    uvec2 ImageResolution = (uvec2)ColorImage->GetImage()->GetProperties().Dimensions;
+    uvec2 ImageResolution = (uvec2)ColorImage->GetImage().GetProperties().Dimensions;
     const vec2 MaxUvThatFits = (vec2)AvailableSpace / (vec2) ImageResolution;
     ImGui::Image((ImTextureID)ColorImage->GetImguiDescriptorSet(),
                  GlmToImGui(AvailableSpace),ImVec2(0,0),GlmToImGui(MaxUvThatFits));
@@ -72,13 +72,14 @@ RenderViewport::RenderViewport()
     ViewportCameraEntity.GetInfo().Name = "Viewport Camera";
     ViewportCameraEntity.GetComponent<CameraComponent>().compositeGroup->AddLayer<EditorViewRenderer>(ViewportCameraEntity);
     ViewportCameraEntity.GetInfo().Locked = true;
+    ViewportCameraEntity.GetInfo().Hidden = true;
     GetMenuBar().PushObject<Editor::LambdaItem>(0, "Camera Selector", [&]() {
         if (ImGui::BeginMenu("Camera"))
         {
             auto CameraView = World::Get().GetComponentView<CameraComponent, EntityInfo>();
 
             for (auto Ent : CameraView)
-            {
+            {   
                 const EntityInfo &info = CameraView.get<EntityInfo>(Ent);
                 if (info.Hidden)
                     continue;

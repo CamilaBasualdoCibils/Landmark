@@ -20,18 +20,21 @@
 // #include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan_to_string.hpp>
 
+#include <glslang/Public/ShaderLang.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 
 #define VMA_DEBUG_DETECT_LEAKS 1
 #define VMA_VULKAN_VERSION 1004000 // Vulkan 1.4
-#include <VulkanMemoryAllocator/include/vk_mem_alloc.h>
+#include <vk_mem_alloc.h>
 // EGL
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 // GLEW
+#define GLEW_STATIC
+#define GLEW_NO_GLU
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <GL/glext.h>
 // GLFW
 #define GLFW_INCLUDE_VULKAN
 #define VK_USE_PLATFORM_WIN32_KHR
@@ -43,34 +46,43 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING
 #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw.h>
-#include <imgui/imgui_impl_vulkan.h>
-#include <imgui/imgui_stdlib.h>
-#include <imgui/imstb_truetype.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_vulkan.h>
+#include <imgui_stdlib.h>
+#include <imstb_truetype.h>
 
 
-#include <implot/implot.h>
+#include <implot.h>
+#include <implot3d.h>
 
 // GLM
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/integer.hpp>
 using namespace glm;
 
-#include <entt-3.15.0/src/entt/entt.hpp>
+#include <entt/entt.hpp>
 
 // JSON
-//#include <JSON/json.hpp>
-//using Json = nlohmann::json;
-//using Json_Ordered = nlohmann::ordered_json;
+#include <nlohmann/json.hpp>
+using Json = nlohmann::json;
+using Json_Ordered = nlohmann::ordered_json;
+// STB_Image
 namespace stb
 {
-#include "stb/stb_image.h"
+#include "stb_image.h"
 
 }
+
+//Boost
+#include <boost/uuid.hpp>
+#include <boost/container/flat_map.hpp>
+#include <boost/numeric/ublas/vector_sparse.hpp>
 
 #include <algorithm>
 #include <cctype>
@@ -92,9 +104,14 @@ namespace stb
 #include <string>
 #include <thread>
 #include <type_traits>
+#include <typeindex>
+#include <typeinfo>
 #include <unordered_map>
 #include <unordered_set>
 #include <variant>
 #include <vector>
-
+#include <stack>
+#include <bitset>
+#include <immintrin.h>
 #endif // PCH_H
+

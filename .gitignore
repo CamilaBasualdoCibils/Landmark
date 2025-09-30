@@ -12,3 +12,5 @@ doc/.obsidian
 compile_commands.json
 market
 assets
+vcpkg
+vcpkg_installed

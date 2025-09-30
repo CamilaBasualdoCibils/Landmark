@@ -12,7 +12,13 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
+            "environment": [
+                {
+                    "name": "GDK_BACKEND",
+                    "value": "wayland"
+                },
+
+            ],
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
@@ -56,6 +62,5 @@
             ],
             "preLaunchTask": "Build Release"
         }
-
     ]
 }

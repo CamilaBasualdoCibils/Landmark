@@ -13,47 +13,9 @@
 #include <Graphics/Vulkan/Commands/CommandManager/VKPipelineCommands.hpp>
 #include <Graphics/Vulkan/VKInstance.hpp>
 #include <misc/Conversions.hpp>
-class ImGuiDemoTool : Editor::ToolItem
-{
-    bool Open = false;
 
-    void DrawTool() override
-    {
-        if (Open)
-            ImGui::ShowDemoWindow(&Open);
-    }
-    void DrawHandle() override
-    {
-        Editor::MenuItem(GetLabel().c_str(), &Open);
-    }
 
-  public:
-    ImGuiDemoTool() : Editor::ToolItem("ImGui Demo")
-    {
-    }
-};
-class ImplotDemoTool : Editor::ToolItem
-{
-    bool Open = false;
-
-    void DrawTool() override
-    {
-        if (Open)
-            ImPlot::ShowDemoWindow(&Open);
-    }
-    void DrawHandle() override
-    {
-        Editor::MenuItem(GetLabel().c_str(), &Open);
-    }
-
-  public:
-    ImplotDemoTool() : Editor::ToolItem("Implot Demo")
-    {
-    }
-};
-class ImPlotDemoTool
-{
-};
+    VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
 DearImGui::DearImGui(const DearImGuiProperties &Properties)
 {
 
@@ -81,21 +43,24 @@ DearImGui::DearImGui(const DearImGuiProperties &Properties)
     LASSERT(CreatePoolResult.result == vk::Result::eSuccess, "concha");
     // VK_CHECK(vkCreateDescriptorPool(_device, &pool_info, nullptr, &imguiPool));
     ImGui::CreateContext();
+        ImPlot::CreateContext();
+        ImPlot3D::CreateContext();
+
     ImGuiIO &io = ImGui::GetIO();
     //(void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+    //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
-    io.FontAllowUserScaling = true;
+    //io.FontAllowUserScaling = true;
     ImGuiStyle &style = ImGui::GetStyle();
 
     style.WindowRounding = 0.0f;
     style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
     const auto capabilties = GPU->LogicalDevice()->GetSurfaceCapabilities(Window->GetVulkanSurface());
-    ImPlot::CreateContext();
+
     ImGui_ImplGlfw_InitForVulkan(Window->GetGLFWHandle(), true);
     ImGui_ImplVulkan_InitInfo init_info = {};
     init_info.Instance = static_cast<vk::Instance>(VK::Instance::Get());
@@ -109,7 +74,7 @@ DearImGui::DearImGui(const DearImGuiProperties &Properties)
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.UseDynamicRendering = true;
     init_info.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
-    VkFormat format = VK_FORMAT_B8G8R8A8_UNORM;
+
     init_info.PipelineRenderingCreateInfo.pColorAttachmentFormats = &format;
     init_info.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
     init_info.ApiVersion = vk::makeApiVersion(0, 1, 4, 0);
@@ -142,17 +107,36 @@ DearImGui::DearImGui(const DearImGuiProperties &Properties)
                 if (ImGuiMetrics)
                     ImGui::ShowMetricsWindow(&ImGuiMetrics);
             });
-    Editor::Editor::Get()
-        .GetMainToolGroup()
-        .GetOrPushToolBar("View")
-        ->GetOrPushToolBar("ImGui")
-        ->PushObject<ImGuiDemoTool>(1);
+    static bool ImGuiDemoOpen = false;
 
     Editor::Editor::Get()
         .GetMainToolGroup()
         .GetOrPushToolBar("View")
         ->GetOrPushToolBar("ImGui")
-        ->PushObject<ImplotDemoTool>(2);
+        ->PushObject<Editor::LambdaItem>(1,"Imgui Demo",[](){ ImGui::Selectable("ImGui Demo", &ImGuiDemoOpen);}, [&]() {
+                if (ImGuiDemoOpen)
+                    ImGui::ShowDemoWindow(&ImGuiDemoOpen);
+            });
+    static bool ImPlotDemoOpen = false;
+    Editor::Editor::Get()
+        .GetMainToolGroup()
+        .GetOrPushToolBar("View")
+        ->GetOrPushToolBar("ImGui")
+       ->PushObject<Editor::LambdaItem>(1,"ImPlot Demo",[](){ ImGui::Selectable("ImPlot Demo", &ImPlotDemoOpen);}, [&]() {
+                if (ImPlotDemoOpen)
+                    ImPlot::ShowDemoWindow(&ImPlotDemoOpen);
+            });
+
+        static bool ImPlot3DDemoOpen = false;
+    Editor::Editor::Get()
+        .GetMainToolGroup()
+        .GetOrPushToolBar("View")
+        ->GetOrPushToolBar("ImGui")
+       ->PushObject<Editor::LambdaItem>(1,"ImPlot3D Demo",[](){ ImGui::Selectable("ImPlot3D Demo", &ImPlot3DDemoOpen);}, [&]() {
+                if (ImPlot3DDemoOpen)
+                    ImPlot3D::ShowDemoWindow(&ImPlot3DDemoOpen);
+            });
+
     // PushEditorTools();
 }
 void DearImGui::BeginFrame()
@@ -188,7 +172,7 @@ Graphics::CompositeLayerExecute ImGuiCompositor::OnRender(const Graphics::Compos
 {
     vk::RenderingAttachmentInfo colorAttachment;
 
-    colorAttachment.imageView = *GetAttachments().at("Main")->GetImageView();
+    colorAttachment.imageView = GetAttachments().at("Main")->GetImageView();
     colorAttachment.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
     colorAttachment.loadOp = vk::AttachmentLoadOp::eClear;
     colorAttachment.storeOp = vk::AttachmentStoreOp::eStore;

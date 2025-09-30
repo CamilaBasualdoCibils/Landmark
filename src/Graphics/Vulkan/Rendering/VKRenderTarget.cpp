@@ -17,7 +17,7 @@ std::shared_ptr<std::pair<vk::RenderingInfo, std::vector<vk::RenderingAttachment
         Attachments.emplace_back();
         auto &Attachment = Attachments.back();
         Attachment.imageLayout = vk::ImageLayout::eGeneral;
-        Attachment.imageView = *ColorAttach->GetImageView();
+        Attachment.imageView = ColorAttach->GetImageView();
         Attachment.loadOp = vk::AttachmentLoadOp::eLoad;
         Attachment.storeOp = vk::AttachmentStoreOp::eStore;
         ColorAttachmentCount++;
@@ -29,7 +29,7 @@ std::shared_ptr<std::pair<vk::RenderingInfo, std::vector<vk::RenderingAttachment
 
         auto &Attachment = Attachments.back();
         Attachment.imageLayout = vk::ImageLayout::eGeneral;
-        Attachment.imageView = *DepthAttachment->GetImageView();
+        Attachment.imageView = DepthAttachment->GetImageView();
         Attachment.loadOp = vk::AttachmentLoadOp::eLoad;
         Attachment.storeOp = vk::AttachmentStoreOp::eStore;
     }

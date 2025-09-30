@@ -1,0 +1,8 @@
+#pragma once
+#include "CompositeAttachment.hpp"
+#include <pch.h>
+struct CompositePayload
+{
+
+    std::unordered_map<std::string, CompositeAttachment> AttachmentMap;
+};

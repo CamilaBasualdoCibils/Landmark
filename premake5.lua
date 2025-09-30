@@ -1,102 +1,45 @@
 -- premake5.lua
 workspace "Landmark"
    configurations { "Debug", "Release" }
+    project "Landmark"
+        kind "ConsoleApp"
+        language "C++"
+        cppdialect "C++20"
+        targetdir "bin/%{cfg.buildcfg}"
+        flags{"MultiProcessorCompile"}
+        files { "src/**.h", "src/**.c","src/**.cpp"}
+        pchheader "pch.h"
+        includedirs {"src","lib","glslang"}
 
-   --[[
-project "Demo"
-   kind "ConsoleApp"
-   language "C++"
-   cppdialect "C++20"
-   targetdir "bin/%{cfg.buildcfg}"
-   flags{"MultiProcessorCompile"}
+        links {"GL","GLEW","glfw3","glm","glslang","imgui","implot","implot3d","SPIRV","vulkan","EGL"}
+        buildoptions "-mavx2"
+       --libdirs{"lib/RenderDoc/lib","lib/GLFW/lib","lib/glslang/lib"}
+        local vcpkg = os.getenv("VCPKG_ROOT") or "vcpkg"
+        local triplet = os.getenv("VCPKG_DEFAULT_TRIPLET") or "x64-linux"
+        local vcpkg_installed = "vcpkg_installed/".. triplet
 
-   links { "Landmark","ImGui","ImPlot","vulkan","glfw",
-   "glslang","MachineIndependent","OSDependent","GenericCodeGen" }
-   
-   files { "demo/src/**.h", "demo/src/**.c","demo/src/**.cpp"}
-   includedirs {"demo/src","src","lib"}
-   libdirs {"bin/%{cfg.buildcfg}"}
-   --
-   filter "configurations:Editor"
-      defines {"_EDITOR"}
-      symbols "On"
-   
-   filter "configurations:Minimal"
-      defines { "_MINIMAL" }
-      symbols "On"
-      optimize "On"
+        includedirs { vcpkg_installed .. "/include" }
+        print(vcpkg_installed)
+        libdirs { vcpkg_installed .. "/lib" }
 
-   filter "configurations:Release"
-      defines { "_NDEBUG","_RELEASE" }
-      optimize "On"
-]]
+        filter "configurations:Debug"
+            defines { "_DEBUG" }
+            symbols "On"
 
-project "Landmark"
-   kind "ConsoleApp"
-   language "C++"
-   cppdialect "C++20"
-   targetdir "bin/%{cfg.buildcfg}"
-   flags{"MultiProcessorCompile"}
-
-   files { "src/**.h", "src/**.c","src/**.cpp"}
-   pchheader "pch.h"
-   includedirs {"src","lib","imgui","glslang","lib/RenderDoc/include","lib/GLFW/include"}
-   links { "ImGui","ImPlot","vulkan","glfw3",
-   "glslang","MachineIndependent","OSDependent","GenericCodeGen","EGL","GL","GLEW" }
-   libdirs{"lib/RenderDoc/lib","lib/GLFW/lib"}
-   dependson {"ImGui","ImPlot"}
-
-   filter "configurations:Debug"
-      defines { "_DEBUG" }
-      symbols "On"
-
-   filter "configurations:Release"
-      defines { "_NDEBUG","_RELEASE" }
-      optimize "On"
-
-   --filter "action:gmake" IMPORTANT FOR COMPILING IN LINUX FOR WINDOWS
-      --gccprefix "x86_64-w64-mingw32-" --compilation in linux for windows
+        filter "configurations:Release"
+            defines { "_NDEBUG","_RELEASE" }
+            symbols "On"
+            optimize "On"
 
 
-project "ImGui"
-   kind "StaticLib"
-   language "C++"
-   targetdir "bin/%{cfg.buildcfg}"
-   flags{"MultiProcessorCompile"}
-
-   includedirs {"lib/GLFW/include"}
-   files { "lib/imgui/**.h","lib/imgui/**.cpp"  }
-   filter "configurations:Debug"
-      defines { "_DEBUG" }
-      symbols "On"
-
-   filter "configurations:Release"
-      defines { "_NDEBUG","_RELEASE" }
-      optimize "On"
-
-project "ImPlot"
-   kind "StaticLib"
-   language "C++"
-   targetdir "bin/%{cfg.buildcfg}"
-   flags{"MultiProcessorCompile"}
-
-   files { "lib/implot/**.h","lib/implot/**.cpp"  }
-   includedirs {"lib"}
-   
-   filter "configurations:Debug"
-      defines { "_DEBUG" }
-      symbols "On"
-
-   filter "configurations:Release"
-      defines { "_NDEBUG","_RELEASE" }
-      optimize "On"
 
 function customClean()
     -- Specify the directories or files to be cleaned
     local dirsToRemove = {
         "bin",
         "obj",
-        "Intermediate"
+        "Intermediate",
+        "vcpkg_installed"
     }
 
     local filesToRemove = {
@@ -113,7 +56,7 @@ function customClean()
         "ImPlot.vcxproj",
         "Landmark.vcxproj",
         "Landmark.vcxproj.filters",
-        "Landmark.sln"
+        "Landmark.sln",
     }
 
     -- Remove specified directories

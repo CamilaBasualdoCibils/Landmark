@@ -8,37 +8,37 @@ const static inline std::string AlbedoAttachmentName = "Albedo", NormalAttachmen
                                 DepthAttachmentName = "Depth", ColorAttachmentName = "Color";
 
 const static inline Graphics::CompositeLayerAttachmentProperties AlbedoProperties{
-    .format = Graphics::TextureFormatValues::eRGB8_UNorm,
+    .format = Graphics::TextureFormat::Values::eRGBA8_UNorm,
     .AspectMask = VK::ImageAspect::eColor,
     .Usage = {VK::ImageUsage::eColorAttachment, VK::ImageUsage::eSampled, VK::ImageUsage::eTransferSrc,
               VK::ImageUsage::eTransferDst}};
 
 const static inline Graphics::CompositeLayerAttachmentProperties NormalProperties{
-    .format = Graphics::TextureFormatValues::eRGB16_SFloat,
+    .format = Graphics::TextureFormat::Values::eRGBA16_SFloat,
     .AspectMask = VK::ImageAspect::eColor,
     .Usage = {VK::ImageUsage::eColorAttachment, VK::ImageUsage::eSampled, VK::ImageUsage::eTransferSrc,
               VK::ImageUsage::eTransferDst}};
 
 const static inline Graphics::CompositeLayerAttachmentProperties PositionProperties{
-    .format = Graphics::TextureFormatValues::eRGB16_SFloat,
+    .format = Graphics::TextureFormat::Values::eRGBA16_SFloat,
     .AspectMask = VK::ImageAspect::eColor,
     .Usage = {VK::ImageUsage::eColorAttachment, VK::ImageUsage::eSampled, VK::ImageUsage::eTransferSrc,
               VK::ImageUsage::eTransferDst}};
 
 const static inline Graphics::CompositeLayerAttachmentProperties MaterialProperties{
-    .format = Graphics::TextureFormatValues::eRGBA8_UNorm,
+    .format = Graphics::TextureFormat::Values::eRGBA8_UNorm,
     .AspectMask = VK::ImageAspect::eColor,
     .Usage = {VK::ImageUsage::eColorAttachment, VK::ImageUsage::eSampled, VK::ImageUsage::eTransferSrc,
               VK::ImageUsage::eTransferDst}};
 
 const static inline Graphics::CompositeLayerAttachmentProperties DepthProperties{
-    .format = Graphics::TextureFormatValues::eDepth32_SFloat,
+    .format = Graphics::TextureFormat::Values::eDepth32_SFloat,
     .AspectMask = VK::ImageAspect::eDepth,
     .Usage = {VK::ImageUsage::eDepthStencilAttachment, VK::ImageUsage::eSampled, VK::ImageUsage::eTransferSrc,
               VK::ImageUsage::eTransferDst}};
 
 const static inline Graphics::CompositeLayerAttachmentProperties ColorProperties{
-    .format = Graphics::TextureFormatValues::eRGBA8_UNorm,
+    .format = Graphics::TextureFormat::Values::eRGBA8_UNorm,
     .AspectMask = VK::ImageAspect::eColor,
     .Usage = {VK::ImageUsage::eColorAttachment, VK::ImageUsage::eSampled, VK::ImageUsage::eTransferSrc,
               VK::ImageUsage::eTransferDst}};

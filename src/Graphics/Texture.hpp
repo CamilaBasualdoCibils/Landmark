@@ -27,7 +27,10 @@ enum class TextureUsage
     eTransferDst
 };
 
-enum class TextureFormatValues
+
+struct TextureFormat
+{
+    enum class Values
 {
     eRGBA8_UNorm,  // uint8 RGBA
     eRGB8_UNorm,   // uint8 RGB
@@ -40,14 +43,14 @@ enum class TextureFormatValues
     eRG16_UNorm,
     eDepth32_SFloat,
     eRGB32_SFloat,
-    eRGB16_SFloat
+    eRGB16_SFloat,
+    eRGBA32_SFloat,
+    eRGBA16_SFloat
 };
-struct TextureFormat
-{
-    TextureFormat(TextureFormatValues v) : value(v)
+    TextureFormat(Values v) : value(v)
     {
     }
-    TextureFormatValues value;
+    Values value;
 
     constexpr std::optional<std::pair<GL::TextureFormats, GL::PixelFormats>> toGLFormat() const
     {
@@ -63,35 +66,43 @@ struct TextureFormat
                 return std::get<1>(entry);
         return std::nullopt;
     }
-    static inline constexpr std::tuple<TextureFormatValues, VK::Format, std::pair<GL::TextureFormats, GL::PixelFormats>>
+    static inline constexpr std::tuple<Values, VK::Format, std::pair<GL::TextureFormats, GL::PixelFormats>>
         textureFormatTable[] = {
             {
-                TextureFormatValues::eRGBA8_UNorm,
+                Values::eRGBA8_UNorm,
                 VK::Format::eRGBA8_UNorm,
                 {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eRGBA},
             },
 
-            {TextureFormatValues::eBGRA8_UNorm,
+            {Values::eBGRA8_UNorm,
              VK::Format::eBGRA8_UNorm,
              {GL::TextureFormats::eRGBA8_UNorm, GL::PixelFormats::eBGRA}},
 
-            {TextureFormatValues::eRGBA8_SRGB,
+            {Values::eRGBA8_SRGB,
              VK::Format::eRGBA8_SRGB,
              {GL::TextureFormats::eSRGB8_Alpha8, GL::PixelFormats::eRGBA}},
 
-            {TextureFormatValues::eDepth32_SFloat,
+            {Values::eDepth32_SFloat,
              VK::Format::eDepth32_SFloat,
              {GL::TextureFormats::eDepth32F, GL::PixelFormats::eDepthComponent}},
 
-            {TextureFormatValues::eRGB32_SFloat,
+            {Values::eRGB32_SFloat,
              VK::Format::eRGB32_SFloat,
              {GL::TextureFormats::eRGB32F, GL::PixelFormats::eRGB}},
-             
-            {TextureFormatValues::eRGB16_SFloat,
+
+            {Values::eRGB16_SFloat,
              VK::Format::eRGB16_SFloat,
              {GL::TextureFormats::eRGB16F, GL::PixelFormats::eRGB}},
 
-            {TextureFormatValues::eRGB8_UNorm,
+             {Values::eRGBA32_SFloat,
+             VK::Format::eRGBA32_SFloat,
+             {GL::TextureFormats::eRGBA32F, GL::PixelFormats::eRGBA}},
+
+            {Values::eRGBA16_SFloat,
+             VK::Format::eRGBA16_SFloat,
+             {GL::TextureFormats::eRGBA16F, GL::PixelFormats::eRGBA}},
+
+            {Values::eRGB8_UNorm,
              VK::Format::eRGB8_UNorm,
              {GL::TextureFormats::eRGB8_UNorm, GL::PixelFormats::eRGB}},
 
@@ -101,7 +112,7 @@ struct TextureProperties
 {
     uvec3 Dimensions;
     uint32_t Levels = 1;
-    TextureFormat Format = TextureFormatValues::eRGBA8_UNorm;
+    TextureFormat Format = TextureFormat::Values::eRGBA8_UNorm;
     Flags<TextureUsage> UsageFlags = {TextureUsage::eColorAttachment, TextureUsage::eSampled,
                                       TextureUsage::eTransferSrc, TextureUsage::eTransferDst};
 };

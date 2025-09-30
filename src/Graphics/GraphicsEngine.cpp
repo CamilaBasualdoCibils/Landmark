@@ -12,8 +12,8 @@ GraphicsEngine::GraphicsEngine(const GraphicsEngineProperties &properties)
     VK::Instance::Make(VulkanProperties);
 
     MainGPU = std::make_shared<GPUInstance>();
-
-    MainGPU->SetDevice(GPUSelector::Get().AllDevices()[0]).Init();
+    const auto Devices= GPUSelector::Get().AllDevices();
+    MainGPU->SetDevice(Devices[0]).Init();
 
     DearImGui::Make(DearImGuiProperties{});
 }
@@ -49,6 +49,8 @@ void GraphicsEngine::BeginFrame()
     glfwPollEvents();
     DearImGui::Get().BeginFrame();
     Editor::Editor::Get().Draw();
+    const vec2 ContentScale = GetMainWindow()->GetContentScale();
+    ImGui::GetIO().FontGlobalScale = (ContentScale.x+ContentScale.y)*0.5f;
 }
 void GraphicsEngine::EndFrame()
 {

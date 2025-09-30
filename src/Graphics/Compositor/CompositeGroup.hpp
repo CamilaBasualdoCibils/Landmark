@@ -27,5 +27,6 @@ class CompositeGroup : public ICompositeLayer, public std::enable_shared_from_th
         return Layers.back()->GetAttachments();
     }
     const decltype(Layers)& GetLayers() const {return Layers;}
+    void UpdateAttachments() override;
 };
 } // namespace Graphics

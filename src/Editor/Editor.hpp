@@ -5,8 +5,10 @@ namespace Editor
 {
 class EditorMainMenuBar : public ToolBar
 {
-    public:
-    EditorMainMenuBar():ToolBar("Main Menu Bar") {}
+  public:
+    EditorMainMenuBar() : ToolBar("Main Menu Bar")
+    {
+    }
     void DrawHandle() override
     {
         if (ImGui::BeginMainMenuBar())
@@ -33,6 +35,7 @@ class Editor : public Singleton<Editor>
     {
         return topbar;
     }
+    const std::string File_ToolBar = "File", Edit_ToolBar = "Edit", Debug_ToolBar = "Debug", View_ToolBar = "View",Tool_ToolBar = "Tool";
 };
 
 } // namespace Editor

@@ -4,7 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 namespace stb
 {
-#include "stb/stb_image.h"
+#include "stb_image.h"
 
 }
 

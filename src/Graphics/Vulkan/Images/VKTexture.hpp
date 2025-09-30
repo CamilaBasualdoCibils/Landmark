@@ -13,9 +13,9 @@ struct TextureProperties
 };
 class Texture : public InteropGiver
 {
-    GPURef<VK::Image> image;
-    GPURef<VK::ImageView> imageView;
-    GPURef<VK::Sampler> sampler;
+    VK::Image image;
+    VK::ImageView imageView;
+    VK::Sampler sampler;
     mutable std::optional<VkDescriptorSet> ImGuiDSet;
 
   public:
@@ -23,28 +23,41 @@ class Texture : public InteropGiver
     ~Texture();
     InteropTransaction ExportMemory() override
     {
-        return image->ExportMemory();
+        return image.ExportMemory();
     }
 
-    auto GetImage() const
+    const VK::Image& GetImage() const
+    {
+        return image;
+    }
+    VK::Image& GetImage() 
     {
         return image;
     }
 
-    auto GetImageView() const
+    const VK::ImageView& GetImageView() const
+    {
+        return imageView;
+    }
+    VK::ImageView& GetImageView()
     {
         return imageView;
     }
 
-    auto GetSampler() const
+    const VK::Sampler& GetSampler() const
     {
         return sampler;
     }
+    VK::Sampler& GetSampler() 
+    {
+        return sampler;
+    }
+
     auto GetImguiDescriptorSet() const
     {
 
         if (!ImGuiDSet)
-            ImGuiDSet = ImGui_ImplVulkan_AddTexture((vk::Sampler)*sampler, (vk::ImageView)*imageView,
+            ImGuiDSet = ImGui_ImplVulkan_AddTexture((vk::Sampler)sampler, (vk::ImageView)imageView,
                                         VkImageLayout::VK_IMAGE_LAYOUT_GENERAL);
         return ImGuiDSet.value();
     }

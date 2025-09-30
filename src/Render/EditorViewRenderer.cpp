@@ -83,7 +83,9 @@ EditorViewRenderer::EditorViewRenderer(std::shared_ptr<Graphics::CompositeGroup>
      vec2 ddx_pos = dFdx(pos);
      vec2 ddy_pos = dFdy(pos);
      gl_FragDepth = clip_space_pos.z/clip_space_pos.w;
-    FragColor = vec4(1.0,1.0,1.0, 1.0-gridTextureGradBox(pos,ddx_pos,ddy_pos)); // opacity = 1 when t > 0, opacity = 0 otherwise
+     float a = gridTextureGradBox(pos,ddx_pos,ddy_pos);
+     a = ((1.0-a)*(1.0-a));
+    FragColor = vec4(1.0,1.0,1.0, a); // opacity = 1 when t > 0, opacity = 0 otherwise
 
     })";
     const auto VertResult = Graphics::ShaderCompiler::Get().Compile(
@@ -114,7 +116,9 @@ EditorViewRenderer::EditorViewRenderer(std::shared_ptr<Graphics::CompositeGroup>
             .VertexAttributes = {},
             .ColorAttachments = {VK::GraphicsPipelineAttachment{
                 .format = Render::PresentStageAttachments.at(Render::ColorAttachmentName).format.toVKFormat().value(),
-                .Blending = VK::AttachmentBlending{.BlendEnable = true,.SrcAlphaFactor = VK::BlendFactor::eZero,.DstAlphaFactor = VK::BlendFactor::eOne}}},
+                .Blending = VK::AttachmentBlending{.BlendEnable = true,
+                                                   .SrcAlphaFactor = VK::BlendFactor::eZero,
+                                                   .DstAlphaFactor = VK::BlendFactor::eOne}}},
             .DepthAttachment =
                 VK::GraphicsPipelineAttachment{
                     .format =
@@ -141,7 +145,7 @@ Graphics::CompositeLayerExecute EditorViewRenderer::OnRender(const Graphics::Com
 
     const ivec2 Resolution = GetResolution();
     CmdManager->Push(VK::CopyImageCommand(
-        Context.previousLayers.front()->GetAttachment(Render::ColorAttachmentName),
+        Context.previousLayers.top()->GetAttachment(Render::ColorAttachmentName),
         GetAttachment(Render::ColorAttachmentName), VK::ImageLayouts::eGeneral, VK::ImageLayouts::eGeneral, ivec3(0),
         ivec3(0), ivec3(Resolution, 1),
         VK::CopyImageCommand::SubresourceRange{
@@ -149,7 +153,7 @@ Graphics::CompositeLayerExecute EditorViewRenderer::OnRender(const Graphics::Com
         VK::CopyImageCommand::SubresourceRange{
             .AspectMask = VK::ImageAspect::eColor, .mipLevel = 0, .baseArrayLayer = 0, .LayerCount = 1}));
     CmdManager->Push(VK::CopyImageCommand(
-        Context.previousLayers.front()->GetAttachment(Render::DepthAttachmentName),
+        Context.previousLayers.top()->GetAttachment(Render::DepthAttachmentName),
         GetAttachment(Render::DepthAttachmentName), VK::ImageLayouts::eGeneral, VK::ImageLayouts::eGeneral, ivec3(0),
         ivec3(0), ivec3(Resolution, 1),
         VK::CopyImageCommand::SubresourceRange{

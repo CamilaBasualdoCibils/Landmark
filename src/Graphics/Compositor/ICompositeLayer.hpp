@@ -10,7 +10,7 @@ class CompositeGroup;
 struct CompositeContext;
 struct CompositeLayerAttachmentProperties
 {
-    TextureFormat format = TextureFormatValues::eRGBA8_UNorm;
+    TextureFormat format = TextureFormat::Values::eRGBA8_UNorm;
     Flags<VK::ImageAspect> AspectMask = VK::ImageAspect::eColor;
     Flags<VK::ImageUsage> Usage = {VK::ImageUsage::eTransferSrc,VK::ImageUsage::eTransferDst,VK::ImageUsage::eColorAttachment};
 };
@@ -57,7 +57,7 @@ class ICompositeLayer
     }
     uvec2 GetResolution() const;
 
-    void UpdateAttachments();
+    virtual void UpdateAttachments();
 
   public:
     void SetResolutionOverride(uvec2 NewResolution);

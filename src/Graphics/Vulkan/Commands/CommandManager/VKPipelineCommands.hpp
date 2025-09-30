@@ -49,7 +49,7 @@ struct TransitionImageLayoutCommand : Command
         barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         if (std::holds_alternative<GPURef<VK::Texture>>(Image))
-            barrier.image = *std::get<GPURef<VK::Texture>>(Image)->GetImage();
+            barrier.image = std::get<GPURef<VK::Texture>>(Image)->GetImage();
         else if (std::holds_alternative<vk::Image>(Image))
         {
             barrier.image = std::get<vk::Image>(image);

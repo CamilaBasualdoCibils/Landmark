@@ -31,7 +31,7 @@ VK::Device::Device(GPURef<PhysicalDevice> phyDev, const VK::DeviceProperties &pr
     DeviceCreateInfo.pNext = &timelineFeatures;
     vk::PhysicalDeviceImagelessFramebufferFeatures ImageLessFramebuffersFeatures;
     ImageLessFramebuffersFeatures.imagelessFramebuffer = true;
-    timelineFeatures.setPNext(ImageLessFramebuffersFeatures);
+    timelineFeatures.setPNext(&ImageLessFramebuffersFeatures);
     vk::PhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures{};
     dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
     ImageLessFramebuffersFeatures.setPNext(&dynamicRenderingFeatures);

@@ -27,6 +27,7 @@ class CommandManager : public Graphics::ICommandManager
         GPURef<VK::Fence> CompletionFence;
     };
     std::deque<Partition> Partitions;
+
     bool PartitionsDirty = true;
     void MakePartition();
     const Flags<CmdCapatiblities> Capabilities;

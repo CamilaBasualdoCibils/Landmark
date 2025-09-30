@@ -19,7 +19,7 @@ VK::Memory::Memory(const VK::MemoryType& type,size_t size)
     vk::MemoryGetFdInfoKHR getFdInfo;
     getFdInfo.memory = Handle,
     getFdInfo.handleType = vk::ExternalMemoryHandleTypeFlagBits::eOpaqueFd;
-    const auto GetMemoryResult = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetMemoryFdKHR(getFdInfo,&fdHandle);
+    const auto GetMemoryResult = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice()->GetMemoryFdKHR((VkMemoryGetFdInfoKHR*)&getFdInfo,&fdHandle);
     LASSERT(GetMemoryResult == VkResult::VK_SUCCESS, "maaan");
 
 }

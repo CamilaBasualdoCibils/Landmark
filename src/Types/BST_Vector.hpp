@@ -1,6 +1,5 @@
 #pragma once
-#include <vector>
-#include <functional>
+#include <pch.h>
 
 template <typename T, auto comparator = std::less<T>{}>
 class BST_Vector

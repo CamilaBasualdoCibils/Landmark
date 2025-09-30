@@ -14,7 +14,15 @@ Graphics::CompositeLayerExecute Graphics::CompositeGroup::OnRender(const Graphic
         CompositeLayerExecute result = Layer->Render(Context);
         Execute.CommandManagers.insert(Execute.CommandManagers.end(),result.CommandManagers.begin(),result.CommandManagers.end());
         //LASSERT(!(result.CommandManagers.empty() ^!result.DoneSemaphore),"If commands provided then a Done semaphore must be provided as well");
-        Context.previousLayers.push_back(Layer);
+        Context.previousLayers.push(Layer);
     }
     return Execute;
+}
+
+void Graphics::CompositeGroup::UpdateAttachments()
+{
+     for (const auto& Layer : Layers)
+    {
+        Layer->UpdateAttachments();
+    }
 }

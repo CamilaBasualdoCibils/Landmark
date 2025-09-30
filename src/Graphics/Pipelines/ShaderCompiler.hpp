@@ -1,7 +1,5 @@
 #pragma once
 #include "misc/Singleton.hpp"
-#include <glslang/Public/ShaderLang.h>
-#include <glslang/SPIRV/GlslangToSpv.h>
 #include <pch.h>
 #include <type_traits>
 namespace Graphics

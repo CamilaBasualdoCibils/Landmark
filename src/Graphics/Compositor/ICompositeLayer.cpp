@@ -28,7 +28,7 @@ void Graphics::ICompositeLayer::UpdateAttachments()
     if (glm::any(glm::greaterThan(NewResolution, RealUnderlyingResolution)))
     {
         if (RealUnderlyingResolution != uvec2(0, 0))
-            std::cout << "Resizing composite layer attachments.\n";
+            std::cout <<Properties.Name <<":  Resizing composite layer attachments.\n";
 
         RealUnderlyingResolution = NewResolution;
         for (const auto &desiredAttachment : Properties.Attachments)
@@ -40,6 +40,8 @@ void Graphics::ICompositeLayer::UpdateAttachments()
                 .ImageViewProp = VK::ImageViewProperties{.AspectMask = desiredAttachment.second.AspectMask}});
         }
     }
+    
+    
 }
 
 void Graphics::ICompositeLayer::SetResolutionOverride(uvec2 NewResolution)

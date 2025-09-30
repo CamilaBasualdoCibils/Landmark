@@ -1,0 +1,46 @@
+
+#include <pch.h>
+#include "CompositorTest.hpp"
+#include "CompositeLayer.hpp"
+struct PipelineOutput
+{
+};
+
+struct PipelinePayload
+{
+
+};
+
+class SimplePass : public Render::CompositePass<PipelinePayload,PipelineOutput>
+{
+
+};
+
+struct SubPassPayload
+{
+
+};
+class SimpleSubpass: public Render::CompositePass<SubPassPayload,PipelinePayload>
+{
+
+};
+
+class SimpleLayer : public Render::CompositeLayer<PipelinePayload>
+{
+     PipelinePayload Compose(const PipelinePayload& in) override {return in;};
+};
+
+class SimpleSublayer : public Render::CompositeLayer<SubPassPayload>
+{
+     SubPassPayload Compose(const SubPassPayload& in) override {return in;};
+};
+void CompositeTestSimple()
+{
+    SimplePass pass;
+    auto subpass = pass.insert<SimpleSubpass>();
+    pass.insert<SimpleLayer>();
+    subpass->insert<SimpleSublayer>();
+
+    PipelineOutput output;
+    output = pass.Compose(output);
+}

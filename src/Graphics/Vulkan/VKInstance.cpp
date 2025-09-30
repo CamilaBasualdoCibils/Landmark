@@ -11,6 +11,11 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(vk::DebugUtilsMessageSeverityFlagBi
 {
     std::cerr << "Validation Layer: " << pCallbackData->pMessage << std::endl;
     //LASSERT(messageSeverity != vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,"Error");
+    if (messageSeverity != vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo &&messageSeverity != vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose)
+    {
+        int a =0;
+        a = 1;
+    }
     return VK_FALSE;
 }
 
@@ -28,11 +33,12 @@ Instance::Instance(const InstanceProperties &properties)
     //EnabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 
     EnabledExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    EnabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
     //EnabledValidationLayers.push_back("VK_LAYER_LUNARG_API_DUMP");
     // EnabledValidationLayers.push_back("VK_LAYER_LUNARG_screenshot");
     // EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_profiles");
     //// EnabledValidationLayers.push_back("VK_LAYER_LUNARG_monitor");
-    EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_synchronization2");
+    //EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_synchronization2");
     EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_validation");
     //EnabledValidationLayers.push_back("VK_LAYER_LUNARG_crash_diagnostic");
     //EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_shader_object");
@@ -72,6 +78,18 @@ Instance::Instance(const InstanceProperties &properties)
             if (it == availableExt.end())
             {
                 std::cerr << "Missing Extensions: " << NeedExt << std::endl;
+            }
+        }
+        const auto &availableLayers = vk::enumerateInstanceLayerProperties().value;
+        for (const auto &NeedValid : EnabledValidationLayers)
+        {
+            auto it = std::find_if(availableLayers.begin(), availableLayers.end(), [&](const vk::LayerProperties &avail) {
+                return NeedValid == avail.layerName;
+            });
+
+            if (it == availableLayers.end())
+            {
+                std::cerr << "Missing Layer: " << NeedValid << std::endl;
             }
         }
     }

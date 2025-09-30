@@ -117,8 +117,9 @@ enum class Format : std::underlying_type<vk::Format>::type
     eRG32_SFloat = (size_t)vk::Format::eR32G32Sfloat,
     eRGB32_SFloat = (size_t)vk::Format::eR32G32B32Sfloat, // RGB 32bit signed float
     eRGB16_SFloat = (size_t)vk::Format::eR16G16B16Sfloat, // RGB 16bit signed float
-
-    eRGBA32_SFloat = (size_t)vk::Format::eR32G32B32A32Sfloat,
+    eRGBA32_SFloat = (size_t)vk::Format::eR32G32B32A32Sfloat, // RGBA 32bit signed float
+    eRGBA16_SFloat = (size_t)vk::Format::eR16G16B16A16Sfloat, // RGBA 16bit signed float
+    
     eDepth32_SFloat = (size_t)vk::Format::eD32Sfloat,
 };
 enum class ImageLayouts : std::underlying_type<vk::ImageLayout>::type

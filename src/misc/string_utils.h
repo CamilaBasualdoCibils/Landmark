@@ -1,6 +1,6 @@
 #include <pch.h>
 
-std::string string_formatBytes(size_t bytes) {
+inline std::string string_formatBytes(size_t bytes) {
     const char* units[] = {"Bytes", "KB", "MB", "GB", "TB", "PB"};
     const size_t unitCount = sizeof(units) / sizeof(units[0]);
 

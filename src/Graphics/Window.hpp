@@ -5,6 +5,10 @@
 #include <pch.h>
 namespace Graphics
 {
+struct WindowProperties
+{
+    ivec2 InitialSize;
+};
 class Window
 {
 
@@ -13,7 +17,10 @@ class Window
     mutable GPURef<VK::Swapchain> Swapchain;
     std::shared_ptr<Graphics::CompositeGroup> WindowComposite;
     const std::string Name;
-    GPURef<Graphics::Semaphore> BlitCompleteSemaphore = GPURef<Graphics::Semaphore>::MakeRef(),ImageReadySemaphore = GPURef<Graphics::Semaphore>::MakeRef();
+    GPURef<Graphics::Semaphore> BlitCompleteSemaphore = GPURef<Graphics::Semaphore>::MakeRef(),
+                                ImageReadySemaphore = GPURef<Graphics::Semaphore>::MakeRef();
+    ivec2 FramebufferSize;
+    ivec2 WindowSize = {1920,1080};
 
   public:
     Window(const std::string &Name);
@@ -43,5 +50,18 @@ class Window
     {
         return WindowComposite;
     }
+    vec2 GetContentScale() const;
+
+  private:
+    static void OnWindowResize(GLFWwindow *window, int width, int height)
+    {
+        reinterpret_cast<Window *>(glfwGetWindowUserPointer(window))->OnWindowResize(ivec2(width, height));
+    }
+    static void OnFramebufferResize(GLFWwindow *window, int width, int height)
+    {
+        reinterpret_cast<Window *>(glfwGetWindowUserPointer(window))->OnFramebufferResize(ivec2(width, height));
+    }
+    void OnWindowResize(ivec2 NewSize);
+    void OnFramebufferResize(ivec2 NewSize);
 };
 } // namespace Graphics

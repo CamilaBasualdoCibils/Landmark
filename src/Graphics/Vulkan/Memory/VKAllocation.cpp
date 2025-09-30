@@ -15,7 +15,8 @@ InteropTransaction VK::Allocation::ExportMemory()
         vk::MemoryGetFdInfoKHR GetFDInfo;
         GetFDInfo.handleType = vk::ExternalMemoryHandleTypeFlagBits::eOpaqueFd;
         GetFDInfo.memory = GetDeviceMemory();
-        device.lock()->GetMemoryFdKHR(GetFDInfo, &InteropTrans->fdHandle);
+        
+        device.lock()->GetMemoryFdKHR((VkMemoryGetFdInfoKHR*)&GetFDInfo,  &InteropTrans->fdHandle);
     }
     return *InteropTrans;
 }

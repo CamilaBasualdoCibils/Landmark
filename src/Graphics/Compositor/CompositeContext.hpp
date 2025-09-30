@@ -8,7 +8,7 @@ namespace Graphics
 {
     struct CompositeContext
     {
-        std::vector<std::shared_ptr<ICompositeLayer>> previousLayers;
+        std::stack<std::shared_ptr<ICompositeLayer>> previousLayers;
 
     };
 } // namespace Graphics

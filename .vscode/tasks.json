@@ -36,7 +36,7 @@
         {
             "label": "Build Release",
             "type": "shell",
-            "command": "make -j 16 config=release",
+            "command": "make -j 16 config=release  2>&1 | tee build.log",
             "group": {
                 "kind": "build",
                 "isDefault": true

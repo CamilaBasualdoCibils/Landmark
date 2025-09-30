@@ -14,7 +14,7 @@ VK::Semaphore::Semaphore()
     TypeInfo.semaphoreType = vk::SemaphoreType::eBinary;
     TypeInfo.initialValue = 0;
     vk::SemaphoreCreateInfo CreateInfo;
-    CreateInfo.setPNext(TypeInfo);
+    CreateInfo.setPNext(&TypeInfo);
     TypeInfo.setPNext(&ExportInfo);
 
     std::shared_ptr<VK::Device> DeviceHandle = GraphicsEngine::Get().GetMainGPU()->VK()->LogicalDevice();
@@ -27,7 +27,7 @@ VK::Semaphore::Semaphore()
     getFdInfo.semaphore = Handle;
 
     
-    const vk::Result FDResult = (vk::Result)DeviceHandle->GetSemaphoreFdKHR(getFdInfo,&fdHandle);
+    const vk::Result FDResult = (vk::Result)DeviceHandle->GetSemaphoreFdKHR((VkSemaphoreGetFdInfoKHR*)&getFdInfo,&fdHandle);
 
     LASSERT(FDResult == vk::Result::eSuccess, "FD fao;ire");
 }

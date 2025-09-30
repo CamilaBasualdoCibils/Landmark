@@ -1,0 +1,9 @@
+#pragma once
+#include <pch.h>
+
+
+/// @brief Represents a singular Texture/Image for rendering
+struct CompositeAttachment
+{
+
+};

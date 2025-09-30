@@ -1,5 +1,12 @@
 {
-     "C_Cpp.default.browse.limitSymbolsToIncludedHeaders":true,
+    "terminal.integrated.env.linux": {
+        "VCPKG_FEATURE_FLAGS": "manifests",
+        "VCPKG_DEFAULT_TRIPLET": "x64-linux"
+    },
+    "cmake.environment": {
+        "VCPKG_DEFAULT_TRIPLET": "x64-linux"
+    },
+    "C_Cpp.default.browse.limitSymbolsToIncludedHeaders": true,
     "cmake.configureOnOpen": true,
     "cmake.ignoreCMakeListsMissing": true,
     "C_Cpp.default.compilerPath": "/usr/bin/clang++-18",
@@ -93,5 +100,4 @@
         "cinttypes": "cpp",
         "execution": "cpp"
     },
-
 }

@@ -34,8 +34,9 @@ vk::Result VK::Allocator::CreateBuffer(const vk::BufferCreateInfo &CreateInfo, v
     VkBuffer buf;
     VK::Allocation alloc;
     alloc.allocator = GPURef_from_this();
+    VkBufferCreateInfo Ci = CreateInfo;
     vk::Result result =
-        (vk::Result)vmaCreateBuffer(allocator, CreateInfo, &allocCreateInfo, &buf, &alloc.alloc, &alloc.info);
+        (vk::Result)vmaCreateBuffer(allocator, &Ci, &allocCreateInfo, &buf, &alloc.alloc, &alloc.info);
     LASSERT(result == vk::Result::eSuccess, "shit");
     outBuffer = buf;
     allocation = alloc;
@@ -57,8 +58,9 @@ vk::Result VK::Allocator::CreateImage(const vk::ImageCreateInfo &CreateInfo, vk:
     VkImage image;
     VK::Allocation alloc;
     alloc.allocator = GPURef_from_this();
+    VkImageCreateInfo ci = CreateInfo;
     vk::Result result =
-        (vk::Result)vmaCreateImage(allocator, CreateInfo, &allocCreateInfo, &image, &alloc.alloc, &alloc.info);
+        (vk::Result)vmaCreateImage(allocator, &ci, &allocCreateInfo, &image, &alloc.alloc, &alloc.info);
     LASSERT(result == vk::Result::eSuccess, "shit");
     outImage = image;
     allocation = alloc;

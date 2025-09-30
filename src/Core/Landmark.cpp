@@ -8,10 +8,18 @@
 #include "Render/Components/CameraComponent.hpp"
 #include "Render/Components/MeshDescriptor.hpp"
 #include "Render/Components/TransformComponent.hpp"
+
+#include "AssetControl/FileParserRegistry.hpp"
+#include "AssetControl/AssetRegistry.hpp"
+#include "Render/Terrain/Atlas.hpp"
+#include "Render/Compositor/CompositorTest.hpp"
 Landmark::Landmark(const LandmarkStartProperties &Properties)
 {
-
     GraphicsEngine::Make(GraphicsEngineProperties{});
+    Atlas::Check();
+    CompositeTestSimple();
+    FileParserRegistry::Check();
+    AssetRegistry::Check();
     std::shared_ptr<Mesh> meshes[2];
     for (int i = 0; i < 2; i++)
     {
