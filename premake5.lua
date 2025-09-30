@@ -84,3 +84,16 @@ newaction {
         customClean()
     end
 }
+
+newaction 
+{
+    trigger = "setup",
+    description = "Setups up dependencies",
+    execute = function ()
+        --local vcpkgDir = path.join(os.getenv("HOME") or ".", "vcpkg")
+        local manifestDir = os.getcwd()
+         os.execute("git clone https://github.com/microsoft/vcpkg.git ")
+         os.execute("./vcpkg/bootstrap-vcpkg.sh")
+         os.execute("./vcpkg/vcpkg install")
+    end
+}
