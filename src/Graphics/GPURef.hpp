@@ -17,7 +17,7 @@ template <typename T> class GPURef : public std::shared_ptr<T>
         *this = MakeRef(std::forward<Args>(args)...);
         return *this;
     }
-    template <typename... Args> static GPURef MakeRef(Args &&...args)
+     template <typename... Args> [[nodiscard]] static GPURef MakeRef(Args &&...args)
     {
         std::shared_ptr<T> ptr = std::make_shared<T>(std::forward<Args>(args)...);
         if constexpr (std::is_base_of<Enable_GPURef_From_This<T>, T>::value)

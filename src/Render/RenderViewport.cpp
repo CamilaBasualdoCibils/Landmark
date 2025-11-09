@@ -1,15 +1,29 @@
 #include "RenderViewport.hpp"
-#include "World.hpp"
+#include "Entity/World.hpp"
 
-#include "Components/CameraComponent.hpp"
-#include "Components/TransformComponent.hpp"
 #include "Editor/EditorLambdaItem.hpp"
-#include "Graphics/Compositor/CompositeGroup.hpp"
-#include "Render/World.hpp"
+#include "Render/Camera/CameraComponent.hpp"
+#include "Transform/TransformComponent.hpp"
+// #include "Graphics/Compositor/CompositeGroup.hpp"
+#include "Entity/World.hpp"
+#include "Render/Renderer/Renderer.hpp"
 #include "misc/Conversions.hpp"
-#include "EditorViewRenderer.hpp"
+// #include "EditorViewRenderer.hpp"
+#include "Render/Compositor/Pipeline.hpp"
 void RenderViewport::DrawWindowContents()
 {
+
+    ivec2 AvailableSpace = glm::max(vec2(0.0f), ImGuiToGlm(ImGui::GetContentRegionAvail()));
+    if (Renderer::Get().GetPipeline()->GetColorImages().empty())
+        return;
+    const auto mainImage = Renderer::Get().GetPipeline()->GetColorImages().front();
+
+    uvec2 ImageResolution = Renderer::Get().GetPipeline()->GetEntrySettings().BaseResolution;
+    const vec2 MaxUvThatFits = (vec2)AvailableSpace / (vec2)ImageResolution;
+
+    ImGui::Image((ImTextureID)mainImage.Texture->GetImguiDescriptorSet(), GlmToImGui(AvailableSpace), ImVec2(0, 0),
+                 GlmToImGui(vec2(1)));
+    /*
     Entity &RenderCamera = SelectedCamera.has_value() ? *SelectedCamera : ViewportCameraEntity;
     ivec2 AvailableSpace = glm::max(vec2(0.0f), ImGuiToGlm(ImGui::GetContentRegionAvail()));
 
@@ -19,6 +33,7 @@ void RenderViewport::DrawWindowContents()
     GPURef<VK::Texture> ColorImage = cameraCompositeGroup->GetAttachments().at("Color");
     uvec2 ImageResolution = (uvec2)ColorImage->GetImage().GetProperties().Dimensions;
     const vec2 MaxUvThatFits = (vec2)AvailableSpace / (vec2) ImageResolution;
+
     ImGui::Image((ImTextureID)ColorImage->GetImguiDescriptorSet(),
                  GlmToImGui(AvailableSpace),ImVec2(0,0),GlmToImGui(MaxUvThatFits));
 
@@ -63,11 +78,13 @@ void RenderViewport::DrawWindowContents()
                                     camera.FOV,
                                 30.0f, 150.0f);
     }
+                                */
 }
 
 RenderViewport::RenderViewport()
     : Editor::ToolItem("Viewport"), Editor::Window<>("Viewport"), ViewportCameraEntity(World::Get().CreateEntity())
 {
+    /*
     ViewportCameraEntity.AddOrGetComponent<CameraComponent>();
     ViewportCameraEntity.GetInfo().Name = "Viewport Camera";
     ViewportCameraEntity.GetComponent<CameraComponent>().compositeGroup->AddLayer<EditorViewRenderer>(ViewportCameraEntity);
@@ -79,7 +96,7 @@ RenderViewport::RenderViewport()
             auto CameraView = World::Get().GetComponentView<CameraComponent, EntityInfo>();
 
             for (auto Ent : CameraView)
-            {   
+            {
                 const EntityInfo &info = CameraView.get<EntityInfo>(Ent);
                 if (info.Hidden)
                     continue;
@@ -98,5 +115,5 @@ RenderViewport::RenderViewport()
             }
             ImGui::EndMenu();
         }
-    });
+    });*/
 }

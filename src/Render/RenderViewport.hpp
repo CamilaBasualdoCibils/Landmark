@@ -2,9 +2,9 @@
 #include <Editor/EditorToolItem.hpp>
 #include <Editor/EditorWindow.hpp>
 #include <pch.h>
-#include <Render/Types/Camera.hpp>
-#include <Render/Types/Transform.hpp>
-#include "Render/Components/Entity.hpp"
+#include <Render/Camera/Camera.hpp>
+#include <Transform/Transform.hpp>
+#include "Entity/Entity.hpp"
 class RenderViewport : public Editor::ToolItem, Editor::Window<>
 {
     std::optional<Entity> SelectedCamera;

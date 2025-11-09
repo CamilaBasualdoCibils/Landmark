@@ -1,19 +1,17 @@
 #pragma once
 #include "Graphics/ICommandManager.hpp"
-#include "Window.hpp"
 #include <Graphics/Devices/GPUInstance.hpp>
-
+#include <Graphics/Vulkan/Synchronization/VKFence.hpp>
 #include <misc/Singleton.hpp>
-
+#include <Graphics/Vulkan/Commands/CommandManager/VKCommandManager.hpp>
 struct GraphicsEngineProperties
 {
 };
 class GraphicsEngine : public Singleton<GraphicsEngine, GraphicsEngineProperties>
 {
     std::shared_ptr<GPUInstance> MainGPU;
-    std::unordered_map<std::string, std::shared_ptr<Graphics::Window>> ActiveWindows;
-    const std::string MAINWINDOWNAME = "Main";
     std::queue<std::shared_ptr<Graphics::ICommandManager>> ExecuteCommandBuffers;
+    std::deque<std::pair<GPURef<VK::Fence>,std::shared_ptr<VK::CommandManager>>> VkCommandBuffersInExecution;
     void Dispatch(std::shared_ptr<Graphics::ICommandManager> CmdBuffer);
   public:
     GraphicsEngine(const GraphicsEngineProperties &);
@@ -33,24 +31,6 @@ class GraphicsEngine : public Singleton<GraphicsEngine, GraphicsEngineProperties
     {
         return MainGPU;
     }
-    
-    [[nodiscard]] const decltype(ActiveWindows) &GetAllWindows() const
-    {
-        return ActiveWindows;
-    }
-    [[nodiscard]] std::shared_ptr<Graphics::Window> GetOrCreateWindow(const std::string &name)
-    {
-        if (!ActiveWindows.contains(name))
-        {
-            ActiveWindows.insert(std::make_pair(name, std::make_shared<Graphics::Window>(name)));
-        }
-        return ActiveWindows[name];
-    }
-    [[nodiscard]] std::shared_ptr<Graphics::Window> GetMainWindow()
-    {
-        return GetOrCreateWindow(MAINWINDOWNAME);
-    }
-    void DestroyWindow(std::shared_ptr<Graphics::Window>);
     void Update() const
     {
         glfwPollEvents();

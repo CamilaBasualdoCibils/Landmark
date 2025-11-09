@@ -13,6 +13,12 @@
         "vulkan-binding"
       ]
     },
+    "vulkan",
+    "vulkan-headers",
+    "vulkan-loader",
+    "vulkan-validationlayers",
+    "vulkan-tools",
+    "spirv-tools",
     "implot",
     "implot3d",
     "nlohmann-json",
@@ -23,6 +29,7 @@
     "boost-type-traits",
     "boost-uuid",
     "boost-multi-index",
-    "boost-container"
+    "boost-container",
+    "boost-describe"
   ]
 }

@@ -7,6 +7,7 @@ namespace GL
     {
         EGLDeviceEXT Handle = 0;
         std::array<char, 16> DeviceUUID = {0}, DriverUUID = {0};
+        std::string DRMPath,RenderNodePath;
     };
     struct Context
     {

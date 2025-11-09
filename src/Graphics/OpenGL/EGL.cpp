@@ -36,6 +36,20 @@ GL::EGL::EGL()
             std::cerr << "Failed to get EGL display\n";
             continue;
         }
+        const char* cDrmPath =eglQueryDeviceStringEXT(device->Handle, EGL_DRM_DEVICE_FILE_EXT);
+        if (cDrmPath)
+        {
+            device->DRMPath = cDrmPath;
+            std::cout << device->DRMPath << std::endl;
+        }
+        const char* cRenderNodePath = eglQueryDeviceStringEXT(device->Handle, EGL_DRM_RENDER_NODE_FILE_EXT);
+        if (cRenderNodePath)
+        {
+            device->RenderNodePath = cRenderNodePath;
+            std::cout << device->RenderNodePath << std::endl;
+
+
+        }
         eglQueryDeviceBinaryEXT(device->Handle, EGL_DRIVER_UUID_EXT, device->DriverUUID.size(),
                                 device->DriverUUID.data(), nullptr);
         eglQueryDeviceBinaryEXT(device->Handle, EGL_DEVICE_UUID_EXT, device->DriverUUID.size(),
@@ -46,7 +60,7 @@ void GLAPIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
                               const GLchar *message, const void *userParam)
 {
     std::cerr << "GL DEBUG: " << message << std::endl;
-    LASSERT(severity== GL_DEBUG_SEVERITY_NOTIFICATION, message);
+    LASSERT(severity == GL_DEBUG_SEVERITY_NOTIFICATION, message);
 }
 std::shared_ptr<GL::Context> GL::EGL::CreateContext(std::shared_ptr<Device> Device)
 {

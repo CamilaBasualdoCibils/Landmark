@@ -10,11 +10,12 @@ GPUSelector::GPUSelector()
     for (int i = 0; i < VulkanDevices.size(); i++)
     {
         const auto &VKDevice = VulkanDevices[i];
-
+        
         for (int j = 0; j < EGLDevices.size(); j++)
         {
             const auto &EGLDevice = EGLDevices[j];
 
+            
             if (!std::memcmp(VKDevice->GetDeviceUUID().data(), EGLDevice->DeviceUUID.data(), 16))
             {
                 AvailableDevices.emplace_back(std::make_shared<GPUPhysicalDevice>(VKDevice, EGLDevice));

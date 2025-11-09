@@ -1,8 +1,8 @@
 #pragma once
 #include <pch.h>
 
-#include "CompositeLayer.hpp"
-#include "CompositePass.hpp"
-#include "CompositePipeline.hpp"
+#include "Layer.hpp"
+#include "Pass.hpp"
+#include "Pipeline.hpp"
 
 void CompositeTestSimple();

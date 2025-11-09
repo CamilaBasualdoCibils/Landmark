@@ -3,6 +3,19 @@
 
 namespace VK
 {
+enum class AttachmentLoadOp : std::underlying_type_t<vk::AttachmentLoadOp>
+{
+    eLoad = (size_t)vk::AttachmentLoadOp::eLoad,
+    eClear = (size_t)vk::AttachmentLoadOp::eClear,
+    eDontCare = (size_t)vk::AttachmentLoadOp::eDontCare,
+};
+
+enum class AttachmentStoreOp : std::underlying_type_t<vk::AttachmentStoreOp>
+{
+    eStore = (size_t)vk::AttachmentStoreOp::eStore,
+    eNone = (size_t)vk::AttachmentStoreOp::eNone,
+    eDontCare = (size_t)vk::AttachmentStoreOp::eDontCare,
+};
 enum class CompareOp : std::underlying_type_t<vk::CompareOp>
 {
     eAlways = (size_t)vk::CompareOp::eAlways,
@@ -115,11 +128,11 @@ enum class Format : std::underlying_type<vk::Format>::type
     eBGRA8_SRGB = (size_t)vk::Format::eB8G8R8A8Srgb,
     eRGBA8_SRGB = (size_t)vk::Format::eR8G8B8A8Srgb,
     eRG32_SFloat = (size_t)vk::Format::eR32G32Sfloat,
-    eRGB32_SFloat = (size_t)vk::Format::eR32G32B32Sfloat, // RGB 32bit signed float
-    eRGB16_SFloat = (size_t)vk::Format::eR16G16B16Sfloat, // RGB 16bit signed float
+    eRGB32_SFloat = (size_t)vk::Format::eR32G32B32Sfloat,     // RGB 32bit signed float
+    eRGB16_SFloat = (size_t)vk::Format::eR16G16B16Sfloat,     // RGB 16bit signed float
     eRGBA32_SFloat = (size_t)vk::Format::eR32G32B32A32Sfloat, // RGBA 32bit signed float
     eRGBA16_SFloat = (size_t)vk::Format::eR16G16B16A16Sfloat, // RGBA 16bit signed float
-    
+
     eDepth32_SFloat = (size_t)vk::Format::eD32Sfloat,
 };
 enum class ImageLayouts : std::underlying_type<vk::ImageLayout>::type

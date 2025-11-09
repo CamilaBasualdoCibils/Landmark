@@ -34,6 +34,7 @@ Instance::Instance(const InstanceProperties &properties)
 
     EnabledExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     EnabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    //EnabledExtensions.push_back(VK_EXT_PHYSICAL_DEVICE_DRM_EXTENSION_NAME);
     //EnabledValidationLayers.push_back("VK_LAYER_LUNARG_API_DUMP");
     // EnabledValidationLayers.push_back("VK_LAYER_LUNARG_screenshot");
     // EnabledValidationLayers.push_back("VK_LAYER_KHRONOS_profiles");

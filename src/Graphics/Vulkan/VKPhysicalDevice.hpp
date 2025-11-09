@@ -12,6 +12,7 @@ class PhysicalDevice
     vk::PhysicalDeviceProperties2 PhysicalDeviceProperties2;
     vk::PhysicalDeviceIDProperties PhysicalDeviceIDProperties;
     vk::PhysicalDeviceMemoryProperties PhysicalDeviceMemoryProperties;
+    vk::PhysicalDeviceDrmPropertiesEXT PhysicalDeviceDrmProperties;
 
   public:
     PhysicalDevice(const vk::PhysicalDevice &phDev);

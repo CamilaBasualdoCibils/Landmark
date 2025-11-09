@@ -1,9 +1,0 @@
-#pragma once
-#include <pch.h>
-
-template <typename In,typename Out>
-class CompositeObject
-{
-
-    virtual void Compose(const In& in, Out& out) = 0;
-};

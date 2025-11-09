@@ -44,20 +44,27 @@ function customClean()
 
     local filesToRemove = {
         "Makefile",
-        "myproject.sln",
-        "Demo.make",
-        "ImGui.make",
-        "ImPlot.make",
-        "Landmark.make",
-      --"imgui.ini",
+        --"imgui.ini",
         "log.txt",
-        "Demo.vcxproj",
-        "ImGui.vcxproj",
-        "ImPlot.vcxproj",
-        "Landmark.vcxproj",
-        "Landmark.vcxproj.filters",
-        "Landmark.sln",
     }
+
+    -- Specify extensions to remove
+    local extensionsToRemove = {
+        ".tmp",
+        ".log",
+        ".bak",
+        ".obj",
+        ".pch",
+        ".make",
+        ".vcxproj",
+        ".vcxproj.filters",
+        ".sln"
+    }
+
+    -- Helper: check if string ends with suffix
+    local function endsWith(str, suffix)
+        return str:sub(-#suffix) == suffix
+    end
 
     -- Remove specified directories
     for _, dir in ipairs(dirsToRemove) do
@@ -72,6 +79,17 @@ function customClean()
         if os.isfile(file) then
             os.remove(file)
             print("Removed file: " .. file)
+        end
+    end
+
+    -- Remove files by extension (scans current dir only)
+    local files = os.matchfiles("*")
+    for _, file in ipairs(files) do
+        for _, ext in ipairs(extensionsToRemove) do
+            if endsWith(file, ext) then
+                os.remove(file)
+                print("Removed file by extension: " .. file)
+            end
         end
     end
 end
@@ -96,4 +114,14 @@ newaction
          os.execute("./vcpkg/bootstrap-vcpkg.sh")
          os.execute("./vcpkg/vcpkg install")
     end
+}
+
+newaction
+{
+    trigger = "GenDocs",
+    description = "generate documentation",
+    execute = function ()
+        os.execute("doxygen Doxyfile")
+    end
+
 }

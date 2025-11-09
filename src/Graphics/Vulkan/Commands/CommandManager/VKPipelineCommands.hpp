@@ -15,6 +15,7 @@ struct BindPipelineCommand : Command
     BindPipelineCommand(GPURef<VK::Pipeline> pipeline, VK::PipelineBindPoint BindPoint)
         : pipeline(pipeline), BindPoint(BindPoint)
     {
+        LASSERT(pipeline,"No pipeline given");
     }
 
     std::string GetName() override

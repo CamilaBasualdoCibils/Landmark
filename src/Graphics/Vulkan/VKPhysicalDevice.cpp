@@ -5,9 +5,10 @@
 VK::PhysicalDevice::PhysicalDevice(const vk::PhysicalDevice &phDev) : Handle(phDev)
 {
     PhysicalDeviceProperties = phDev.getProperties();
+    
+    
+    PhysicalDeviceIDProperties.pNext = &PhysicalDeviceDrmProperties;
     PhysicalDeviceProperties2.pNext = &PhysicalDeviceIDProperties;
-
-
     phDev.getProperties2(&PhysicalDeviceProperties2);
     PhysicalDeviceMemoryProperties = phDev.getMemoryProperties();
 }

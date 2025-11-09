@@ -26,5 +26,6 @@ class Buffer : InteropGiver
     operator vk::Buffer() const {return Handle;}
     void* Map() {return Allocation.Map();}
     void Unmap() { Allocation.UnMap();}
+    void InsertData(void* data, size_t size, size_t offset);
 };
 } // namespace VK

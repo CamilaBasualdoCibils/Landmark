@@ -1,21 +1,21 @@
 #include "GraphicsEngine.hpp"
-#include "DearImGui.hpp"
 #include "Graphics/OpenGL/Commands/GLCommandManager.hpp"
 #include "Graphics/Vulkan/Commands/CommandManager/VKCommandManager.hpp"
+#include "Render/Compositor/Compositor.hpp"
 #include <Editor/Editor.hpp>
-#include <Graphics/Compositor/Compositor.hpp>
 #include <Graphics/Devices/GPUSelector.hpp>
 #include <Graphics/Vulkan/VKInstance.hpp>
+#include <Platform/Window/WindowManager.hpp>
+#include <Platform/DearImGui/DearImGui.hpp>
 GraphicsEngine::GraphicsEngine(const GraphicsEngineProperties &properties)
 {
     VK::InstanceProperties VulkanProperties;
     VK::Instance::Make(VulkanProperties);
 
     MainGPU = std::make_shared<GPUInstance>();
-    const auto Devices= GPUSelector::Get().AllDevices();
+    const auto Devices = GPUSelector::Get().AllDevices();
     MainGPU->SetDevice(Devices[0]).Init();
 
-    DearImGui::Make(DearImGuiProperties{});
 }
 
 void GraphicsEngine::Push(const std::vector<std::shared_ptr<Graphics::ICommandManager>> &CmdBuffers)
@@ -41,6 +41,9 @@ void GraphicsEngine::Dispatch(std::shared_ptr<Graphics::ICommandManager> CmdBuff
     else // VULKAN
     {
         const auto VulkanCommandBuffer = std::dynamic_pointer_cast<VK::CommandManager>(CmdBuffer);
+
+        auto FinishedFence = VulkanCommandBuffer->SignalFence();
+        VkCommandBuffersInExecution.push_back({FinishedFence, VulkanCommandBuffer});
         VulkanCommandBuffer->Submit(MainGPU->VK()->GraphicsQueue());
     }
 }
@@ -49,21 +52,18 @@ void GraphicsEngine::BeginFrame()
     glfwPollEvents();
     DearImGui::Get().BeginFrame();
     Editor::Editor::Get().Draw();
-    const vec2 ContentScale = GetMainWindow()->GetContentScale();
-    ImGui::GetIO().FontGlobalScale = (ContentScale.x+ContentScale.y)*0.5f;
 }
 void GraphicsEngine::EndFrame()
 {
     DearImGui::Get().EndFrame();
+
 }
 
 void GraphicsEngine::Render()
 {
-    Graphics::Compositor::Get().RenderCompositions();
-    for (const auto &Window : ActiveWindows)
-    {
-        Window.second->Render();
-    }
+    // Graphics::Compositor::Get().RenderCompositions();
+    Render::Compositor::Get().Compose();
+
     // ExecuteCommandBuffers.push(DearImGui::Get().Render());
     while (!ExecuteCommandBuffers.empty())
     {
@@ -71,11 +71,17 @@ void GraphicsEngine::Render()
         ExecuteCommandBuffers.pop();
         Dispatch(CommandBuffer);
     }
-
-    for (const auto &Window : ActiveWindows)
+    for (auto it = VkCommandBuffersInExecution.begin(); it != VkCommandBuffersInExecution.end();)
     {
-        Window.second->Present();
+        if (it->first->IsSignaled())
+        {
+            it = VkCommandBuffersInExecution.erase(it);
+        }
+        else
+        {
+            it++;
+        }
     }
-    DearImGui::Get().UpdatePlatforms();
-    // std::cerr << "Presented\n";
+
+    Platform::WindowManager::Get().PresentAll();
 }

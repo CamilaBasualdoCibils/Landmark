@@ -3,19 +3,6 @@
 #include "Graphics/Vulkan/VKEnums.hpp"
 namespace VK
 {
-enum class AttachmentLoadOp : std::underlying_type<vk::AttachmentLoadOp>::type
-{
-    eLoad = (size_t)vk::AttachmentLoadOp::eLoad,
-    eClear = (size_t)vk::AttachmentLoadOp::eClear,
-    eDontCare = (size_t)vk::AttachmentLoadOp::eDontCare,
-    eNone = (size_t)vk::AttachmentLoadOp::eNone,
-};
-enum class AttachmentStoreOp : std::underlying_type<vk::AttachmentStoreOp>::type
-{
-    eDontCare = (size_t)vk::AttachmentStoreOp::eDontCare,
-    eStore = (size_t)vk::AttachmentStoreOp::eStore,
-    eNone = (size_t)vk::AttachmentStoreOp::eNone,
-};
 struct RenderPassAttachment
 {
     AttachmentLoadOp LoadOp = AttachmentLoadOp::eLoad;

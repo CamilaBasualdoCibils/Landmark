@@ -23,3 +23,10 @@ InteropTransaction VK::Buffer::ExportMemory()
     LASSERT(false,"Not implemented");
     return InteropTransaction();
 }
+
+void VK::Buffer::InsertData(void *data, size_t size, size_t offset)
+{
+    void* mapped = Map();
+    std::memcpy(mapped+offset,data,size);
+    Unmap();
+}

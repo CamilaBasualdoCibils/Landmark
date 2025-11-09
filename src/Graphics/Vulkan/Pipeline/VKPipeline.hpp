@@ -40,7 +40,7 @@ struct GraphicsPipelineProperties
     std::vector<GraphicsPipelineAttachment> ColorAttachments;
     GraphicsPipelineAttachment DepthAttachment;
 
-    VK::CullMode cullMode = VK::CullMode::eBack;
+    VK::CullMode cullMode = VK::CullMode::eNone;
     // Depth Testing
     bool DepthTest = false, DepthWrite = false;
     VK::CompareOp DepthComparison = VK::CompareOp::eLess;
