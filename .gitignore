@@ -2,3 +2,6 @@
 build
 assets
 /assets
+vcpkg_installed
+vcpkg
+.cache

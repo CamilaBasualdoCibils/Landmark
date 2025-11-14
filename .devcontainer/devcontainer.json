@@ -1,0 +1,62 @@
+{
+  "name": "Ubuntu Dev Container",
+  "image": "ubuntu:24.04",
+  // Run commands after container is created
+  "onCreateCommand": "chmod +x ./.devcontainer/setup.sh && ./.devcontainer/setup.sh",
+  // Forward ports if needed
+  "forwardPorts": [
+    8080,
+    3000,
+    5000
+  ],
+  // Bind your workspace into the container
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind"
+  ],
+  "remoteUser": "root",
+  // Optional: VSCode features support
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/msclock/features/vcpkg:2": {
+      "vcpkgDirectory": "/opt/vcpkg",  
+    "vcpkgRoot": "/opt/vcpkg"
+    },
+    "ghcr.io/schlich/devcontainer-features/starship:0":{}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools-extension-pack",
+        "ms-azuretools.vscode-docker",
+        "docker.docker",
+        "PKief.material-icon-theme",
+        "cschlosser.doxdocgen",
+        "mhutchie.git-graph",
+        "cweijan.vscode-redis-client",
+        "llvm-vs-code-extensions.vscode-clangd"
+      ],
+       "settings": {
+        // Prefer clangd ALWAYS
+        "C_Cpp.intelliSenseEngine": "disabled",
+        "clangd.path": "/usr/bin/clangd",
+        "clangd.arguments": [
+          "--background-index",
+          "--clang-tidy",
+          "--completion-style=detailed",
+          "--header-insertion=never"
+        ]
+      },
+       // --- CMake Auto Kit Selection ---
+  "cmake.generator": "Ninja",
+  "cmake.preferredGenerators": ["Ninja"],
+  "cmake.cmakePath": "/usr/bin/cmake",
+  "cmake.configureSettings": {
+    "CMAKE_C_COMPILER": "/usr/bin/clang",
+    "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+  },
+  "cmake.autoSelectKit": true,
+  "cmake.scanForKitsOnOpen": true,
+  "cmake.ignoreKitEnvironmentChanges": true
+    }
+  }
+}
