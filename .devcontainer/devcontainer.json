@@ -11,17 +11,38 @@
   ],
   // Bind your workspace into the container
   "mounts": [
-    "source=${localWorkspaceFolder},target=/workspace,type=bind"
+    "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "source=${localEnv:XAUTHORITY},target=/root/.Xauthority,type=bind"
   ],
+  "runArgs": [
+    "--device=nvidia.com/gpu=all",
+     "--device=/dev/dri",
+
+  // display for X apps (fallback)
+  "--env=DISPLAY=${localEnv:DISPLAY}",
+  "--volume=/tmp/.X11-unix:/tmp/.X11-unix:rw",
+
+  // wayland support
+  "--env=WAYLAND_DISPLAY=${localEnv:WAYLAND_DISPLAY}",
+  "--env=XDG_RUNTIME_DIR=/run/user/${localEnv:UID}",
+  "--volume=/run/user/${localEnv:UID}:/run/user/${localEnv:UID}",
+
+  // required on NixOS to avoid SELinux DAC failures
+  "--security-opt=label=disable"
+  ],
+   "containerEnv": {
+    "NVIDIA_VISIBLE_DEVICES": "all",
+    "NVIDIA_DRIVER_CAPABILITIES": "all"
+  },
   "remoteUser": "root",
   // Optional: VSCode features support
   "features": {
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     "ghcr.io/msclock/features/vcpkg:2": {
-      "vcpkgDirectory": "/opt/vcpkg",  
-    "vcpkgRoot": "/opt/vcpkg"
+      "vcpkgDirectory": "/opt/vcpkg",
+      "vcpkgRoot": "/opt/vcpkg"
     },
-    "ghcr.io/schlich/devcontainer-features/starship:0":{}
+    "ghcr.io/schlich/devcontainer-features/starship:0": {}
   },
   "customizations": {
     "vscode": {
@@ -33,9 +54,11 @@
         "cschlosser.doxdocgen",
         "mhutchie.git-graph",
         "cweijan.vscode-redis-client",
-        "llvm-vs-code-extensions.vscode-clangd"
+        "llvm-vs-code-extensions.vscode-clangd",
+        "dtoplak.vscode-glsllint",
+        "yzhang.markdown-all-in-one"
       ],
-       "settings": {
+      "settings": {
         // Prefer clangd ALWAYS
         "C_Cpp.intelliSenseEngine": "disabled",
         "clangd.path": "/usr/bin/clangd",
@@ -46,17 +69,19 @@
           "--header-insertion=never"
         ]
       },
-       // --- CMake Auto Kit Selection ---
-  "cmake.generator": "Ninja",
-  "cmake.preferredGenerators": ["Ninja"],
-  "cmake.cmakePath": "/usr/bin/cmake",
-  "cmake.configureSettings": {
-    "CMAKE_C_COMPILER": "/usr/bin/clang",
-    "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
-  },
-  "cmake.autoSelectKit": true,
-  "cmake.scanForKitsOnOpen": true,
-  "cmake.ignoreKitEnvironmentChanges": true
+      // --- CMake Auto Kit Selection ---
+      "cmake.generator": "Ninja",
+      "cmake.preferredGenerators": [
+        "Ninja"
+      ],
+      "cmake.cmakePath": "/usr/bin/cmake",
+      "cmake.configureSettings": {
+        "CMAKE_C_COMPILER": "/usr/bin/clang",
+        "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+      },
+      "cmake.autoSelectKit": true,
+      "cmake.scanForKitsOnOpen": true,
+      "cmake.ignoreKitEnvironmentChanges": true
     }
   }
 }

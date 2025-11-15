@@ -6,6 +6,8 @@
 #define LANDMARK_MATH_HPP
 #include "Libs/GLM.hpp"
 
+using uint8 = glm::uint8;
+
 using mat2 = glm::mat2;
 using mat3 = glm::mat3;
 using mat4 = glm::mat4;
