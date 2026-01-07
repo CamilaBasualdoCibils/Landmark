@@ -1,0 +1,10 @@
+{
+    "nixEnvSelector.suggestion": false,
+    "nixEnvSelector.useFlakes": true,
+    "nixEnvSelector.nixFile": "${workspaceFolder}/flake.nix",
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.arguments": [
+        "--compile-commands-dir=build",
+        "--background-index"
+    ]
+}

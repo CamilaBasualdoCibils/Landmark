@@ -19,7 +19,7 @@ private:
     Settings _settings;
     bool ShouldClose = false;
 public:
-    LandmarkEngine();
+    LandmarkEngine()= default;
 
     void Init(const Settings& settings);
     void Run();

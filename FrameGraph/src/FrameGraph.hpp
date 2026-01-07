@@ -1,115 +1,78 @@
-//
-// Created by camila on 11/10/25.
-//
+#pragma once
 
-#ifndef LANDMARK_FRAMEGRAPH_HPP
-#define LANDMARK_FRAMEGRAPH_HPP
-#include <string_view>
 #include <functional>
-
-#include "FrameGraphPass.hpp"
-#include "FrameGraphResource.hpp"
-#include "PassNode.hpp"
+#include <string_view>
+#include "Math/Math.hpp"
+#include "Resource.hpp"
 #include "ResourceEntry.hpp"
 #include "ResourceNode.hpp"
-#include "Utility/Assert.hpp"
-class FrameGraphPassResources;
+#include "PassNode.hpp"
+namespace FG
+{
+    /**
+     * @brief Main use of a FrameGraph
+     * 
+     */
+class FrameGraph
+{
 
-class FrameGraph {
-public:
-    static constexpr auto kFlagsIgnored = ~0;
-
-    class Builder final {
     public:
-        Builder(FrameGraph &parent_graph, PassNode &pass_node) : parent_graph(parent_graph), pass_node(pass_node) {
+    class Builder
+    {
+        protected:
+        Builder(FrameGraph& _fg) :fg(_fg){}
+        public:
+        template<typename Type,typename Desc = Type::Desc>
+        Resource create(const std::string_view name,const Desc& desc)
+        {
+            const auto ID = fg._create<Type,Desc>(ResourceEntry::ResourceType::eTransient,name,desc,Type{});
+            pass_node.
         }
 
-        template<typename T>
-        [[nodiscard]] FrameGraphResource create(const std::string_view name, const typename T::Desc & desc) {
-            const auto id = parent_graph._create<T>(ResourceEntry::Type::eTransient,name,desc,T{});
-            return pass_node.m_creates.emplace_back(id);
+        Resource write(Resource);
+
+        private:
+        FrameGraph& fg;
+        PassNode& pass_node;
+
+    };
+    class PassResources
+    {
+        public:
+        template <typename T>
+        [[nodiscard]] T& get(FG::Resource id)
+        {
+            static T t;
+            return t;
         }
-
-        FrameGraphResource read(FrameGraphResource id, uint32_t flags = kFlagsIgnored) {
-            LASSERT(parent_graph.isValid(id),"Invalid ID");
-            return pass_node._read(id,flags);
-        }
-
-        [[nodiscard]] FrameGraphResource write(FrameGraphResource id, uint32_t flags = kFlagsIgnored) {
-            LASSERT(parent_graph.isValid(id),"Invalid ID");
-            if (parent_graph._getResourceEntry(id).isImported()) setSideEffect();
-
-            if (pass_node.creates(id)) {
-                return pass_node._write(id, flags);
-            } else {
-                // Writing to a texture produces a renamed handle.
-                // This allows us to catch errors when resources are modified in
-                // undefined order (when same resource is written by different passes).
-                // Renaming resources enforces a specific execution order of the render
-                // passes.
-                pass_node._read(id, kFlagsIgnored);
-                return pass_node._write(parent_graph._clone(id), flags);
-            }
-        }
-
-    private:
-        FrameGraph &parent_graph;
-        PassNode &pass_node;
     };
 
-    struct NoData {
-    };
-
-    template<typename Data = NoData, typename Setup, typename Execute>
-    const Data &add_callback_pass(const std::string_view name, Setup &&setup, Execute &&execute) {
-        auto pass = std::make_unique<FrameGraphPass<Data, Execute> >(std::forward<Execute>(execute));
-        auto *passr = pass.get();
-        auto &passNode = _create_pass_node(name, std::move(pass));
-        Builder builder{*this, passNode};
-        std::invoke(setup, builder, passr->data);
-        return passr->data;
-    }
-    [[nodiscard]] bool isValid(FrameGraphResource id) const;
+    template <typename Data>
+    using LambdaSetupCallback = std::function<void(Builder& builder,Data& data)>;
+    template <typename Data>
+    using LambdaExecuteCallback = std::function<void(const Data& data,PassResources& resources)>;
+    template <typename Data>
+    const Data& push_pass_lambda(const std::string_view pass_name,LambdaSetupCallback<Data> setup,LambdaExecuteCallback<Data> execute);
     void compile();
+    void execute();
+    private:
+    std::vector<PassNode> pass_nodes;
+    std::vector<ResourceEntry> resource_registry;
+    std::vector<ResourceNode> resource_nodes;
 
-    void execute(void *context = nullptr, void *allocator = nullptr);
-
-private:
-    PassNode &_create_pass_node(const std::string_view name, std::unique_ptr<IFrameGraphPass> &&exec) {
-        const auto id = static_cast<uint32_t>(m_pass_nodes.size());
-        return m_pass_nodes.emplace_back(PassNode{name, id, std::move(exec)});
+    template <typename Type,typename Desc = Type::Desc>
+    Resource _create(const ResourceEntry::ResourceType type,const std::string_view name, const Desc& desc, Type&& resource)
+    {
+        const auto ID = static_cast<Resource>(resource_registry.size());
+        resource_registry.emplace_back(ResourceEntry{type,ID,desc,std::forward<Type>(resource)});
+        //we return a resource node since each time a get is done, 
+        // they receive the most recent version. not the original node
+        return _create_resource_node(name,ID).get_id();
     }
-
-    template<typename T>
-    uint32_t _create(const ResourceEntry::Type type,const std::string_view name,const typename T::Desc &desc,T&&) {
-
+    ResourceNode& _create_resource_node(const std::string_view name,Resource resource_id,uint32 version = ResourceEntry::k_initial_version)
+    {
+        const uint32 node_id = resource_nodes.size();
+        return resource_nodes.emplace_back(ResourceNode{name,node_id,resource_id,version});
     }
-    //All resource IDs
-    boost::container::small_vector<ResourceEntry, 25> resource_registry;
-    //All resource nodes
-    boost::container::small_vector<ResourceNode, 25> resources_nodes;
-    // boost::container::small_vector<ResourceEntry, 25> resources;
-    //All pass nodes
-    boost::container::small_vector<PassNode, 10> m_pass_nodes;
 };
-
-class FrameGraphPassResources {
-public:
-    template<typename T>
-    [[nodiscard]] T &get(FrameGraphResource id) {
-        LASSERT(pass_node_.reads(id) || pass_node_.writes(id) || pass_node_.creates(id),
-                "Cannot get resources not associated");
-        throw "Not implemented";
-    }
-
-    template<typename T>
-    [[nodiscard]] const T::Desc &get_descriptor(FrameGraphResource id) const {
-        throw "Not implemented";
-    }
-
-private:
-    FrameGraph &parent_graph;
-    const PassNode pass_node_;
 };
-
-#endif //LANDMARK_FRAMEGRAPH_HPP

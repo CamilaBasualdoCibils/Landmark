@@ -7,6 +7,9 @@
 #include "Libs/GLM.hpp"
 
 using uint8 = glm::uint8;
+using uint16 = glm::uint16;
+using uint32 = glm::uint32;
+using uint64 = glm::uint64;
 
 using mat2 = glm::mat2;
 using mat3 = glm::mat3;

@@ -12,9 +12,8 @@ get_filename_component(VCPKG_ROOT "${VCPKG_EXECUTABLE}" DIRECTORY)
 set(CMAKE_TOOLCHAIN_FILE
     "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
     CACHE STRING "Vcpkg toolchain file")
-    
+set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 project(Landmark)
-
 
 set(CMAKE_CXX_STANDARD 23)
 
@@ -27,3 +26,4 @@ add_subdirectory(FrameGraphViz)
 add_subdirectory(SimpleAppBase)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+

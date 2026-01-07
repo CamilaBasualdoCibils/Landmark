@@ -13,6 +13,7 @@
 #include <boost/describe.hpp>
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 class GLFW : public Singleton<GLFW> {
 
   enum class Platforms {
@@ -31,6 +32,7 @@ public:
         [&init = init](auto D) {
           if (init)
             return;
+          std::cout << "GLFW Trying " << D.name << std::endl;
           glfwInitHint(GLFW_PLATFORM, (int)D.value);
           const auto result = glfwInit();
           if (result == GLFW_TRUE) {
@@ -46,6 +48,8 @@ public:
             throw std::runtime_error("Failed to init GLFW");
         }
   }
+
+  void GetRequiredVulkanExtensions(std::vector<const char*>&);
 };
 
 #endif // LANDMARK_GLFW_HPP

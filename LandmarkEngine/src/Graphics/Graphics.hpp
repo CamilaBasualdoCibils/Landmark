@@ -34,6 +34,7 @@ public:
     struct Settings {
         APIMode _APIMode = APIMode::eVulkan;
     };
+    Settings _settings;
 
     void Init(const Settings& settings);
 
@@ -43,6 +44,8 @@ public:
     void NewFrame();
     void EndFrame();
     void Render();
+
+    void InitGraphicsAPIs();
 };
 
 

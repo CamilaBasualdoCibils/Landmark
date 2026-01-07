@@ -6,9 +6,7 @@
 #define LANDMARK_FRAMEGRAPHVIZ_HPP
 
 #include "App.h"
-#include "FrameGraph.hpp"
-#include "Blackboard.hpp"
-#include "FrameGraphResource.hpp"
+#include "FG.hpp"
 
 class FrameGraphViz : public App {
 public:
@@ -27,11 +25,11 @@ private:
     void OnShutdown() override;
 
     struct GBufferData {
-        FrameGraphResource Albedo, Normal, Depth;
+        FG::Resource Albedo, Normal, Depth;
     };
 
-    Blackboard bb;
-    FrameGraph fg;
+    FG::Blackboard bb;
+    FG::FrameGraph fg;
 };
 
 

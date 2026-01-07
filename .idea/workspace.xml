@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DCMAKE_TOOLCHAIN_FILE=/home/camila/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2ae5ad05-76fb-4c3c-bdd6-c0fd4532dd85" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/FrameGraph/src/FG.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FrameGraph/src/Resource.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GenericLib/src/Libs/GLFW.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LandmarkEngine/src/Graphics/Vulkan/Instance.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LandmarkEngine/src/Graphics/Vulkan/Instance.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/flake.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/flake.nix" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.clang-tidy" beforeDir="false" afterPath="$PROJECT_DIR$/.clang-tidy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.devcontainer/devcontainer.json" beforeDir="false" afterPath="$PROJECT_DIR$/.devcontainer/devcontainer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.devcontainer/setup.sh" beforeDir="false" afterPath="$PROJECT_DIR$/.devcontainer/setup.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/Blackboard.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/FrameGraph/src/Blackboard.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/FrameGraph.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/FrameGraph.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/FrameGraph/src/FrameGraph.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/FrameGraphPass.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/FrameGraphPass.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/FrameGraphResource.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/FrameGraphResource.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/GraphNode.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/FrameGraph/src/GraphNode.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/PassNode.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/PassNode.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/FrameGraph/src/PassNode.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/ResourceEntry.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/ResourceEntry.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/FrameGraph/src/ResourceEntry.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/ResourceNode.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraph/src/ResourceNode.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/FrameGraph/src/ResourceNode.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraphViz/src/FrameGraphViz.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/FrameGraphViz/src/FrameGraphViz.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrameGraphViz/src/FrameGraphViz.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/FrameGraphViz/src/FrameGraphViz.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GenericLib/src/Libs/GLFW.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/GenericLib/src/Libs/GLFW.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GenericLib/src/Math/Math.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/GenericLib/src/Math/Math.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LandmarkEngine/src/Graphics/Graphics.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/LandmarkEngine/src/Graphics/Graphics.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LandmarkEngine/src/Graphics/Graphics.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/LandmarkEngine/src/Graphics/Graphics.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LandmarkEngine/src/LandmarkEngine.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/LandmarkEngine/src/LandmarkEngine.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LandmarkEngine/src/LandmarkEngine.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/LandmarkEngine/src/LandmarkEngine.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/Nsight-Graphics.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/Nsight-Graphics.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vcpkg.json" beforeDir="false" afterPath="$PROJECT_DIR$/vcpkg.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2025" />
+    <option name="minorVersion" value="1.2" />
+    <option name="productBranch" value="Classic" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="36BFnNFHsKtoB3oAE3ewPljuVGR" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.west.config.association.type.startup.service&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2ae5ad05-76fb-4c3c-bdd6-c0fd4532dd85" name="Changes" comment="" />
+      <created>1764472225236</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1764472225236</updated>
+      <workItem from="1764472226254" duration="112000" />
+      <workItem from="1764472362000" duration="260000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+  </component>
+</project>

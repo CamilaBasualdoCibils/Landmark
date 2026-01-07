@@ -8,9 +8,6 @@
 
 #include "Graphics/Graphics.hpp"
 
-LandmarkEngine::LandmarkEngine() {
-}
-
 void LandmarkEngine::Init(const Settings &settings) {
     std::cerr << "LandmarkEngine::Init()" << std::endl;
     _settings = settings;

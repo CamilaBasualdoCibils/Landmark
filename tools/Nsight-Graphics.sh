@@ -20,6 +20,7 @@ fi
 
 echo "ngfx-ui-for-linux not found. Installing Nsight Graphics..."
 
+apt install -y libxcb-dri2-0 libxcb-dri3-0 libxcb-present0 libxcb-sync1 libxcb-randr0 libxcb-shape0 libxcb-xfixes0 libxcb-xinerama0 libx11-xcb1 libxext6 libxrandr2 libxrender1 libxi6 libgl1 libglx-mesa0 libglu1-mesa mesa-vulkan-drivers libvulkan1 libwayland-client0 libwayland-server0
 # ------------------------------------------
 # Ensure wget
 # ------------------------------------------
